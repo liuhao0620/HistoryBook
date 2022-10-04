@@ -1,0 +1,22 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{68EA2097-45DE-D1C2-30AB-428765F864C8}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "HistoryBook",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "ModelingToolsEditorMode",
+			"Enabled": true,
+			"TargetAllowList": [
+				"Editor"
+			]
+		}
+	]
+}
