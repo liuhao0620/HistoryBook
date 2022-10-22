@@ -21,6 +21,7 @@ public:
 	const UHBConfigManager* GetConfigManager() const { return ConfigManager; }
 	
 private:
+	UPROPERTY()
 	UHBConfigManager*				ConfigManager = nullptr;
 	
 	UPROPERTY(EditAnywhere)

@@ -3,17 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "HBWarPlayerController.generated.h"
+#include "HBWarCursor.h"
+#include "HBMovableCursor.generated.h"
 
 class AHBWarHero;
-UCLASS()
-class HISTORYBOOK_API AHBWarPlayerController : public APlayerController
+UCLASS(BlueprintType)
+class HISTORYBOOK_API AHBMovableCursor : public AHBWarCursor
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	AHBWarPlayerController();
+	AHBMovableCursor();
 
 protected:
 	// Called when the game starts or when spawned
@@ -23,10 +24,5 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-public:
-	void SetControlledHero(AHBWarHero* InHero);
-	TWeakObjectPtr<AHBWarHero> GetControlledHero() const;
-
-private:
-	TWeakObjectPtr<AHBWarHero>			ControlledHero;
+	virtual void NotifyActorOnClicked(FKey ButtonPressed) override;
 };

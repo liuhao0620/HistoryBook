@@ -6,6 +6,8 @@
 #include "HBTypes.h"
 #include "HBConfigManager.generated.h"
 
+class AHBMovableCursor;
+class AHBAttackableCursor;
 /**
  * 
  */
@@ -22,7 +24,8 @@ public:
 	const FHBMilitaryConfig* GetMilitaryConfig(EHBMilitaryType InType) const  { return MilitaryConfigs.Find(InType); }
 	const FHBHeroConfig* GetHeroConfig(int32 InHeroId) const { return HeroConfigs.Find(InHeroId); }
 	const FHBWarMapConfig* GetWarMapConfig(int32 InWarMapId) const  { return WarMapConfigs.Find(InWarMapId); }
-	const TSubclassOf<AActor>& GetMovableCursorClass() const { return MovableCursorClass; }
+	const TSubclassOf<AHBMovableCursor>& GetMovableCursorClass() const { return MovableCursorClass; }
+	const TSubclassOf<AHBAttackableCursor>& GetAttackableCursorClass() const { return AttackCursorClass; }
 
 private:
 	UPROPERTY()
@@ -35,13 +38,15 @@ private:
 	TMap<int32, FHBWarMapConfig>				WarMapConfigs;
 	
 	UPROPERTY(EditDefaultsOnly)
-	UDataTable*				LandformConfigDataTable;
+	UDataTable*									LandformConfigDataTable;
 	UPROPERTY(EditDefaultsOnly)
-	UDataTable*				MilitaryConfigDataTable;
+	UDataTable*									MilitaryConfigDataTable;
 	UPROPERTY(EditDefaultsOnly)
-	UDataTable*				HeroConfigDataTable;	
+	UDataTable*									HeroConfigDataTable;	
 	UPROPERTY(EditDefaultsOnly)
-	UDataTable*				WarMapConfigDataTable;
+	UDataTable*									WarMapConfigDataTable;
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AActor>		MovableCursorClass;
+	TSubclassOf<AHBMovableCursor>				MovableCursorClass;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AHBAttackableCursor>				AttackCursorClass;
 };

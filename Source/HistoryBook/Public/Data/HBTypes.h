@@ -7,6 +7,14 @@
 class AHBWarHero;
 
 UENUM(BlueprintType)
+enum class EHBWarCamp : uint8
+{
+	ENone,
+	ERed,
+	EBlue,
+};
+
+UENUM(BlueprintType)
 enum class EHBLandformType : uint8
 {
 	Invalid UMETA(Hidden),
@@ -18,6 +26,12 @@ enum class EHBMilitaryType : uint8
 {
 	Invalid UMETA(Hidden),
 	Infantry UMETA(DisplayName="步兵"),
+};
+
+enum class EHBWarHeroState
+{
+	EMove,
+	EAttack,
 };
 
 USTRUCT(BlueprintType)

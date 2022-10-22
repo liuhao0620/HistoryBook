@@ -7,6 +7,8 @@
 #include "Data/HBTypes.h"
 #include "HBWarHero.generated.h"
 
+class AHBWarCursor;
+
 UCLASS()
 class HISTORYBOOK_API AHBWarHero : public ACharacter
 {
@@ -30,9 +32,11 @@ public:
 	virtual void NotifyActorOnClicked(FKey ButtonPressed = EKeys::LeftMouseButton) override;
 
 public:
-	void InitParameters(int32 InConfigId, FIntVector2 InPosition, int32 InLevel = 1, int32 InSoldierCount = -1);
+	void InitParameters(EHBWarCamp InCamp, int32 InConfigId, FIntVector2 InPosition, int32 InLevel = 1, int32 InSoldierCount = -1);
 	
 public:
+	UFUNCTION(BlueprintCallable)
+	EHBWarCamp GetWarCamp() const;
 	UFUNCTION(BlueprintCallable)
 	FName GetHeroName() const;
 	UFUNCTION(BlueprintCallable)
@@ -42,15 +46,28 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int32 GetMaxSoldierCount() const;
 
+public:
+	void MoveTo(const FIntVector2& InPosition);
+	void Attack(AHBWarHero* InEnemy);
+	void ClearCursors();
+	
 private:
-	void DisplayMovableCursors() const;
+	void DisplayMovableCursors();
+	void DisplayAttackCursors();
 
 private:
-	int32			ConfigId = 0;
 	FIntVector2		Position = FIntVector2(0, 0);
-	int32			Level = 0;
 	int32			SoldierCount = 0;
+	EHBWarHeroState	State = EHBWarHeroState::EMove;
+	
+	EHBWarCamp		Camp = EHBWarCamp::ENone;
+	int32			ConfigId = 0;
+	int32			Level = 0;
 	FName			Name;
 	EHBMilitaryType MilitaryType = EHBMilitaryType::Invalid;
 	int32			MaxSoldierCount = 0;
+
+private:
+	TArray<TWeakObjectPtr<AHBWarCursor>>		Cursors;
+	TSet<FIntVector2>							AttackCursorPositions;
 };

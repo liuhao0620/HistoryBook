@@ -1,33 +1,38 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
-#include "Character/HBWarPlayerController.h"
+
+
+#include "Cursor/HBMovableCursor.h"
 #include "Character/HBWarHero.h"
 
+
 // Sets default values
-AHBWarPlayerController::AHBWarPlayerController()
+AHBMovableCursor::AHBMovableCursor()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
 // Called when the game starts or when spawned
-void AHBWarPlayerController::BeginPlay()
+void AHBMovableCursor::BeginPlay()
 {
 	Super::BeginPlay();
+	
 }
 
 // Called every frame
-void AHBWarPlayerController::Tick(float DeltaTime)
+void AHBMovableCursor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
-void AHBWarPlayerController::SetControlledHero(AHBWarHero* InHero)
+void AHBMovableCursor::NotifyActorOnClicked(FKey ButtonPressed)
 {
-	ControlledHero = InHero;
-}
+	Super::NotifyActorOnClicked(ButtonPressed);
 
-TWeakObjectPtr<AHBWarHero> AHBWarPlayerController::GetControlledHero() const
-{
-	return ControlledHero;
+	if (ButtonPressed == EKeys::LeftMouseButton && Owner.IsValid() && Owner->GetWarCamp() == EHBWarCamp::ERed)
+	{
+		Owner->MoveTo(Position);
+		Owner->ClearCursors();
+	}
 }
 

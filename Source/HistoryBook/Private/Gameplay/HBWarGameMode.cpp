@@ -87,7 +87,7 @@ void AHBWarGameMode::InitWar()
 					HeroTrans.SetLocation(HeroLoc);
 					if (AHBWarHero* RedHero = World->SpawnActorDeferred<AHBWarHero>(MilitaryConfig->PawnClass, HeroTrans))
 					{
-						RedHero->InitParameters(RedHeroIds[i], BirthPosition);
+						RedHero->InitParameters(EHBWarCamp::ERed, RedHeroIds[i], BirthPosition);
 						RedHero->FinishSpawning(HeroTrans);
 					}
 				}
@@ -110,7 +110,7 @@ void AHBWarGameMode::InitWar()
 					HeroTrans.SetLocation(HeroLoc);
 					if (AHBWarHero* BlueHero = World->SpawnActorDeferred<AHBWarHero>(MilitaryConfig->PawnClass, HeroTrans))
 					{
-						BlueHero->InitParameters(BlueHeroIds[i], BirthPosition);
+						BlueHero->InitParameters(EHBWarCamp::EBlue, BlueHeroIds[i], BirthPosition);
 						BlueHero->FinishSpawning(HeroTrans);
 					}
 				}

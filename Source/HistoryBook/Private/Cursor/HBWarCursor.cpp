@@ -1,33 +1,32 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
-#include "Character/HBWarPlayerController.h"
+
+#include "Cursor/HBWarCursor.h"
 #include "Character/HBWarHero.h"
 
+
 // Sets default values
-AHBWarPlayerController::AHBWarPlayerController()
+AHBWarCursor::AHBWarCursor()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
 // Called when the game starts or when spawned
-void AHBWarPlayerController::BeginPlay()
+void AHBWarCursor::BeginPlay()
 {
 	Super::BeginPlay();
+	
 }
 
 // Called every frame
-void AHBWarPlayerController::Tick(float DeltaTime)
+void AHBWarCursor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
-void AHBWarPlayerController::SetControlledHero(AHBWarHero* InHero)
+void AHBWarCursor::Init(AHBWarHero* InOwner, const FIntVector2& InPosition)
 {
-	ControlledHero = InHero;
-}
-
-TWeakObjectPtr<AHBWarHero> AHBWarPlayerController::GetControlledHero() const
-{
-	return ControlledHero;
+	Owner = InOwner;
+	Position = InPosition;
 }
 
