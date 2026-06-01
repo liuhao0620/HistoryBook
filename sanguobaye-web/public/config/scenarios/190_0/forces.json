@@ -1,0 +1,78 @@
+[
+  {
+    "id": 1,
+    "kingId": 0
+  },
+  {
+    "id": 2,
+    "kingId": 1
+  },
+  {
+    "id": 3,
+    "kingId": 2
+  },
+  {
+    "id": 4,
+    "kingId": 3
+  },
+  {
+    "id": 5,
+    "kingId": 4
+  },
+  {
+    "id": 6,
+    "kingId": 5
+  },
+  {
+    "id": 7,
+    "kingId": 6
+  },
+  {
+    "id": 8,
+    "kingId": 7
+  },
+  {
+    "id": 9,
+    "kingId": 8
+  },
+  {
+    "id": 10,
+    "kingId": 9
+  },
+  {
+    "id": 11,
+    "kingId": 10
+  },
+  {
+    "id": 12,
+    "kingId": 11
+  },
+  {
+    "id": 13,
+    "kingId": 12
+  },
+  {
+    "id": 14,
+    "kingId": 13
+  },
+  {
+    "id": 15,
+    "kingId": 14
+  },
+  {
+    "id": 16,
+    "kingId": 15
+  },
+  {
+    "id": 17,
+    "kingId": 16
+  },
+  {
+    "id": 18,
+    "kingId": 17
+  },
+  {
+    "id": 19,
+    "kingId": 18
+  }
+]

@@ -1,0 +1,28 @@
+{
+  "scenarios": [
+    {
+      "id": "190_0",
+      "name": "董卓弄权",
+      "startYear": 190,
+      "startMonth": 1
+    },
+    {
+      "id": "198_1",
+      "name": "曹操崛起",
+      "startYear": 198,
+      "startMonth": 1
+    },
+    {
+      "id": "208_2",
+      "name": "赤壁之战",
+      "startYear": 208,
+      "startMonth": 1
+    },
+    {
+      "id": "225_3",
+      "name": "三足鼎立",
+      "startYear": 225,
+      "startMonth": 1
+    }
+  ]
+}

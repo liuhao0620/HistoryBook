@@ -1,0 +1,217 @@
+[
+  {
+    "id": 0,
+    "name": "践踏",
+    "description": "骑兵的基本技能，可对步兵造成一定伤害。"
+  },
+  {
+    "id": 1,
+    "name": "冲锋",
+    "description": "骑兵的中级技能，可对许多兵种造成一定伤害。"
+  },
+  {
+    "id": 2,
+    "name": "突击",
+    "description": "骑兵的高级技能，可对所有兵种造成较大伤害。"
+  },
+  {
+    "id": 3,
+    "name": "突袭",
+    "description": "使目标敌人的部队受到很大伤害，同时陷入混乱。"
+  },
+  {
+    "id": 4,
+    "name": "火攻",
+    "description": "趁敌人不防备，放火烧敌人或粮草。"
+  },
+  {
+    "id": 5,
+    "name": "滚木",
+    "description": "利用高出的地势，使用滚木攻击敌人。"
+  },
+  {
+    "id": 6,
+    "name": "落石",
+    "description": "利用高出的地势，向下丢石头。"
+  },
+  {
+    "id": 7,
+    "name": "奋战",
+    "description": "全军士气高昂，奋力一战。"
+  },
+  {
+    "id": 8,
+    "name": "飞矢",
+    "description": "弓箭兵远程发箭，间接攻击敌人。"
+  },
+  {
+    "id": 9,
+    "name": "箭雨",
+    "description": "由于弓箭的数量太多，飞矢变成了箭雨。"
+  },
+  {
+    "id": 10,
+    "name": "火箭",
+    "description": "箭头带火，可以造成重大伤害，或引燃军粮。"
+  },
+  {
+    "id": 11,
+    "name": "水淹",
+    "description": "利用敌人不知水性的特点，重创敌人。"
+  },
+  {
+    "id": 12,
+    "name": "撞击",
+    "description": "猛烈撞击敌人的船只，对目标造成伤害。"
+  },
+  {
+    "id": 13,
+    "name": "咒封",
+    "description": "使目标部队无法施展技能。"
+  },
+  {
+    "id": 14,
+    "name": "定身",
+    "description": "使目标部队无法移动。"
+  },
+  {
+    "id": 15,
+    "name": "流言",
+    "description": "使目标敌人混乱。"
+  },
+  {
+    "id": 16,
+    "name": "援兵",
+    "description": "恢复对友少量兵力。"
+  },
+  {
+    "id": 17,
+    "name": "烈火",
+    "description": "利用地利，引然大火，焚烧敌人。"
+  },
+  {
+    "id": 18,
+    "name": "海啸",
+    "description": "驾御狂风，引发海啸，攻击水面军队。"
+  },
+  {
+    "id": 19,
+    "name": "奇门",
+    "description": "使目标部队在战场上无视其他部队的阻挡，进行移动。"
+  },
+  {
+    "id": 20,
+    "name": "遁甲",
+    "description": "使目标部队为敌人不可见。"
+  },
+  {
+    "id": 21,
+    "name": "天变",
+    "description": "施展法术，改变当前战场天气。"
+  },
+  {
+    "id": 22,
+    "name": "石阵",
+    "description": "利用地理环境，布置巧妙阵法。"
+  },
+  {
+    "id": 23,
+    "name": "陷阱",
+    "description": "在适当的地方挖陷阱。"
+  },
+  {
+    "id": 24,
+    "name": "天籁",
+    "description": "利用天籁之音对敌人进行迷惑。"
+  },
+  {
+    "id": 25,
+    "name": "潜踪",
+    "description": "消除部队的行动踪迹。"
+  },
+  {
+    "id": 26,
+    "name": "围攻",
+    "description": "使临近目标敌人的步兵部队同时再攻击一次敌人。"
+  },
+  {
+    "id": 27,
+    "name": "急行",
+    "description": "自己部队快速移动。"
+  },
+  {
+    "id": 28,
+    "name": "援军",
+    "description": "恢复对友大量兵力。"
+  },
+  {
+    "id": 29,
+    "name": "谍报",
+    "description": "君主特有技能。可以获取敌人的最新战场情报。"
+  },
+  {
+    "id": 30,
+    "name": "@@@@",
+    "description": "\u0006D@@c@A@@@@@@KHB@G@@TT@@@TTA@@TT@@@TTA@@TT@@@TTA@@"
+  },
+  {
+    "id": 31,
+    "name": "@蠤@",
+    "description": ""
+  },
+  {
+    "id": 32,
+    "name": "@a@A",
+    "description": ""
+  },
+  {
+    "id": 33,
+    "name": "@@@@",
+    "description": ""
+  },
+  {
+    "id": 34,
+    "name": "@l@U",
+    "description": ""
+  },
+  {
+    "id": 35,
+    "name": "@A@@",
+    "description": ""
+  },
+  {
+    "id": 36,
+    "name": "@@@@",
+    "description": ""
+  },
+  {
+    "id": 37,
+    "name": "@�??",
+    "description": ""
+  },
+  {
+    "id": 38,
+    "name": "?? €",
+    "description": ""
+  },
+  {
+    "id": 39,
+    "name": "@@@@",
+    "description": ""
+  },
+  {
+    "id": 40,
+    "name": "`€`@",
+    "description": ""
+  },
+  {
+    "id": 41,
+    "name": "@@`�",
+    "description": ""
+  },
+  {
+    "id": 42,
+    "name": "窣@�",
+    "description": ""
+  }
+]

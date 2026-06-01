@@ -1,0 +1,926 @@
+import React, { useState, useEffect } from 'react';
+import { useGameStore, getSaveSlotsInfo } from '../../core/state/useGameStore';
+
+const bounceKeyframes = `
+@keyframes bounce {
+    from { transform: translateX(-50%) translateY(0); }
+    to { transform: translateX(-50%) translateY(-5px); }
+}
+`;
+import { useBattleStore } from '../../core/battle/useBattleStore';
+import { C_MAP, CITY_MAP_W } from '../../core/constants/cityMap';
+import { 
+    AssartCommand, AccractbusinessCommand, SearchCommand, 
+    FatherCommand, InspectionCommand, SurrenderCommand, 
+    LargessCommand, ConfiscateCommand, TreatCommand, 
+    KillCommand, BanishCommand, ExchangeCommand
+} from '../../core/commands/InternalCommands';
+import { 
+    ConscriptionCommand, ReconnoitreCommand, DistributeCommand, 
+    DepredateCommand, TransportationCommand, MoveCommand 
+} from '../../core/commands/MilitaryCommands';
+import { 
+    AlienateCommand, CanvassCommand, CounterespionageCommand, InduceCommand 
+} from '../../core/commands/DiplomacyCommands';
+import { AIBattleSimulator } from '../../core/ai/AIBattleSimulator';
+import { GameButton } from '../components/ui/GameButton';
+import { GamePanel } from '../components/ui/GamePanel';
+import { GameModal } from '../components/ui/GameModal';
+
+type CommandStep = 'NONE' | 'SELECT_EXECUTORS' | 'SELECT_TARGET_CITY' | 'SELECT_TARGET_PERSON' | 'INPUT_AMOUNTS';
+
+export const GameScreen: React.FC = () => {
+    const { year, month, selectedCityId, cities, persons, forces, playerForceId, nextTurn, setScreen, selectCity, delayedTasks, processDelayedTasks, updateCity, updatePerson, addReport, aiThinkingForceId, reportQueue, clearReports } = useGameStore();
+    const initBattle = useBattleStore(state => state.initBattle);
+    const [cityLinks, setCityLinks] = useState<any[]>([]);
+
+    const [currentReportIndex, setCurrentReportIndex] = useState<number>(0);
+    const playerReports = reportQueue.filter(r => r.forceId === playerForceId);
+    const showReportModal = playerReports.length > 0 && currentReportIndex < playerReports.length;
+
+    const handleNextReport = () => {
+        if (currentReportIndex + 1 >= playerReports.length) {
+            clearReports();
+            setCurrentReportIndex(0);
+        } else {
+            setCurrentReportIndex(prev => prev + 1);
+        }
+    };
+
+    useEffect(() => {
+        fetch('/config/city_links.json')
+            .then(res => res.json())
+            .then(data => setCityLinks(data));
+    }, []);
+
+    // 处理延迟任务
+    useEffect(() => {
+        const completedTasks = delayedTasks.filter(t => t.monthsLeft <= 0);
+        if (completedTasks.length > 0) {
+            const newAiReports: string[] = [];
+            completedTasks.forEach(task => {
+                if (task.type === 'TRANSPORT') {
+                    updateCity(task.data.toCityId, c => {
+                        c.money += task.data.money;
+                        c.food += task.data.food;
+                        c.mothballArms += task.data.arms;
+                    });
+                    const msgPrefix = task.data.executorId === forces[task.forceId]?.kingId ? `孤已将物资押送到` : `主公，臣已将物资押送到`;
+                    addReport({ forceId: task.forceId, msg: `${msgPrefix} ${cities[task.data.toCityId]?.name}，送达金钱 ${task.data.money}，粮草 ${task.data.food}，兵力 ${task.data.arms}。`, avatarId: task.data.executorId });
+                } else if (task.type === 'MOVE') {
+                    task.data.personIds.forEach((pid: number) => {
+                        updatePerson(pid, p => { p.city = task.data.toCityId; });
+                    });
+                    const executorId = task.data.personIds[0];
+                    const msgPrefix = executorId === forces[task.forceId]?.kingId ? `孤率军` : `主公，臣已率军`;
+                    addReport({ forceId: task.forceId, msg: `${msgPrefix}抵达 ${cities[task.data.toCityId]?.name}。`, avatarId: executorId });
+                } else if (task.type === 'RECONNOITRE') {
+                    const msgPrefix = task.data.executorId === forces[task.forceId]?.kingId ? `孤探明了` : `主公，臣探明了`;
+                    addReport({ forceId: task.forceId, msg: `${msgPrefix} ${cities[task.data.targetCityId]?.name} 的兵力情况。`, avatarId: task.data.executorId });
+                } else if (task.type === 'ATTACK') {
+                    const targetCityId = task.data.targetCityId;
+                    const executors = task.data.executorIds;
+                    const fromCityId = task.data.fromCityId;
+                    const defenderIds = Object.values(persons).filter(p => p.city === targetCityId).map(p => p.id);
+                    if (defenderIds.length === 0) {
+                        updateCity(targetCityId, c => { c.belong = task.forceId; });
+                        executors.forEach((pid: number) => {
+                            updatePerson(pid, p => { p.city = targetCityId; });
+                        });
+                        const executorId = executors[0];
+                        const isKing = executorId === forces[task.forceId]?.kingId;
+                        const msgPrefix = isKing ? `孤已兵不血刃占领了` : `主公，臣已兵不血刃占领了`;
+                        addReport({ forceId: task.forceId, msg: `${msgPrefix} ${cities[targetCityId].name}！`, avatarId: executorId });
+                    } else {
+                        const targetCityBelong = cities[targetCityId].belong;
+                        if (task.forceId !== playerForceId && targetCityBelong !== playerForceId) {
+                            // AI vs AI -> fast simulate
+                            const result = AIBattleSimulator.simulateBattle(task.forceId, targetCityBelong, targetCityId, executors, defenderIds);
+                            addReport({ forceId: task.forceId, msg: result.reportMsg });
+                            newAiReports.push(result.reportMsg);
+                        } else {
+                            initBattle(fromCityId, targetCityId, executors, defenderIds).then(() => {
+                                setScreen('BATTLE');
+                            });
+                        }
+                    }
+                } else if (task.type === 'DIPLOMACY') {
+                    // 简易外交结算
+                    const target = persons[task.data.targetId];
+                    if (target) {
+                        const executor = persons[task.data.executorId];
+                        const isKing = executor?.id === forces[task.forceId]?.kingId;
+                        const msgPrefix = isKing ? `孤` : `主公，臣`;
+                        const success = Math.random() * 100 < ((executor?.iq || 50) - target.iq + 50);
+                        if (success) {
+                            if (task.data.subtype === 'Alienate') {
+                                updatePerson(target.id, p => { p.devotion = Math.max(0, p.devotion - 10); });
+                                addReport({ forceId: task.forceId, msg: `${msgPrefix}的离间之计成功了！\n【外交】${target.name} 忠诚度下降。`, avatarId: executor?.id });
+                            } else if (task.data.subtype === 'Canvass') {
+                                updatePerson(target.id, p => { p.belong = playerForceId; p.devotion = 60; });
+                                addReport({ forceId: task.forceId, msg: `${msgPrefix}已成功招揽 ${target.name}！`, avatarId: executor?.id });
+                                addReport({ forceId: task.forceId, msg: `良禽择木而栖，贤臣择主而事。在下愿随明公！\n【外交】招揽成功，${target.name} 加入我方！`, avatarId: target.id });
+                            } else if (task.data.subtype === 'Counterespionage') {
+                                updatePerson(target.id, p => { p.belong = playerForceId; });
+                                addReport({ forceId: task.forceId, msg: `${msgPrefix}的策反之计成功了，${target.name} 已经倒戈！`, avatarId: executor?.id });
+                                addReport({ forceId: task.forceId, msg: `旧主无道，在下愿弃暗投明！\n【外交】策反成功，${target.name} 倒戈！`, avatarId: target.id });
+                            } else if (task.data.subtype === 'Induce') {
+                                updatePerson(target.id, p => { p.belong = playerForceId; });
+                                addReport({ forceId: task.forceId, msg: `${msgPrefix}已成功劝降 ${target.name}！`, avatarId: executor?.id });
+                                addReport({ forceId: task.forceId, msg: `末将愿降，请受我一拜！\n【外交】劝降成功，${target.name} 投降！`, avatarId: target.id });
+                            }
+                        } else {
+                            addReport({ forceId: task.forceId, msg: `${msgPrefix}针对 ${target.name} 的计谋失败了。`, avatarId: executor?.id });
+                            if (['Canvass', 'Induce'].includes(task.data.subtype)) {
+                                addReport({ forceId: task.forceId, msg: `忠臣不事二主，要杀便杀！`, avatarId: target.id });
+                            }
+                        }
+                    }
+                }
+            });
+            if (newAiReports.length > 0) {
+                setAiBattleReports(newAiReports);
+            }
+            processDelayedTasks();
+        }
+    }, [month]);
+
+    const myCities = Object.values(cities).filter(c => c.belong === playerForceId);
+    const myPersons = Object.values(persons).filter(p => p.belong === playerForceId);
+    
+    const currentCity = selectedCityId !== null ? cities[selectedCityId] : null;
+
+    const [menuState, setMenuState] = useState<'NONE' | 'MAIN' | 'CITY' | 'DOMESTIC' | 'DIPLOMACY' | 'MILITARY' | 'STATUS' | 'SAVE'>('NONE');
+    const [menuPosition, setMenuPosition] = useState<{x: number, y: number} | null>(null);
+
+    const [commandCtx, setCommandCtx] = useState<{
+        cmd: string | null;
+        step: CommandStep;
+        executors: number[];
+        targetCityId?: number;
+        targetPersonId?: number;
+        amounts?: Record<number | string, number>;
+    }>({ cmd: null, step: 'NONE', executors: [], amounts: {} });
+
+    const [reportMsg, setReportMsg] = useState<{avatarId: number, text: string} | null>(null);
+    const [aiBattleReports, setAiBattleReports] = useState<string[]>([]);
+    const [saveSlots, setSaveSlots] = useState<any[]>([]);
+
+    const getCityCenterCoords = (cityId: number) => {
+        const mapIndex = C_MAP.indexOf(cityId + 1);
+        if (mapIndex === -1) return null;
+        
+        const x = mapIndex % CITY_MAP_W;
+        const y = Math.floor(mapIndex / CITY_MAP_W);
+        return {
+            x: x * 80 + 40,
+            y: y * 80 + 69
+        };
+    };
+
+    const handleCommandClick = (cmd: string) => {
+        setCommandCtx({ cmd, step: 'SELECT_EXECUTORS', executors: [], amounts: {} });
+        setMenuState('NONE');
+    };
+
+    const isMultiSelectCommand = (cmd: string | null) => {
+        return cmd === '移动' || cmd === '分配' || cmd === '赏赐' || cmd === '出征';
+    };
+
+    const handleGeneralClick = (generalId: number) => {
+        if (isMultiSelectCommand(commandCtx.cmd)) {
+            setCommandCtx(prev => {
+                const isSelected = prev.executors.includes(generalId);
+                return {
+                    ...prev,
+                    executors: isSelected 
+                        ? prev.executors.filter(id => id !== generalId)
+                        : [...prev.executors, generalId]
+                };
+            });
+        } else {
+            handleSingleExecutorSelected(generalId);
+        }
+    };
+
+    const handleSingleExecutorSelected = (generalId: number) => {
+        const cmd = commandCtx.cmd;
+        if (['离间', '招揽', '策反', '劝降', '招降'].includes(cmd!)) {
+            setCommandCtx(prev => ({ ...prev, step: 'SELECT_TARGET_PERSON', executors: [generalId] }));
+        } else if (['侦察', '输送'].includes(cmd!)) {
+            setCommandCtx(prev => ({ ...prev, step: 'SELECT_TARGET_CITY', executors: [generalId] }));
+        } else {
+            executeCommands(cmd!, [generalId]);
+        }
+    };
+
+    const handleMultiSelectConfirm = () => {
+        const cmd = commandCtx.cmd;
+        if (commandCtx.executors.length === 0) return;
+
+        if (cmd === '移动' || cmd === '出征') {
+            setCommandCtx(prev => ({ ...prev, step: 'SELECT_TARGET_CITY' }));
+        } else {
+            executeCommands(cmd!, commandCtx.executors, { amounts: commandCtx.amounts });
+        }
+    };
+
+    const handleTargetCitySelected = (targetCityId: number) => {
+        const cmd = commandCtx.cmd;
+        if (cmd === '输送') {
+            setCommandCtx(prev => ({ ...prev, step: 'INPUT_AMOUNTS', targetCityId }));
+        } else {
+            executeCommands(cmd!, commandCtx.executors, { targetCityId });
+        }
+    };
+
+    const handleTargetPersonSelected = (targetPersonId: number) => {
+        const cmd = commandCtx.cmd;
+        executeCommands(cmd!, commandCtx.executors, { targetPersonId });
+    };
+
+    const executeCommands = (cmd: string, executors: number[], extraArgs?: any) => {
+        if (!currentCity) return;
+        
+        const store = useGameStore.getState();
+
+        if (cmd === '出征') {
+            if (!extraArgs?.targetCityId || !executors || executors.length === 0) {
+                alert('必须选择目标城池和出征武将');
+                return;
+            }
+            // 扣除出征武将体力，并标记为已行动
+            executors.forEach((pid: number) => {
+                store.updatePerson(pid, p => { p.thew = Math.max(0, p.thew - 10); p.acted = true; });
+            });
+            
+            store.addLog(`【军备】${store.persons[executors[0]].name} 等人向 ${store.cities[extraArgs.targetCityId].name} 发起了进攻！命令已下达，将于下月执行。`);
+            const executorId = executors[0];
+            const isKing = store.forces[store.playerForceId]?.kingId === executorId;
+            const msgPrefix = isKing ? `向 ${store.cities[extraArgs.targetCityId].name} 的出征命令已经下达，` : `主公，向 ${store.cities[extraArgs.targetCityId].name} 的出征命令已经传达，`;
+            setReportMsg({ avatarId: executorId, text: `${msgPrefix}大军将于下月兵临城下！` });
+
+            store.addDelayedTask({
+                type: 'ATTACK',
+                monthsLeft: 1, // 下个回合开始时触发
+                forceId: store.playerForceId,
+                data: {
+                    fromCityId: currentCity.id,
+                    targetCityId: extraArgs.targetCityId,
+                    executorIds: executors
+                }
+            });
+
+            setCommandCtx({ cmd: null, step: 'NONE', executors: [], amounts: {} });
+            return;
+        }
+
+        if (cmd === '输送' && !extraArgs?.amounts && extraArgs?.targetCityId !== undefined) {
+            setCommandCtx(prev => ({ ...prev, step: 'INPUT_AMOUNTS' }));
+            return;
+        }
+
+        for (const executorId of executors) {
+            let commandObj = null;
+            switch (cmd) {
+                case '开垦': commandObj = new AssartCommand(currentCity.id, executorId); break;
+                case '招商': commandObj = new AccractbusinessCommand(currentCity.id, executorId); break;
+                case '搜寻': commandObj = new SearchCommand(currentCity.id, executorId); break;
+                case '治理': commandObj = new FatherCommand(currentCity.id, executorId); break;
+                case '出巡': commandObj = new InspectionCommand(currentCity.id, executorId); break;
+                case '征兵': commandObj = new ConscriptionCommand(currentCity.id, executorId); break;
+                case '侦察': commandObj = new ReconnoitreCommand(executorId, extraArgs?.targetCityId!); break;
+                case '掠夺': commandObj = new DepredateCommand(currentCity.id, executorId); break;
+                case '分配': 
+                    const targetArms = extraArgs?.amounts?.[executorId] ?? persons[executorId].arms ?? 0;
+                    commandObj = new DistributeCommand(currentCity.id, executorId, targetArms); 
+                    break;
+                case '赏赐': commandObj = new LargessCommand(currentCity.id, executorId); break;
+                case '没收': commandObj = new ConfiscateCommand(currentCity.id, executorId); break;
+                case '宴请': commandObj = new TreatCommand(currentCity.id, executorId); break;
+                case '处斩': commandObj = new KillCommand(executorId); break;
+                case '流放': commandObj = new BanishCommand(executorId); break;
+                case '招降': commandObj = new SurrenderCommand(executorId, extraArgs?.targetPersonId!); break;
+                
+                case '移动': commandObj = new MoveCommand(currentCity.id, extraArgs?.targetCityId!, executors, playerForceId); break;
+                case '输送': commandObj = new TransportationCommand(currentCity.id, extraArgs?.targetCityId!, executorId, playerForceId, extraArgs?.amounts?.money || 0, extraArgs?.amounts?.food || 0, extraArgs?.amounts?.arms || 0); break;
+    
+                case '离间': commandObj = new AlienateCommand(currentCity.id, executorId, extraArgs?.targetPersonId!); break;
+                case '招揽': commandObj = new CanvassCommand(currentCity.id, executorId, extraArgs?.targetPersonId!); break;
+                case '策反': commandObj = new CounterespionageCommand(currentCity.id, executorId, extraArgs?.targetPersonId!); break;
+                case '劝降': commandObj = new InduceCommand(currentCity.id, executorId, extraArgs?.targetPersonId!); break;
+                case '交易': 
+                    commandObj = new ExchangeCommand(currentCity.id, executorId, extraArgs?.amounts?.type || 'buy', extraArgs?.amounts?.amount || 0); 
+                    break;
+            }
+    
+            if (commandObj) {
+                const result = commandObj.execute() as { success: boolean; message?: string };
+                if (result.success) {
+                    if (!['赏赐', '没收', '宴请', '处斩', '流放'].includes(cmd)) {
+                        store.updatePerson(executorId, p => { p.acted = true; });
+                    }
+                    if (result.message) {
+                        setReportMsg({ avatarId: executorId, text: result.message });
+                    }
+                } else {
+                    if (result.message) {
+                        setReportMsg({ avatarId: executorId, text: result.message });
+                    }
+                }
+            }
+    
+            if (cmd === '移动') break; 
+        }
+    
+        const continuousCommands = ['开垦', '招商', '搜寻', '治理', '出巡', '征兵', '赏赐', '没收', '宴请'];
+        if (!continuousCommands.includes(cmd)) {
+            setCommandCtx({ cmd: null, step: 'NONE', executors: [], amounts: {} });
+        } else {
+            // Keep the modal open, but clear the selection
+            setCommandCtx(prev => ({ ...prev, executors: [] }));
+        }
+    };
+
+    const renderCommandUI = () => {
+        if (commandCtx.step === 'NONE') return null;
+
+        if (commandCtx.step === 'SELECT_EXECUTORS') {
+            const isMulti = isMultiSelectCommand(commandCtx.cmd);
+            const isTargetOnlyCmd = ['赏赐', '没收', '宴请', '处斩', '流放'].includes(commandCtx.cmd!);
+            
+            let availablePersons = Object.values(persons).filter(p => p.belong === playerForceId && p.city === currentCity?.id);
+            if (!isTargetOnlyCmd) {
+                availablePersons = availablePersons.filter(p => !p.acted);
+            }
+
+            return (
+                <GameModal 
+                    isOpen={true} 
+                    onClose={() => setCommandCtx({ cmd: null, step: 'NONE', executors: [], amounts: {} })}
+                    title={`请选择【${commandCtx.cmd}】的${isTargetOnlyCmd ? '目标' : '执行武将'}`}
+                    style={{ width: '600px' }}
+                >
+                    <div style={{ display: 'flex', borderBottom: '2px solid var(--theme-brown)', padding: '5px 10px', fontSize: '20px', fontWeight: 'bold' }}>
+                        {isMulti && <div style={{ width: '30px' }}></div>}
+                        <div style={{ flex: 1.2 }}>姓名</div>
+                        <div style={{ flex: 1 }}>等级</div>
+                        <div style={{ flex: 1.5 }}>武力/智力</div>
+                        <div style={{ flex: 1.5 }}>体力/忠诚</div>
+                        <div style={{ flex: 1.5 }}>兵种/兵力</div>
+                        <div style={{ flex: 1.5 }}>装备道具</div>
+                        {commandCtx.cmd === '分配' && <div style={{ width: '100px' }}>分配兵力</div>}
+                    </div>
+                    <div className="custom-scrollbar" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                        {availablePersons.length === 0 ? (
+                            <div style={{ padding: '20px', textAlign: 'center', fontSize: '20px' }}>无可选择的武将。</div>
+                        ) : availablePersons.map(p => {
+                            const isSelected = commandCtx.executors.includes(p.id);
+                            const armsTypeName = p.armsType === 0 ? '步兵' : p.armsType === 1 ? '弓兵' : p.armsType === 2 ? '骑兵' : p.armsType === 3 ? '水军' : '未知';
+                            const equipNames = p.equip && p.equip.length > 0 ? p.equip.map(eid => useGameStore.getState().goods[eid]?.name || '未知').join(', ') : '无';
+                            
+                            return (
+                                <div 
+                                    key={p.id} 
+                                    onClick={() => handleGeneralClick(p.id)} 
+                                    style={{ 
+                                        display: 'flex', padding: '10px', fontSize: '20px', 
+                                        cursor: 'pointer', borderBottom: '1px solid var(--theme-border)',
+                                        backgroundColor: isSelected ? 'rgba(0,0,0,0.2)' : 'transparent',
+                                        alignItems: 'center'
+                                    }}
+                                    onMouseEnter={(e) => { if(!isSelected) e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.1)'; }}
+                                    onMouseLeave={(e) => { if(!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
+                                >
+                                    {isMulti && <div style={{ width: '30px' }}><input type="checkbox" checked={isSelected} readOnly /></div>}
+                                    <div style={{ flex: 1.2, fontWeight: 'bold' }}>{p.name}</div>
+                                    <div style={{ flex: 1 }}>{p.level}</div>
+                                    <div style={{ flex: 1.5 }}>{p.force} / {p.iq}</div>
+                                    <div style={{ flex: 1.5 }}>{p.thew} / {p.devotion}</div>
+                                    <div style={{ flex: 1.5 }}>{armsTypeName} / {p.arms}</div>
+                                    <div style={{ flex: 1.5, fontSize: '16px', color: 'var(--theme-gold)' }}>{equipNames}</div>
+                                    {commandCtx.cmd === '分配' && isSelected && (
+                                        <div style={{ width: '100px' }}>
+                                            <input 
+                                                type="number" 
+                                                value={commandCtx.amounts?.[p.id] ?? p.arms ?? 0} 
+                                                onChange={(e) => setCommandCtx(prev => ({
+                                                    ...prev, 
+                                                    amounts: { ...prev.amounts, [p.id]: parseInt(e.target.value) || 0 }
+                                                }))}
+                                                onClick={e => e.stopPropagation()}
+                                                style={{ width: '80px', fontSize: '18px', backgroundColor: '#fff', border: '1px solid var(--theme-brown)', padding: '2px 5px', color: '#000' }}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            )
+                        })}
+                    </div>
+                    <div style={{ textAlign: 'center', padding: '15px 0 5px 0', display: 'flex', justifyContent: 'center', gap: '20px' }}>
+                        {isMulti && <GameButton onClick={handleMultiSelectConfirm}>确认</GameButton>}
+                        <GameButton variant="secondary" onClick={() => setCommandCtx({ cmd: null, step: 'NONE', executors: [], amounts: {} })}>取消</GameButton>
+                    </div>
+                </GameModal>
+            );
+        }
+
+        if (commandCtx.step === 'SELECT_TARGET_CITY') {
+            return (
+                <div style={{ position: 'absolute', top: '20px', left: '50%', transform: 'translateX(-50%)', backgroundColor: 'rgba(26,17,12,0.9)', padding: '15px 30px', zIndex: 200, color: 'var(--theme-gold)', border: '2px solid var(--theme-gold)', fontSize: '24px', textAlign: 'center', borderRadius: '8px' }}>
+                    <div style={{ marginBottom: '10px' }}>请在大地图上点击目标城池。</div>
+                    <GameButton variant="secondary" onClick={() => setCommandCtx({ cmd: null, step: 'NONE', executors: [], amounts: {} })}>取消</GameButton>
+                </div>
+            );
+        }
+
+        if (commandCtx.step === 'SELECT_TARGET_PERSON') {
+            let availablePersons = Object.values(persons);
+            if (commandCtx.cmd === '招降' || commandCtx.cmd === '处斩' || commandCtx.cmd === '流放') {
+                availablePersons = availablePersons.filter(p => p.city === currentCity?.id && p.belong !== playerForceId);
+            } else {
+                availablePersons = availablePersons.filter(p => p.belong !== playerForceId && p.belong !== 0);
+            }
+
+            return (
+                <GameModal 
+                    isOpen={true} 
+                    onClose={() => setCommandCtx({ cmd: null, step: 'NONE', executors: [], amounts: {} })}
+                    title="请选择目标武将"
+                    style={{ width: '500px' }}
+                >
+                    <div style={{ display: 'flex', borderBottom: '2px solid var(--theme-brown)', padding: '5px 10px', fontSize: '20px', fontWeight: 'bold' }}>
+                        <div style={{ flex: 1.2 }}>姓名</div>
+                        <div style={{ flex: 1 }}>势力</div>
+                        <div style={{ flex: 1 }}>所在城市</div>
+                        <div style={{ flex: 1.5 }}>武力/智力</div>
+                        <div style={{ flex: 1 }}>忠诚</div>
+                    </div>
+                    <div className="custom-scrollbar" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                        {availablePersons.length === 0 ? (
+                            <div style={{ padding: '20px', textAlign: 'center', fontSize: '20px' }}>无符合条件的武将。</div>
+                        ) : availablePersons.map(p => (
+                            <div key={p.id} onClick={() => handleTargetPersonSelected(p.id)} style={{ display: 'flex', padding: '10px', fontSize: '20px', cursor: 'pointer', borderBottom: '1px solid var(--theme-border)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.1)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                                <div style={{ flex: 1.2 }}>{p.name}</div>
+                                <div style={{ flex: 1 }}>{p.belong ? persons[forces[p.belong]?.kingId]?.name || '君主' : '在野'}</div>
+                                <div style={{ flex: 1 }}>{p.city !== undefined ? cities[p.city]?.name : '未知'}</div>
+                                <div style={{ flex: 1.5 }}>{p.force} / {p.iq}</div>
+                                <div style={{ flex: 1 }}>{p.devotion}</div>
+                            </div>
+                        ))}
+                    </div>
+                    <div style={{ textAlign: 'center', marginTop: '15px' }}>
+                        <GameButton variant="secondary" onClick={() => setCommandCtx({ cmd: null, step: 'NONE', executors: [], amounts: {} })}>取消</GameButton>
+                    </div>
+                </GameModal>
+            );
+        }
+
+        if (commandCtx.step === 'INPUT_AMOUNTS') {
+            return (
+                <GameModal 
+                    isOpen={true} 
+                    onClose={() => setCommandCtx({ cmd: null, step: 'NONE', executors: [], amounts: {} })}
+                    title="输入输送数量"
+                    style={{ width: '400px' }}
+                >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', alignItems: 'center' }}>
+                        <span>金钱 (最大 {currentCity?.money}):</span>
+                        <input type="number" min="0" max={currentCity?.money} value={commandCtx.amounts?.money || 0} onChange={e => setCommandCtx(prev => ({ ...prev, amounts: { ...prev.amounts, money: parseInt(e.target.value) || 0 } }))} style={{ width: '100px', fontSize: '20px', padding: '2px 5px' }} />
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', alignItems: 'center' }}>
+                        <span>粮食 (最大 {currentCity?.food}):</span>
+                        <input type="number" min="0" max={currentCity?.food} value={commandCtx.amounts?.food || 0} onChange={e => setCommandCtx(prev => ({ ...prev, amounts: { ...prev.amounts, food: parseInt(e.target.value) || 0 } }))} style={{ width: '100px', fontSize: '20px', padding: '2px 5px' }} />
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '25px', alignItems: 'center' }}>
+                        <span>兵力 (最大 {currentCity?.mothballArms}):</span>
+                        <input type="number" min="0" max={currentCity?.mothballArms} value={commandCtx.amounts?.arms || 0} onChange={e => setCommandCtx(prev => ({ ...prev, amounts: { ...prev.amounts, arms: parseInt(e.target.value) || 0 } }))} style={{ width: '100px', fontSize: '20px', padding: '2px 5px' }} />
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
+                        <GameButton onClick={() => executeCommands(commandCtx.cmd!, commandCtx.executors, { targetCityId: commandCtx.targetCityId, amounts: commandCtx.amounts })}>确认输送</GameButton>
+                        <GameButton variant="secondary" onClick={() => setCommandCtx({ cmd: null, step: 'NONE', executors: [], amounts: {} })}>取消</GameButton>
+                    </div>
+                </GameModal>
+            );
+        }
+
+        return null;
+    };
+
+    return (
+        <div style={{ display: 'flex', height: '100vh', backgroundColor: '#2b1d14', color: '#cda654', fontFamily: '"STKaiti", "KaiTi", serif', alignItems: 'center', justifyContent: 'center' }}>
+            <style>{bounceKeyframes}</style>
+            
+            <div style={{ display: 'flex', width: '1180px', height: '720px', backgroundColor: '#000', boxShadow: '0 0 20px rgba(0,0,0,0.8)' }}>
+                
+                <div style={{ width: '960px', position: 'relative', borderRight: '4px solid #cda654', backgroundColor: '#3e2723', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    
+                    {aiThinkingForceId !== null && (
+                        <div style={{
+                            position: 'absolute', bottom: '30px', left: '50%', transform: 'translateX(-50%)',
+                            zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        }}>
+                            <div style={{
+                                backgroundColor: 'rgba(26,17,12,0.9)', padding: '15px 40px',
+                                border: '2px solid var(--theme-gold)', borderRadius: '4px',
+                                color: 'var(--theme-gold)', fontSize: '24px', letterSpacing: '4px',
+                                boxShadow: '0 0 15px rgba(205,166,84,0.3)'
+                            }}>
+                                {forces[aiThinkingForceId]?.kingId !== undefined ? persons[forces[aiThinkingForceId].kingId]?.name : '未知'} 势力策略中...
+                            </div>
+                        </div>
+                    )}
+                    
+                    <div 
+                        onClick={(e) => {
+                            if (reportMsg) setReportMsg(null);
+                            if (e.target === e.currentTarget) {
+                                if (commandCtx.step === 'SELECT_TARGET_CITY') {
+                                    // Clicking on empty map cancels selection
+                                    setCommandCtx({ cmd: null, step: 'NONE', executors: [], amounts: {} });
+                                    return;
+                                }
+                                setMenuState('MAIN');
+                                setMenuPosition({ x: CITY_MAP_W * 80 / 2, y: 150 });
+                            }
+                        }}
+                        style={{ 
+                            position: 'relative', 
+                            width: '100%', 
+                            height: '100%',
+                            backgroundColor: '#b0c4de',
+                            backgroundImage: 'url(/assets/images/bg_world_map.jpg)',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            border: '4px solid #1a110c',
+                            boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)'
+                        }}>
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.3)', pointerEvents: 'none', zIndex: 0 }}></div>
+                        
+                        {menuState !== 'NONE' && menuPosition && (
+                            <GamePanel style={{ 
+                                position: 'absolute', 
+                                top: `${menuPosition.y}px`, 
+                                left: `${menuPosition.x}px`, 
+                                transform: 'translate(-50%, 0)',
+                                zIndex: 100, 
+                                minWidth: '160px',
+                                maxHeight: '400px',
+                                overflowY: 'auto',
+                                pointerEvents: 'auto',
+                                backgroundColor: 'rgba(43, 29, 20, 0.95)',
+                                backdropFilter: 'blur(4px)'
+                            }}>
+                                {menuState === 'MAIN' && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '10px', fontSize: '24px' }}>
+                                            <span style={{ color: 'var(--theme-gold)', letterSpacing: '4px' }}>策略</span>
+                                            <span onClick={() => setMenuState('NONE')} style={{ cursor: 'pointer', color: 'var(--theme-text)' }}>[X]</span>
+                                        </div>
+                                        <GameButton onClick={() => { nextTurn(); setMenuState('NONE'); }}>策略结束</GameButton>
+                                        <GameButton onClick={() => { 
+                                            setSaveSlots(getSaveSlotsInfo());
+                                            setMenuState('SAVE'); 
+                                        }}>存储进度</GameButton>
+                                        <GameButton onClick={() => setScreen('MAIN_MENU')}>结束游戏</GameButton>
+                                    </div>
+                                )}
+
+                                {menuState === 'SAVE' && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '260px' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '10px', fontSize: '24px' }}>
+                                            <span style={{ color: 'var(--theme-gold)', letterSpacing: '4px' }}>选择进度</span>
+                                            <span onClick={() => setMenuState('MAIN')} style={{ cursor: 'pointer', color: 'var(--theme-text)' }}>[X]</span>
+                                        </div>
+                                        {saveSlots.map(s => (
+                                            <GameButton 
+                                                key={s.slot} 
+                                                onClick={() => {
+                                                    useGameStore.getState().saveGame(s.slot);
+                                                    setMenuState('NONE');
+                                                }}
+                                                style={{ padding: '10px', fontSize: '18px', display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: '1.2' }}
+                                            >
+                                                <span>进度 {s.slot}</span>
+                                                <span style={{ fontSize: '14px', opacity: 0.8, marginTop: '5px' }}>
+                                                    {s.empty ? '空' : `${s.year}年${s.month}月 ${s.forceName}`}
+                                                </span>
+                                            </GameButton>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {menuState === 'CITY' && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '10px', fontSize: '24px' }}>
+                                            <span style={{ color: 'var(--theme-gold)', letterSpacing: '4px' }}>城市指令</span>
+                                            <span onClick={() => setMenuState('NONE')} style={{ cursor: 'pointer', color: 'var(--theme-text)' }}>[X]</span>
+                                        </div>
+                                        <GameButton onClick={() => setMenuState('DOMESTIC')}>内政</GameButton>
+                                        <GameButton onClick={() => setMenuState('DIPLOMACY')}>外交</GameButton>
+                                        <GameButton onClick={() => setMenuState('MILITARY')}>军备</GameButton>
+                                        <GameButton onClick={() => setMenuState('STATUS')}>状况</GameButton>
+                                    </div>
+                                )}
+
+                                {menuState === 'DOMESTIC' && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '5px', fontSize: '24px' }}>
+                                            <span style={{ color: 'var(--theme-gold)', letterSpacing: '4px' }}>内政</span>
+                                            <span onClick={() => setMenuState('CITY')} style={{ cursor: 'pointer', color: 'var(--theme-text)' }}>[X]</span>
+                                        </div>
+                                        <GameButton onClick={() => handleCommandClick('开垦')}>开垦</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('招商')}>招商</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('搜寻')}>搜寻</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('治理')}>治理</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('出巡')}>出巡</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('招降')}>招降</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('处斩')}>处斩</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('流放')}>流放</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('赏赐')}>赏赐</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('没收')}>没收</GameButton>
+                                    </div>
+                                )}
+
+                                {menuState === 'DIPLOMACY' && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '10px', fontSize: '24px' }}>
+                                            <span style={{ color: 'var(--theme-gold)', letterSpacing: '4px' }}>外交</span>
+                                            <span onClick={() => setMenuState('CITY')} style={{ cursor: 'pointer', color: 'var(--theme-text)' }}>[X]</span>
+                                        </div>
+                                        <GameButton onClick={() => handleCommandClick('离间')}>离间</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('招揽')}>招揽</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('策反')}>策反</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('反间')}>反间</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('劝降')}>劝降</GameButton>
+                                    </div>
+                                )}
+
+                                {menuState === 'MILITARY' && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '10px', fontSize: '24px' }}>
+                                            <span style={{ color: 'var(--theme-gold)', letterSpacing: '4px' }}>军备</span>
+                                            <span onClick={() => setMenuState('CITY')} style={{ cursor: 'pointer', color: 'var(--theme-text)' }}>[X]</span>
+                                        </div>
+                                        <GameButton onClick={() => handleCommandClick('侦察')}>侦察</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('征兵')}>征兵</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('分配')}>分配</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('掠夺')}>掠夺</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('输送')}>输送</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('移动')}>移动</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('交易')}>交易</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('出征')}>出征</GameButton>
+                                    </div>
+                                )}
+
+                                {menuState === 'STATUS' && currentCity && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '220px', fontSize: '18px' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '5px', fontSize: '24px' }}>
+                                            <span style={{ color: 'var(--theme-gold)' }}>{currentCity.name}</span>
+                                            <span onClick={() => setMenuState('CITY')} style={{ cursor: 'pointer', color: 'var(--theme-text)' }}>[X]</span>
+                                        </div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>归属:</span> <span>{forces[currentCity.belong] ? persons[forces[currentCity.belong].kingId]?.name : '无'}</span></div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>太守:</span> <span>
+                                            {currentCity.satrapId === 0 
+                                                ? '无' 
+                                                : (persons[currentCity.satrapId - 1]?.name || '无')}
+                                        </span></div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>农业:</span> <span>{currentCity.farming}/{currentCity.farmingLimit}</span></div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>商业:</span> <span>{currentCity.commerce}/{currentCity.commerceLimit}</span></div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>民忠:</span> <span>{currentCity.peopleDevotion}</span></div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>防灾:</span> <span>{currentCity.avoidCalamity}</span></div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>人口:</span> <span>{currentCity.population}</span></div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>金钱:</span> <span>{currentCity.money}</span></div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>粮食:</span> <span>{currentCity.food}</span></div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>后备兵力:</span> <span>{currentCity.mothballArms}</span></div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>状态:</span> <span>{['正常', '饥荒', '旱灾', '水灾', '暴动'][currentCity.state] || '正常'}</span></div>
+                                    </div>
+                                )}
+                            </GamePanel>
+                        )}
+
+                    <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 5 }}>
+                        {cityLinks.map((cityLink) => {
+                            const startCoords = getCityCenterCoords(cityLink.cityId);
+                            if (!startCoords) return null;
+
+                            return cityLink.links.map((link: any, idx: number) => {
+                                if (cityLink.cityId >= link.targetId) return null;
+                                
+                                const endCoords = getCityCenterCoords(link.targetId);
+                                if (!endCoords) return null;
+
+                                return (
+                                    <line 
+                                        key={`${cityLink.cityId}-${link.targetId}-${idx}`}
+                                        x1={startCoords.x} 
+                                        y1={startCoords.y} 
+                                        x2={endCoords.x} 
+                                        y2={endCoords.y} 
+                                        stroke="#8d6e63" 
+                                        strokeWidth="2"
+                                        strokeDasharray="5,5"
+                                    />
+                                );
+                            });
+                        })}
+                    </svg>
+
+                    {C_MAP.map((cityIndex, index) => {
+                        if (cityIndex === 0) return null;
+                        const city = cities[cityIndex - 1];
+                        if (!city) return null;
+
+                        const x = index % CITY_MAP_W;
+                        const y = Math.floor(index / CITY_MAP_W);
+                        const force = forces[city.belong];
+
+                        return (
+                            <div 
+                                key={city.id}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (reportMsg) setReportMsg(null);
+
+                                    if (commandCtx.step === 'SELECT_TARGET_CITY') {
+                                        handleTargetCitySelected(city.id);
+                                        return;
+                                    }
+
+                                    selectCity(city.id);
+                                    if (city.belong === playerForceId) {
+                                        setMenuState('CITY');
+                                        setMenuPosition({ x: CITY_MAP_W * 80 / 2, y: 100 });
+                                    } else {
+                                        setMenuState('NONE');
+                                    }
+                                }}
+                                style={{
+                                    position: 'absolute',
+                                    top: `${y * 80 + 50}px`,
+                                    left: `${x * 80 + 10}px`,
+                                    width: '60px',
+                                    height: '60px',
+                                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                                    cursor: 'pointer',
+                                    zIndex: 10
+                                }}>
+                                <div style={{ 
+                                    width: city.belong === playerForceId ? '50px' : '40px', 
+                                    height: city.belong === playerForceId ? '50px' : '40px', 
+                                    backgroundImage: city.belong === playerForceId ? 'url(/assets/images/city_friendly.png)' : (city.belong === 0 ? 'url(/assets/images/city_neutral.png)' : 'url(/assets/images/city_enemy.png)'),
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundColor: 'transparent',
+                                    filter: selectedCityId === city.id 
+                                        ? 'drop-shadow(0 0 10px #FFF)' 
+                                        : (city.belong === playerForceId ? 'drop-shadow(0 0 8px #cda654)' : (force ? `drop-shadow(0 0 5px ${force.color})` : 'none')),
+                                    transition: 'all 0.2s',
+                                    transform: city.belong === playerForceId ? 'translateY(-5px)' : 'none',
+                                    zIndex: city.belong === playerForceId ? 10 : 1,
+                                    position: 'relative'
+                                }}>
+                                    {city.belong === playerForceId && (
+                                        <div style={{
+                                            position: 'absolute', top: '-25px', left: '50%', transform: 'translateX(-50%)',
+                                            color: '#cda654', fontSize: '20px', fontWeight: 'bold', textShadow: '0 0 5px #000',
+                                            animation: 'bounce 1s infinite alternate'
+                                        }}>
+                                            ▼
+                                        </div>
+                                    )}
+                                </div>
+                                <span style={{ 
+                                    marginTop: '4px', 
+                                    backgroundColor: city.belong === playerForceId ? '#cda654' : '#1a110c', 
+                                    color: city.belong === playerForceId ? '#1a110c' : '#cda654',
+                                    padding: '2px 4px', 
+                                    fontSize: '12px', 
+                                    fontWeight: city.belong === playerForceId ? 'bold' : 'normal',
+                                    border: '1px solid #cda654', 
+                                    whiteSpace: 'nowrap',
+                                    zIndex: 10
+                                }}>
+                                    {city.name}
+                                </span>
+                            </div>
+                        );
+                    })}
+
+                    {renderCommandUI()}
+
+                    {reportMsg && (
+                        <GameModal 
+                            isOpen={true} 
+                            onClose={() => setReportMsg(null)}
+                            style={{ width: '600px', cursor: 'pointer' }}
+                        >
+                            <div onClick={() => setReportMsg(null)} style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                    <div style={{ 
+                                        width: '80px', height: '80px', border: '2px solid var(--theme-brown)', backgroundColor: '#000',
+                                        backgroundImage: persons[reportMsg.avatarId]?.name ? `url(/assets/images/generals/${persons[reportMsg.avatarId]?.name}.png)` : 'none',
+                                        backgroundSize: 'cover', backgroundPosition: 'center',
+                                        display: 'flex', justifyContent: 'center', alignItems: 'center'
+                                    }}>
+                                        {!persons[reportMsg.avatarId]?.name && "头像"}
+                                    </div>
+                                    <div style={{ marginTop: '5px', fontSize: '20px', color: 'var(--theme-dark)', fontWeight: 'bold' }}>
+                                        {persons[reportMsg.avatarId]?.name}
+                                    </div>
+                                </div>
+                                <div style={{ flex: 1, fontSize: '24px', color: 'var(--theme-dark)', lineHeight: '1.5' }}>
+                                    {reportMsg.text}
+                                </div>
+                            </div>
+                        </GameModal>
+                    )}
+
+                    {showReportModal && (
+                        <GameModal 
+                            isOpen={true} 
+                            onClose={handleNextReport}
+                            title="回合汇报"
+                            style={{ width: '600px' }}
+                        >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                {playerReports[currentReportIndex].avatarId !== undefined && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                        <div style={{ 
+                                            width: '80px', height: '80px', border: '2px solid var(--theme-brown)', backgroundColor: '#000',
+                                            backgroundImage: persons[playerReports[currentReportIndex].avatarId!]?.name ? `url(/assets/images/generals/${persons[playerReports[currentReportIndex].avatarId!]?.name}.png)` : 'none',
+                                            backgroundSize: 'cover', backgroundPosition: 'center',
+                                            display: 'flex', justifyContent: 'center', alignItems: 'center'
+                                        }}>
+                                            {!persons[playerReports[currentReportIndex].avatarId!]?.name && "头像"}
+                                        </div>
+                                        <div style={{ marginTop: '5px', fontSize: '20px', color: 'var(--theme-dark)', fontWeight: 'bold' }}>
+                                            {persons[playerReports[currentReportIndex].avatarId!]?.name}
+                                        </div>
+                                    </div>
+                                )}
+                                <div style={{ flex: 1, fontSize: '22px', color: 'var(--theme-dark)', lineHeight: '1.6', minHeight: '80px', display: 'flex', alignItems: 'center', whiteSpace: 'pre-line' }}>
+                                    {playerReports[currentReportIndex].msg}
+                                </div>
+                            </div>
+                            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                                <GameButton onClick={handleNextReport}>确认</GameButton>
+                            </div>
+                        </GameModal>
+                    )}
+
+                    {aiBattleReports.length > 0 && !showReportModal && (
+                        <GameModal 
+                            isOpen={true} 
+                            onClose={() => {
+                                const nextReports = [...aiBattleReports];
+                                nextReports.shift();
+                                setAiBattleReports(nextReports);
+                            }}
+                            title="天下大势"
+                            style={{ width: '600px' }}
+                        >
+                            <div style={{ fontSize: '22px', color: 'var(--theme-dark)', lineHeight: '1.6', minHeight: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', whiteSpace: 'pre-line' }}>
+                                {aiBattleReports[0]}
+                            </div>
+                            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                                <GameButton onClick={() => {
+                                    const nextReports = [...aiBattleReports];
+                                    nextReports.shift();
+                                    setAiBattleReports(nextReports);
+                                }}>
+                                    确认
+                                </GameButton>
+                            </div>
+                        </GameModal>
+                    )}
+                </div>
+            </div>
+
+            <div style={{ width: '220px', backgroundColor: '#1a110c', display: 'flex', flexDirection: 'column', padding: '10px', boxSizing: 'border-box', borderLeft: '2px solid #cda654' }}>
+                
+                <div style={{ 
+                    width: '100%', height: '220px', border: '2px solid #cda654', marginBottom: '20px', 
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#2b1d14',
+                    backgroundImage: forces[playerForceId] && persons[forces[playerForceId].kingId] ? `url(/assets/images/generals/${persons[forces[playerForceId].kingId].name}.png)` : 'none',
+                    backgroundSize: 'cover', backgroundPosition: 'top'
+                }}>
+                    {!(forces[playerForceId] && persons[forces[playerForceId].kingId]) && "[君主头像]"}
+                </div>
+                
+                <div style={{ display: 'flex', justifyContent: 'space-around', color: '#cda654', fontSize: '24px', marginBottom: 'auto' }}>
+                    <span>城: {myCities.length}</span>
+                    <span>将: {myPersons.length}</span>
+                </div>
+
+                <div style={{ borderTop: '2px solid #cda654', paddingTop: '20px', textAlign: 'center', fontSize: '32px', letterSpacing: '2px', paddingBottom: '20px' }}>
+                    <div>{year} 年</div>
+                    <div style={{ margin: '10px 0' }}>{month} 月</div>
+                    <div style={{ marginTop: '20px', fontWeight: 'bold' }}>{currentCity?.name || '平原'}</div>
+                </div>
+            </div>
+
+        </div>
+        </div>
+    );
+};

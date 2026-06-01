@@ -1,0 +1,624 @@
+[
+  {
+    "cityId": 0,
+    "links": [
+      {
+        "targetId": 3,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 1,
+    "links": [
+      {
+        "targetId": 2,
+        "distance": 3
+      },
+      {
+        "targetId": 7,
+        "distance": 2
+      },
+      {
+        "targetId": 6,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 2,
+    "links": [
+      {
+        "targetId": 1,
+        "distance": 3
+      }
+    ]
+  },
+  {
+    "cityId": 3,
+    "links": [
+      {
+        "targetId": 8,
+        "distance": 2
+      },
+      {
+        "targetId": 0,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 4,
+    "links": [
+      {
+        "targetId": 5,
+        "distance": 3
+      },
+      {
+        "targetId": 10,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 5,
+    "links": [
+      {
+        "targetId": 6,
+        "distance": 2
+      },
+      {
+        "targetId": 11,
+        "distance": 2
+      },
+      {
+        "targetId": 4,
+        "distance": 3
+      }
+    ]
+  },
+  {
+    "cityId": 6,
+    "links": [
+      {
+        "targetId": 1,
+        "distance": 2
+      },
+      {
+        "targetId": 12,
+        "distance": 2
+      },
+      {
+        "targetId": 5,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 7,
+    "links": [
+      {
+        "targetId": 13,
+        "distance": 2
+      },
+      {
+        "targetId": 1,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 8,
+    "links": [
+      {
+        "targetId": 9,
+        "distance": 2
+      },
+      {
+        "targetId": 14,
+        "distance": 2
+      },
+      {
+        "targetId": 3,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 9,
+    "links": [
+      {
+        "targetId": 10,
+        "distance": 2
+      },
+      {
+        "targetId": 8,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 10,
+    "links": [
+      {
+        "targetId": 4,
+        "distance": 2
+      },
+      {
+        "targetId": 15,
+        "distance": 3
+      },
+      {
+        "targetId": 20,
+        "distance": 3
+      },
+      {
+        "targetId": 14,
+        "distance": 3
+      },
+      {
+        "targetId": 9,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 11,
+    "links": [
+      {
+        "targetId": 5,
+        "distance": 2
+      },
+      {
+        "targetId": 12,
+        "distance": 2
+      },
+      {
+        "targetId": 15,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 12,
+    "links": [
+      {
+        "targetId": 6,
+        "distance": 2
+      },
+      {
+        "targetId": 13,
+        "distance": 2
+      },
+      {
+        "targetId": 16,
+        "distance": 2
+      },
+      {
+        "targetId": 11,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 13,
+    "links": [
+      {
+        "targetId": 7,
+        "distance": 2
+      },
+      {
+        "targetId": 18,
+        "distance": 2
+      },
+      {
+        "targetId": 17,
+        "distance": 2
+      },
+      {
+        "targetId": 12,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 14,
+    "links": [
+      {
+        "targetId": 8,
+        "distance": 2
+      },
+      {
+        "targetId": 10,
+        "distance": 5
+      },
+      {
+        "targetId": 20,
+        "distance": 4
+      },
+      {
+        "targetId": 19,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 15,
+    "links": [
+      {
+        "targetId": 11,
+        "distance": 2
+      },
+      {
+        "targetId": 16,
+        "distance": 2
+      },
+      {
+        "targetId": 21,
+        "distance": 2
+      },
+      {
+        "targetId": 10,
+        "distance": 4
+      }
+    ]
+  },
+  {
+    "cityId": 16,
+    "links": [
+      {
+        "targetId": 12,
+        "distance": 2
+      },
+      {
+        "targetId": 22,
+        "distance": 2
+      },
+      {
+        "targetId": 15,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 17,
+    "links": [
+      {
+        "targetId": 13,
+        "distance": 2
+      },
+      {
+        "targetId": 18,
+        "distance": 2
+      },
+      {
+        "targetId": 22,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 18,
+    "links": [
+      {
+        "targetId": 17,
+        "distance": 2
+      },
+      {
+        "targetId": 13,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 19,
+    "links": [
+      {
+        "targetId": 14,
+        "distance": 2
+      },
+      {
+        "targetId": 24,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 20,
+    "links": [
+      {
+        "targetId": 10,
+        "distance": 4
+      },
+      {
+        "targetId": 21,
+        "distance": 2
+      },
+      {
+        "targetId": 26,
+        "distance": 2
+      },
+      {
+        "targetId": 14,
+        "distance": 5
+      }
+    ]
+  },
+  {
+    "cityId": 21,
+    "links": [
+      {
+        "targetId": 15,
+        "distance": 2
+      },
+      {
+        "targetId": 22,
+        "distance": 3
+      },
+      {
+        "targetId": 20,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 22,
+    "links": [
+      {
+        "targetId": 17,
+        "distance": 2
+      },
+      {
+        "targetId": 23,
+        "distance": 2
+      },
+      {
+        "targetId": 29,
+        "distance": 2
+      },
+      {
+        "targetId": 28,
+        "distance": 2
+      },
+      {
+        "targetId": 21,
+        "distance": 3
+      },
+      {
+        "targetId": 16,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 23,
+    "links": [
+      {
+        "targetId": 22,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 24,
+    "links": [
+      {
+        "targetId": 19,
+        "distance": 2
+      },
+      {
+        "targetId": 25,
+        "distance": 2
+      },
+      {
+        "targetId": 31,
+        "distance": 2
+      },
+      {
+        "targetId": 30,
+        "distance": 4
+      }
+    ]
+  },
+  {
+    "cityId": 25,
+    "links": [
+      {
+        "targetId": 24,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 26,
+    "links": [
+      {
+        "targetId": 20,
+        "distance": 2
+      },
+      {
+        "targetId": 27,
+        "distance": 2
+      },
+      {
+        "targetId": 33,
+        "distance": 2
+      },
+      {
+        "targetId": 32,
+        "distance": 4
+      }
+    ]
+  },
+  {
+    "cityId": 27,
+    "links": [
+      {
+        "targetId": 28,
+        "distance": 2
+      },
+      {
+        "targetId": 33,
+        "distance": 2
+      },
+      {
+        "targetId": 26,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 28,
+    "links": [
+      {
+        "targetId": 22,
+        "distance": 2
+      },
+      {
+        "targetId": 34,
+        "distance": 2
+      },
+      {
+        "targetId": 27,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 29,
+    "links": [
+      {
+        "targetId": 34,
+        "distance": 2
+      },
+      {
+        "targetId": 22,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 30,
+    "links": [
+      {
+        "targetId": 24,
+        "distance": 4
+      }
+    ]
+  },
+  {
+    "cityId": 31,
+    "links": [
+      {
+        "targetId": 32,
+        "distance": 3
+      },
+      {
+        "targetId": 24,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 32,
+    "links": [
+      {
+        "targetId": 26,
+        "distance": 3
+      },
+      {
+        "targetId": 35,
+        "distance": 2
+      },
+      {
+        "targetId": 31,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 33,
+    "links": [
+      {
+        "targetId": 27,
+        "distance": 2
+      },
+      {
+        "targetId": 34,
+        "distance": 4
+      },
+      {
+        "targetId": 36,
+        "distance": 2
+      },
+      {
+        "targetId": 26,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 34,
+    "links": [
+      {
+        "targetId": 29,
+        "distance": 2
+      },
+      {
+        "targetId": 37,
+        "distance": 2
+      },
+      {
+        "targetId": 33,
+        "distance": 4
+      },
+      {
+        "targetId": 28,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 35,
+    "links": [
+      {
+        "targetId": 36,
+        "distance": 3
+      },
+      {
+        "targetId": 32,
+        "distance": 2
+      }
+    ]
+  },
+  {
+    "cityId": 36,
+    "links": [
+      {
+        "targetId": 33,
+        "distance": 2
+      },
+      {
+        "targetId": 37,
+        "distance": 3
+      },
+      {
+        "targetId": 35,
+        "distance": 3
+      }
+    ]
+  },
+  {
+    "cityId": 37,
+    "links": [
+      {
+        "targetId": 34,
+        "distance": 2
+      },
+      {
+        "targetId": 36,
+        "distance": 3
+      }
+    ]
+  }
+]
