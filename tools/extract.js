@@ -70,28 +70,23 @@ const decodeName = (buf) => {
 };
 
 const outDir = path.join(__dirname, '../sanguobaye-web/public/config');
-const tmpOutDir = path.join(__dirname, '../public/config');
 if (!fs.existsSync(outDir)) {
     fs.mkdirSync(outDir, { recursive: true });
 }
-if (!fs.existsSync(tmpOutDir)) {
-    fs.mkdirSync(tmpOutDir, { recursive: true });
-}
 
-const writeToBoth = (filename, data) => {
+const writeToOut = (filename, data) => {
     fs.writeFileSync(path.join(outDir, filename), data);
-    fs.writeFileSync(path.join(tmpOutDir, filename), data);
 };
 
 // 1. Extract City Names (ResID 58)
 const cityNamesRaw = getResource(58);
 const cityNames = cityNamesRaw.map(decodeName);
-writeToBoth('city_names.json', JSON.stringify(cityNames, null, 2));
+writeToOut('city_names.json', JSON.stringify(cityNames, null, 2));
 
 // 2. Extract General Names (ResID 62)
 const genNamesRaw = getResource(62);
 const genNames = genNamesRaw.map(decodeName);
-writeToBoth('general_names.json', JSON.stringify(genNames, null, 2));
+writeToOut('general_names.json', JSON.stringify(genNames, null, 2));
 
 // 3. Extract Goods
 const goodsNamesRaw = getResource(73);
@@ -117,7 +112,7 @@ if (goodsResRaw && goodsResRaw.length > 0) {
             arm: itemData.readUInt8(65)
         });
     }
-    writeToBoth('goods.json', JSON.stringify(goodsList, null, 2));
+    writeToOut('goods.json', JSON.stringify(goodsList, null, 2));
 }
 
 // 4. Extract Scenarios
@@ -205,6 +200,6 @@ for (let s = 0; s < 4; s++) {
     });
 }
 
-writeToBoth('scenarios.json', JSON.stringify(scenarios, null, 2));
+writeToOut('scenarios.json', JSON.stringify(scenarios, null, 2));
 
-console.log('Extraction complete! Check public/config/');
+console.log('Extraction complete! Check ../sanguobaye-web/public/config/');

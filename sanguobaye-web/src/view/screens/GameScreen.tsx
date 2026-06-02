@@ -624,8 +624,8 @@ export const GameScreen: React.FC = () => {
                                 )}
 
                                 {menuState === 'DOMESTIC' && (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '5px', fontSize: '24px' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5px' }}>
+                                        <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '5px', fontSize: '24px' }}>
                                             <span style={{ color: 'var(--theme-gold)', letterSpacing: '4px' }}>内政</span>
                                             <span onClick={() => setMenuState('CITY')} style={{ cursor: 'pointer', color: 'var(--theme-text)' }}>[X]</span>
                                         </div>
@@ -639,12 +639,16 @@ export const GameScreen: React.FC = () => {
                                         <GameButton onClick={() => handleCommandClick('流放')}>流放</GameButton>
                                         <GameButton onClick={() => handleCommandClick('赏赐')}>赏赐</GameButton>
                                         <GameButton onClick={() => handleCommandClick('没收')}>没收</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('交易')}>交易</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('宴请')}>宴请</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('输送')}>输送</GameButton>
+                                        <GameButton onClick={() => handleCommandClick('移动')}>移动</GameButton>
                                     </div>
                                 )}
 
                                 {menuState === 'DIPLOMACY' && (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '10px', fontSize: '24px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '5px', fontSize: '24px' }}>
                                             <span style={{ color: 'var(--theme-gold)', letterSpacing: '4px' }}>外交</span>
                                             <span onClick={() => setMenuState('CITY')} style={{ cursor: 'pointer', color: 'var(--theme-text)' }}>[X]</span>
                                         </div>
@@ -657,8 +661,8 @@ export const GameScreen: React.FC = () => {
                                 )}
 
                                 {menuState === 'MILITARY' && (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '10px', fontSize: '24px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '5px', fontSize: '24px' }}>
                                             <span style={{ color: 'var(--theme-gold)', letterSpacing: '4px' }}>军备</span>
                                             <span onClick={() => setMenuState('CITY')} style={{ cursor: 'pointer', color: 'var(--theme-text)' }}>[X]</span>
                                         </div>
@@ -666,9 +670,6 @@ export const GameScreen: React.FC = () => {
                                         <GameButton onClick={() => handleCommandClick('征兵')}>征兵</GameButton>
                                         <GameButton onClick={() => handleCommandClick('分配')}>分配</GameButton>
                                         <GameButton onClick={() => handleCommandClick('掠夺')}>掠夺</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('输送')}>输送</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('移动')}>移动</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('交易')}>交易</GameButton>
                                         <GameButton onClick={() => handleCommandClick('出征')}>出征</GameButton>
                                     </div>
                                 )}

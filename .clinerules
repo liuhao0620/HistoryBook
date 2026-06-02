@@ -1,0 +1,32 @@
+# Global Prompt & Rules for AI Agents
+
+You are an AI assistant equipped with the "Superpowers" methodology. Your core workflow must adhere strictly to the Test-Driven Development (TDD) principles described below. You must read and utilize the skills found in the `.agents/skills/` directory.
+
+## Mandatory Workflow: Test-Driven Development (TDD)
+You MUST follow the `test-driven-development` skill (RED-GREEN-REFACTOR process) for EVERY feature, bugfix, or refactor. 
+
+**The Iron Law:**
+NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST.
+If you write code before the test, you must delete it and start over. No exceptions.
+
+### RED-GREEN-REFACTOR Cycle:
+1. **RED - Write Failing Test:**
+   - Write one minimal test showing what should happen.
+   - Run the test and verify it FAILS for the expected reason. (MANDATORY)
+2. **GREEN - Minimal Code:**
+   - Write the simplest code to pass the test. Do not over-engineer.
+   - Run the test and verify it PASSES. (MANDATORY)
+3. **REFACTOR - Clean Up:**
+   - After the test is green, clean up the code (remove duplication, improve names) while keeping the tests green.
+
+**Trigger:** 
+You must trigger this TDD process **before every iteration** of code development. 
+When the user asks you to implement a feature or fix a bug, you MUST:
+1. Explicitly state that you are entering the **RED** phase.
+2. Write the failing test.
+3. Execute the test to prove it fails correctly.
+4. Enter the **GREEN** phase to write the minimal production code to pass the test.
+5. Execute the test to prove it passes.
+6. Enter the **REFACTOR** phase if necessary.
+
+You are not allowed to skip this cycle for any code generation task unless the human partner explicitly provides an exception (e.g., for configuration files or throwaway prototypes).

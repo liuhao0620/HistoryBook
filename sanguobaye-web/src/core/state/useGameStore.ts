@@ -173,12 +173,24 @@ export const useGameStore = create<GameState>((set) => ({
         
         data.cities.forEach((c: any) => { 
             state.cities[c.id] = { ...c, peopleDevotion: c.peopleDevotion !== undefined ? c.peopleDevotion : (c.devotion || 50) }; 
+            
+            const pQueue: number[] = [];
             for (let i = 0; i < c.persons; i++) {
                 const personId = data.genQueue[c.personQueue + i];
+                pQueue.push(personId);
                 if (state.persons[personId]) {
                     state.persons[personId].city = c.id;
                 }
             }
+            state.cities[c.id].personQueue = pQueue;
+
+            const tQueue: number[] = [];
+            if (c.tools > 0 && data.goodsQueue) {
+                for (let i = 0; i < c.tools; i++) {
+                    tQueue.push(data.goodsQueue[c.toolQueue + i]);
+                }
+            }
+            state.cities[c.id].toolQueue = tQueue;
         });
         
         // 动态生成势力列表 (根据剧本配置或城池归属)
@@ -261,28 +273,23 @@ export const useGameStore = create<GameState>((set) => ({
             // Simulate AI thinking time
             await new Promise(resolve => setTimeout(resolve, 500));
             
-            // Generate AI orders
-            const { AIEngine } = await import('../ai/AIEngine');
-            AIEngine.generateOrdersForForce(force.id);
+            try {
+                // Generate AI orders
+                const { AIEngine } = await import('../ai/AIEngine');
+                AIEngine.generateOrdersForForce(force.id);
+            } catch (e) {
+                console.error(`Error generating orders for AI force ${force.id}:`, e);
+            }
         }
         
         useGameStore.setState({ aiThinkingForceId: null });
 
-        // Now process all orders in the queue
-        // Because of circular dependency if we import commands here, we will just call an external resolver,
-        // or we just emit an event?
-        // Wait, instead of importing OrderResolver here, we can expose a function or we just resolve it in the UI layer.
-        // Actually, we can import OrderResolver in useGameStore if we are careful about circular dependency.
-        // Wait, `useGameStore` is imported by commands, so `OrderResolver` importing commands might cause a circular dependency.
-        // Let's create an `OrderResolver` that takes `store` as argument, and doesn't import `useGameStore`.
-        // That avoids circular dependency!
-        
-        // So we can import OrderResolver here:
-        // const { resolveOrders } = await import('../commands/OrderResolver');
-        // resolveOrders(useGameStore.getState(), useGameStore.setState);
-        
-        const { resolveOrders } = await import('../commands/OrderResolver');
-        resolveOrders();
+        try {
+            const { resolveOrders } = await import('../commands/OrderResolver');
+            resolveOrders();
+        } catch (e) {
+            console.error(`Error resolving orders:`, e);
+        }
         
         set(produce((state: GameState) => {
             // 先处理本月到期的延迟任务

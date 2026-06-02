@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const scenariosFile = path.join(__dirname, '../public/config/scenarios.json');
+const scenariosFile = path.join(__dirname, '../sanguobaye-web/public/config/scenarios.json');
 const data = JSON.parse(fs.readFileSync(scenariosFile, 'utf-8'));
 
 const outBase = path.join(__dirname, '../sanguobaye-web/public/config/scenarios');
