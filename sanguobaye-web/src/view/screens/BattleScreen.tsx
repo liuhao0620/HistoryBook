@@ -1,10 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useBattleStore } from '../../core/battle/useBattleStore';
 import { TerrainType, ArmsType } from '../../core/battle/BattleTypes';
 import { GameButton } from '../components/ui/GameButton';
-import { PLAIN_MAP_BACKGROUND_IMAGE, WATER_MAP_BACKGROUND_IMAGE, getTerrainRenderLayers } from '../battle/battleTerrainRendering';
+import {
+    BATTLE_FRAME_IMAGE,
+    BATTLE_PANEL_BACKGROUND_IMAGE,
+    COMPASS_NORTH_IMAGE,
+    PLAIN_MAP_BACKGROUND_IMAGE,
+    WATER_MAP_BACKGROUND_IMAGE,
+    getTerrainRenderLayers,
+    computeMountainBlocks,
+} from '../battle/battleTerrainRendering';
 
 const TILE_SIZE = 80;
+const SCENE_WIDTH = 1180;
+const SCENE_HEIGHT = 720;
+const PANEL_WIDTH = 720;
+const PANEL_HEIGHT = 82;
+const ancientFontFamily = '"Kaiti", "STKaiti", "KaiTi", "Songti SC", serif';
 
 const UNIT_IMAGES: Record<number, string> = {
     [ArmsType.CAVALRY]: '/assets/images/battle/unit_cavalry.png',
@@ -26,9 +39,31 @@ const TERRAIN_NAMES: Record<TerrainType, string> = {
     [TerrainType.RIVER]: '河流',
 };
 
+const TERRAIN_DESCRIPTIONS: Record<TerrainType, string> = {
+    [TerrainType.GRASS]: '适合所有兵种作战之地形，无特殊影响。',
+    [TerrainType.PLAIN]: '适合骑兵作战之地形，骑兵在平原移动极快。',
+    [TerrainType.MOUNTAIN]: '适合步兵和弓箭兵作战之地形。步兵、弓箭兵防御上升30%。',
+    [TerrainType.FOREST]: '适合步兵作战之地形。骑兵难以穿越。',
+    [TerrainType.VILLAGE]: '驻防据点。驻扎可获得防御加成，并微量恢复兵力。',
+    [TerrainType.CITY]: '核心据点。驻扎可获得极大的防御加成，并恢复兵力和体力。',
+    [TerrainType.CAMP]: '军事据点。驻扎可获得防御加成。',
+    [TerrainType.RIVER]: '适合水军作战之地形。水军在河流中移动极快，其他兵种移动极慢。',
+};
+
+const ARMS_NAMES: Record<ArmsType, string> = {
+    [ArmsType.INFANTRY]: '步兵',
+    [ArmsType.CAVALRY]: '骑兵',
+    [ArmsType.ARCHER]: '弓箭兵',
+    [ArmsType.WATER]: '水军',
+    [ArmsType.JI]: '极兵',
+    [ArmsType.XUAN]: '玄兵'
+};
+
 export const BattleScreen: React.FC = () => {
     const store = useBattleStore();
     const { map, units, day, activeUnitId, reachableTiles, attackableTiles, isAiThinking, isAttackerTurn } = store;
+
+    const mountainBlocks = useMemo(() => computeMountainBlocks(map), [map]);
 
     const [attackingUnitId, setAttackingUnitId] = useState<string | null>(null);
     const [attackedUnitId, setAttackedUnitId] = useState<string | null>(null);
@@ -44,13 +79,14 @@ export const BattleScreen: React.FC = () => {
 
     // 如果没有选择武将，不显示技能面板，也不锁定地图交互
     const [showUnitInfo, setShowUnitInfo] = useState<string | null>(null);
+    const [showTerrainInfo, setShowTerrainInfo] = useState<{x: number, y: number} | null>(null);
 
     const winStatus = store.checkWinCondition();
 
     if (winStatus) {
         return (
             <div style={{ display: 'flex', height: '100vh', backgroundColor: '#2b1d14', alignItems: 'center', justifyContent: 'center', fontFamily: '"Kaiti", "STKaiti", serif', userSelect: 'none' }}>
-                <div style={{ width: '1180px', height: '720px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--theme-bg-dark)', color: 'var(--theme-primary)', boxShadow: '0 0 20px rgba(0,0,0,0.8)' }}>
+                <div style={{ width: `${SCENE_WIDTH}px`, height: `${SCENE_HEIGHT}px`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--theme-bg-dark)', color: 'var(--theme-primary)', boxShadow: '0 0 20px rgba(0,0,0,0.8)' }}>
                     <h1 style={{ fontSize: '48px', marginBottom: '20px' }}>战斗结束</h1>
                     <h2 style={{ fontSize: '32px', color: winStatus === 'ATTACKER_WIN' ? '#ff4444' : '#4444ff' }}>
                         {winStatus === 'ATTACKER_WIN' ? '攻方胜利！' : '守方胜利！'}
@@ -104,6 +140,7 @@ export const BattleScreen: React.FC = () => {
 
             if (clickedUnit?.id === activeUnitId) {
                 setShowUnitInfo(activeUnitId);
+                setShowTerrainInfo(null);
                 return;
             }
 
@@ -116,7 +153,11 @@ export const BattleScreen: React.FC = () => {
                     setSelectingSkill(false);
                 } else {
                     setShowUnitInfo(clickedUnit.id);
+                    setShowTerrainInfo(null);
                 }
+            } else {
+                setShowTerrainInfo({x, y});
+                setShowUnitInfo(null);
             }
         }
     };
@@ -155,8 +196,24 @@ export const BattleScreen: React.FC = () => {
     };
 
     return (
-        <div style={{ display: 'flex', height: '100vh', backgroundColor: '#2b1d14', alignItems: 'center', justifyContent: 'center', fontFamily: '"Kaiti", "STKaiti", serif', userSelect: 'none' }}>
-            <div style={{ width: '1180px', height: '720px', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--theme-bg-dark)', color: 'var(--theme-text)', boxShadow: '0 0 20px rgba(0,0,0,0.8)' }}>
+        <div style={{ display: 'flex', height: '100vh', backgroundColor: '#20150d', alignItems: 'center', justifyContent: 'center', fontFamily: ancientFontFamily, userSelect: 'none' }}>
+            <div
+                data-testid="ancient-battle-frame"
+                style={{
+                    width: `${SCENE_WIDTH}px`,
+                    height: `${SCENE_HEIGHT}px`,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    backgroundColor: '#3a2411',
+                    backgroundImage: `url(${BATTLE_FRAME_IMAGE}), radial-gradient(circle at center, rgba(250, 213, 125, 0.08), rgba(0, 0, 0, 0.55) 76%)`,
+                    backgroundSize: '100% 100%, cover',
+                    color: '#e3bd70',
+                    boxShadow: '0 0 22px rgba(0,0,0,0.9), inset 0 0 24px rgba(255,192,80,0.18)',
+                    border: '1px solid #8f6426',
+                }}
+            >
             <style>
                 {`
                     @keyframes battleShake {
@@ -189,22 +246,38 @@ export const BattleScreen: React.FC = () => {
             </style>
             
             {/* 顶部状态栏取消，改为底部信息栏 */}
-            <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
+            <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative', padding: '18px' }}>
                 {/* 战场地图区 */}
                 <div 
-                    style={{ flex: 1, overflow: 'hidden', backgroundColor: '#111', cursor: isDragging ? 'grabbing' : 'grab' }}
+                    style={{
+                        flex: 1,
+                        overflow: 'hidden',
+                        position: 'relative',
+                        backgroundColor: '#25180d',
+                        cursor: isDragging ? 'grabbing' : 'grab',
+                        boxShadow: 'inset 0 0 90px rgba(0,0,0,0.45)',
+                    }}
                     onMouseDown={handleMouseDown}
                     onMouseMove={handleMouseMove}
                     onMouseUp={handleMouseUp}
                     onMouseLeave={handleMouseUp}
                 >
+                    <div
+                        style={{
+                            position: 'absolute',
+                            inset: 0,
+                            pointerEvents: 'none',
+                            zIndex: 80,
+                            background: 'radial-gradient(circle at center, transparent 58%, rgba(28, 17, 8, 0.36) 82%, rgba(13, 8, 4, 0.68) 100%)',
+                        }}
+                    />
                     <div style={{ 
                         position: 'relative',
                         width: map.width * TILE_SIZE, 
                         height: map.height * TILE_SIZE,
                         transform: `translate(${cameraPos.x}px, ${cameraPos.y}px)`,
                         transition: isDragging ? 'none' : 'transform 0.1s',
-                        backgroundColor: '#111',
+                        backgroundColor: '#9c7d3d',
                         backgroundImage: `url(${PLAIN_MAP_BACKGROUND_IMAGE})`,
                         backgroundRepeat: 'repeat',
                         backgroundSize: '512px 512px',
@@ -215,12 +288,13 @@ export const BattleScreen: React.FC = () => {
                             row.map((terrain, x) => {
                                 const isReachable = reachableTiles.some(t => t.x === x && t.y === y);
                                 const isAttackable = attackableTiles.some(t => t.x === x && t.y === y);
-                                const terrainLayers = getTerrainRenderLayers(x, y, map);
+                                const terrainLayers = getTerrainRenderLayers(x, y, map, mountainBlocks);
                                 const isWater = terrain === TerrainType.RIVER;
 
                                 return (
                                     <div 
                                         key={`${x}-${y}`}
+                                        data-testid={`battle-terrain-tile-${x}-${y}`}
                                         onClick={() => handleTileClick(x, y)}
                                         onMouseEnter={() => setHoveredTile({x, y})}
                                         style={{
@@ -235,21 +309,22 @@ export const BattleScreen: React.FC = () => {
                                                 : (terrainLayers.baseImage ? `url(${terrainLayers.baseImage})` : undefined),
                                             backgroundRepeat: isWater ? 'repeat' : undefined,
                                             backgroundSize: isWater ? `${TILE_SIZE}px ${TILE_SIZE}px` : 'cover',
-                                            backgroundPosition: isWater ? 'center' : 'center',
+                                            backgroundPosition: isWater ? `${-x * TILE_SIZE}px ${-y * TILE_SIZE}px` : 'center',
                                             boxSizing: 'border-box',
                                             cursor: (isReachable || isAttackable) ? 'pointer' : 'default',
+                                            filter: 'sepia(0.18) saturate(0.95)',
                                         }}
                                     >
                                         {/* 渲染覆盖物图层 */}
-                                        {terrainLayers.overlays.map((src, index) => (
+                                        {terrainLayers.overlays.map((overlay, index) => (
                                             <div
                                                 key={`overlay-${index}`}
                                                 style={{
                                                     position: 'absolute',
-                                                    width: '100%',
-                                                    height: '100%',
-                                                    backgroundImage: `url(${src})`,
-                                                    backgroundSize: 'cover',
+                                                    width: overlay.width || '100%',
+                                                    height: overlay.height || '100%',
+                                                    backgroundImage: `url(${overlay.src})`,
+                                                    backgroundSize: '100% 100%',
                                                     backgroundPosition: 'center',
                                                     pointerEvents: 'none',
                                                     zIndex: 2
@@ -258,9 +333,9 @@ export const BattleScreen: React.FC = () => {
                                         ))}
 
                                         {/* 移动范围遮罩 */}
-                                        {isReachable && <div style={{ position: 'absolute', width: '100%', height: '100%', backgroundColor: 'rgba(255, 255, 255, 0.3)', pointerEvents: 'none', zIndex: 5 }} />}
+                                        {isReachable && <div style={{ position: 'absolute', width: '100%', height: '100%', backgroundColor: 'rgba(246, 213, 130, 0.26)', boxShadow: 'inset 0 0 18px rgba(255, 241, 173, 0.42)', pointerEvents: 'none', zIndex: 5 }} />}
                                         {/* 攻击范围遮罩 */}
-                                        {isAttackable && <div style={{ position: 'absolute', width: '100%', height: '100%', backgroundColor: 'rgba(255, 0, 0, 0.4)', pointerEvents: 'none', zIndex: 5 }} />}
+                                        {isAttackable && <div style={{ position: 'absolute', width: '100%', height: '100%', backgroundColor: 'rgba(138, 32, 22, 0.36)', boxShadow: 'inset 0 0 18px rgba(255, 85, 44, 0.46)', pointerEvents: 'none', zIndex: 5 }} />}
                                     </div>
                                 );
                             })
@@ -298,19 +373,19 @@ export const BattleScreen: React.FC = () => {
                                         zIndex: isActive ? 15 : 10,
                                         opacity: unit.hasActed && !isActive ? 0.6 : 1,
                                         transition: 'left 0.2s, top 0.2s',
-                                        filter: isActive ? 'drop-shadow(0 0 8px var(--theme-primary)) brightness(1.2)' : 'none'
+                                        filter: isActive ? 'drop-shadow(0 0 10px #f1c66f) brightness(1.15)' : 'drop-shadow(0 8px 8px rgba(39, 24, 9, 0.52))'
                                     }}
                                 >
                                     {/* 势力底座光环 */}
                                     <div style={{
                                         position: 'absolute',
                                         bottom: '10%',
-                                        width: '70%',
-                                        height: '30%',
-                                        backgroundColor: unit.isAttacker ? 'rgba(255, 68, 68, 0.4)' : 'rgba(68, 68, 255, 0.4)',
-                                        border: `2px solid ${isActive ? 'var(--theme-primary)' : (unit.isAttacker ? '#ff4444' : '#4444ff')}`,
+                                        width: '68%',
+                                        height: '26%',
+                                        backgroundColor: unit.isAttacker ? 'rgba(116, 37, 24, 0.66)' : 'rgba(34, 58, 104, 0.64)',
+                                        border: `2px solid ${isActive ? '#f1c66f' : '#6a4319'}`,
                                         borderRadius: '50%',
-                                        boxShadow: isActive ? '0 0 10px var(--theme-primary)' : '0 2px 4px rgba(0,0,0,0.5)',
+                                        boxShadow: isActive ? '0 0 12px #f1c66f, inset 0 0 8px rgba(255,231,152,0.4)' : '0 3px 7px rgba(0,0,0,0.65), inset 0 0 7px rgba(238,186,91,0.24)',
                                         zIndex: 1
                                     }} />
 
@@ -322,7 +397,8 @@ export const BattleScreen: React.FC = () => {
                                             width: '90%', 
                                             height: '90%', 
                                             objectFit: 'contain',
-                                            zIndex: 2
+                                            zIndex: 2,
+                                            filter: 'sepia(0.1) saturate(0.95) contrast(1.04)'
                                         }}
                                     />
 
@@ -330,12 +406,13 @@ export const BattleScreen: React.FC = () => {
                                     <div style={{
                                         position: 'absolute',
                                         bottom: '0',
-                                        backgroundColor: 'rgba(0,0,0,0.7)',
-                                        color: '#fff',
+                                        backgroundColor: 'rgba(45, 25, 10, 0.86)',
+                                        color: '#f1d184',
                                         fontSize: '10px',
                                         fontWeight: 'bold',
-                                        padding: '1px 4px',
-                                        borderRadius: '4px',
+                                        padding: '1px 5px',
+                                        border: '1px solid rgba(214, 156, 67, 0.72)',
+                                        borderRadius: '2px',
                                         zIndex: 3
                                     }}>
                                         {unit.name[0]} {unit.armsCount}
@@ -347,46 +424,68 @@ export const BattleScreen: React.FC = () => {
                 </div>
                 
                 {/* 底部信息面板 */}
-                <div style={{
+                <div
+                    data-testid="ancient-compass-north"
+                    aria-label="北"
+                    style={{
+                        position: 'absolute',
+                        top: '28px',
+                        right: '34px',
+                        width: '64px',
+                        height: '96px',
+                        backgroundImage: `url(${COMPASS_NORTH_IMAGE})`,
+                        backgroundSize: 'contain',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'center',
+                        zIndex: 120,
+                        filter: 'drop-shadow(0 3px 3px rgba(0,0,0,0.65))',
+                    }}
+                />
+
+                <div data-testid="ancient-battle-panel" style={{
                     position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    width: '600px',
-                    height: '60px',
-                    backgroundColor: '#d6d6d6',
-                    border: '2px solid #000',
+                    bottom: '18px',
+                    left: '18px',
+                    width: `${PANEL_WIDTH}px`,
+                    height: `${PANEL_HEIGHT}px`,
+                    backgroundColor: '#2a1609',
+                    backgroundImage: `url(${BATTLE_PANEL_BACKGROUND_IMAGE})`,
+                    backgroundSize: '100% 100%',
+                    border: '2px solid #a4742a',
                     display: 'flex',
                     alignItems: 'center',
-                    fontSize: '24px',
-                    color: '#000',
+                    fontSize: '30px',
+                    color: '#d6a85b',
                     fontWeight: 'bold',
                     zIndex: 100,
-                    fontFamily: '"SimSun", "Songti SC", serif'
+                    fontFamily: ancientFontFamily,
+                    boxShadow: '0 6px 18px rgba(0,0,0,0.62), inset 0 0 18px rgba(255,194,78,0.12)',
+                    textShadow: '0 2px 2px rgba(0,0,0,0.75)',
                 }}>
-                    <div style={{ padding: '0 20px', borderRight: '2px solid #000', height: '100%', display: 'flex', alignItems: 'center' }}>
+                    <div style={{ padding: '0 24px', borderRight: '1px solid rgba(185, 126, 41, 0.76)', height: '100%', display: 'flex', alignItems: 'center' }}>
                         粮{store.attackerFood}
                     </div>
-                    <div style={{ padding: '0 20px', borderRight: '2px solid #000', height: '100%', display: 'flex', alignItems: 'center' }}>
+                    <div style={{ padding: '0 24px', borderRight: '1px solid rgba(185, 126, 41, 0.76)', height: '100%', display: 'flex', alignItems: 'center' }}>
                         天 {day}
                     </div>
-                    <div style={{ padding: '0 20px', flex: 1, height: '100%', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div style={{ width: '24px', height: '24px', border: '2px solid #000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>?</div>
+                    <div style={{ padding: '0 24px', flex: 1, height: '100%', display: 'flex', alignItems: 'center', gap: '14px', minWidth: 0 }}>
+                        <div style={{ width: '42px', height: '42px', border: '2px solid #b78031', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '30px', color: '#e2bd74', backgroundColor: 'rgba(32, 17, 6, 0.82)', boxShadow: 'inset 0 0 8px rgba(242,197,104,0.18)' }}>?</div>
                         {hoveredUnit ? hoveredUnit.name : (hoveredTerrain !== null ? TERRAIN_NAMES[hoveredTerrain] : '')}
                     </div>
                     
                     {/* 操作按钮组放在最右侧 */}
-                    <div style={{ display: 'flex', height: '100%', borderLeft: '2px solid #000' }}>
+                    <div style={{ display: 'flex', height: '100%', borderLeft: '1px solid rgba(185, 126, 41, 0.76)' }}>
                         {activeUnitId && (
                             <>
                                 <button 
                                     onClick={() => setSelectingSkill(!selectingSkill)}
-                                    style={{ padding: '0 20px', border: 'none', borderRight: '2px solid #000', backgroundColor: selectingSkill ? '#999' : 'transparent', cursor: 'pointer', fontSize: '20px', fontWeight: 'bold' }}
+                                    style={{ padding: '0 18px', border: 'none', borderRight: '1px solid rgba(185, 126, 41, 0.76)', backgroundColor: selectingSkill ? 'rgba(174, 121, 43, 0.34)' : 'transparent', cursor: 'pointer', fontSize: '20px', fontWeight: 'bold', color: '#d6a85b', fontFamily: ancientFontFamily }}
                                 >
                                     {selectingSkill ? '取消' : '技能'}
                                 </button>
                                 <button 
                                     onClick={() => { store.rest(activeUnitId); setSelectingSkill(false); }}
-                                    style={{ padding: '0 20px', border: 'none', borderRight: '2px solid #000', backgroundColor: 'transparent', cursor: 'pointer', fontSize: '20px', fontWeight: 'bold' }}
+                                    style={{ padding: '0 18px', border: 'none', borderRight: '1px solid rgba(185, 126, 41, 0.76)', backgroundColor: 'transparent', cursor: 'pointer', fontSize: '20px', fontWeight: 'bold', color: '#d6a85b', fontFamily: ancientFontFamily }}
                                 >
                                     待命
                                 </button>
@@ -394,7 +493,7 @@ export const BattleScreen: React.FC = () => {
                         )}
                         <button 
                             onClick={() => store.endTurn()} disabled={isAiThinking}
-                            style={{ padding: '0 20px', border: 'none', backgroundColor: 'transparent', cursor: isAiThinking ? 'not-allowed' : 'pointer', fontSize: '20px', fontWeight: 'bold', color: isAiThinking ? '#999' : '#000' }}
+                            style={{ padding: '0 18px', border: 'none', backgroundColor: 'transparent', cursor: isAiThinking ? 'not-allowed' : 'pointer', fontSize: '20px', fontWeight: 'bold', color: isAiThinking ? '#766244' : '#d6a85b', fontFamily: ancientFontFamily }}
                         >
                             结束回合
                         </button>
@@ -402,59 +501,89 @@ export const BattleScreen: React.FC = () => {
                 </div>
             </div>
             
-            {/* 武将详细信息弹窗 */}
-            {showUnitInfo && units[showUnitInfo] && (
-                <div style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    backgroundColor: '#d6d6d6',
-                    border: '4px solid #000',
-                    padding: '20px',
-                    zIndex: 200,
-                    width: '400px',
-                    color: '#000',
-                    fontFamily: '"SimSun", "Songti SC", serif',
-                    boxShadow: '8px 8px 0px rgba(0,0,0,0.3)'
-                }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-                        <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '18px' }}>
-                            <div>等级: 1</div>
-                            <div>兵种: 步兵</div>
-                            <div>武力: {units[showUnitInfo].force}</div>
-                            <div>智力: {units[showUnitInfo].iq}</div>
-                            <div>经验: 0</div>
-                            <div>生命: {units[showUnitInfo].hp}</div>
-                            <div>技力: {units[showUnitInfo].mp}</div>
-                            <div>攻击: {units[showUnitInfo].attack}</div>
-                            <div>防御: {units[showUnitInfo].defense}</div>
-                            <div>兵力: {units[showUnitInfo].armsCount}</div>
-                            <div>状态: 正常</div>
-                        </div>
-                        <div style={{ width: '100px', height: '100px', border: '2px solid #000', marginLeft: '20px', display: 'flex', flexDirection: 'column' }}>
-                            {!imgErrors[showUnitInfo] ? (
-                                <img 
-                                    src={`/assets/images/generals/${units[showUnitInfo].name}.png`} 
-                                    alt={units[showUnitInfo].name}
-                                    onError={() => handleImgError(showUnitInfo)}
-                                    style={{ width: '100%', height: '70px', objectFit: 'cover' }}
-                                />
-                            ) : (
-                                <div style={{ flex: 1, backgroundColor: units[showUnitInfo].color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    {units[showUnitInfo].name[0]}
+            {/* 详细信息弹窗 */}
+            {(showUnitInfo && units[showUnitInfo]) || (showTerrainInfo) ? (
+                <div 
+                    onClick={() => { setShowUnitInfo(null); setShowTerrainInfo(null); }}
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 190,
+                        backgroundColor: 'rgba(0,0,0,0.1)'
+                    }}
+                >
+                    <div 
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            backgroundColor: '#c0c0c0',
+                            border: '2px solid #000',
+                            padding: '16px',
+                            zIndex: 200,
+                            width: showUnitInfo ? '420px' : '360px',
+                            color: '#000',
+                            fontFamily: '"SimSun", "Songti SC", serif',
+                            boxShadow: '4px 4px 0px rgba(0,0,0,0.4)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '16px'
+                        }}
+                    >
+                        {showUnitInfo && units[showUnitInfo] && (() => {
+                            const unit = units[showUnitInfo];
+                            return (
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px 4px', fontSize: '16px', lineHeight: '1.2' }}>
+                                        <div>等级:{unit.level}</div>
+                                        <div>兵种:{ARMS_NAMES[unit.armsType]}</div>
+                                        <div>武力:{unit.force}</div>
+                                        <div>智力:{unit.iq}</div>
+                                        <div>经验:{unit.expGained || 0}</div>
+                                        <div>生命:{unit.hp}</div>
+                                        <div>技力:{unit.mp}</div>
+                                        <div>攻击:{unit.attack}</div>
+                                        <div>防御:{unit.defense}</div>
+                                        <div style={{ gridColumn: '1 / span 2' }}>兵力:{unit.armsCount}</div>
+                                        <div>状态:正常</div>
+                                    </div>
+                                    <div style={{ width: '80px', height: '100px', border: '2px solid #000', marginLeft: '12px', display: 'flex', flexDirection: 'column', backgroundColor: '#d0d0d0' }}>
+                                        {!imgErrors[showUnitInfo] ? (
+                                            <img 
+                                                src={`/assets/images/generals/${unit.name}.png`} 
+                                                alt={unit.name}
+                                                onError={() => handleImgError(showUnitInfo)}
+                                                style={{ width: '100%', height: '76px', objectFit: 'cover' }}
+                                            />
+                                        ) : (
+                                            <div style={{ flex: 1, backgroundColor: unit.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', color: '#fff', fontWeight: 'bold' }}>
+                                                {unit.name[0]}
+                                            </div>
+                                        )}
+                                        <div style={{ height: '20px', borderTop: '1px solid #000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold' }}>
+                                            {unit.name}
+                                        </div>
+                                    </div>
                                 </div>
-                            )}
-                            <div style={{ height: '30px', borderTop: '2px solid #000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-                                {units[showUnitInfo].name}
-                            </div>
-                        </div>
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                        <button onClick={() => setShowUnitInfo(null)} style={{ padding: '5px 20px', fontSize: '18px', border: '2px solid #000', backgroundColor: '#fff', cursor: 'pointer' }}>关闭</button>
+                            );
+                        })()}
+
+                        {showTerrainInfo && (() => {
+                            const tType = map.tiles[showTerrainInfo.y][showTerrainInfo.x];
+                            return (
+                                <div style={{ fontSize: '18px', lineHeight: '1.5' }}>
+                                    {TERRAIN_NAMES[tType]}：{TERRAIN_DESCRIPTIONS[tType]}
+                                </div>
+                            );
+                        })()}
                     </div>
                 </div>
-            )}
+            ) : null}
         </div>
         </div>
     );

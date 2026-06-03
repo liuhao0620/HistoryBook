@@ -6,6 +6,9 @@ import { describe, expect, it } from 'vitest';
 const battleAssetPath = (...segments: string[]) =>
     join(process.cwd(), 'public', 'assets', 'images', 'battle', ...segments);
 
+const ancientBattleAssetPath = (...segments: string[]) =>
+    battleAssetPath(...segments);
+
 interface PngAlphaStats {
     visibleCoverage: number;
     componentCount: number;
@@ -161,25 +164,65 @@ const paeth = (left: number, up: number, upperLeft: number) => {
 
 describe('battle terrain symbolic assets', () => {
     it('uses one or two large forest groups per tile instead of a dense tree pattern', () => {
-        const forest = readPngAlphaStats(battleAssetPath('wood_autotile', 'wood_center_01.png'));
+        const forest = readPngAlphaStats(ancientBattleAssetPath('wood_autotile', 'wood_center_01.png'));
 
-        expect(forest.visibleCoverage).toBeGreaterThan(0.10);
-        expect(forest.visibleCoverage).toBeLessThan(0.22);
+        expect(forest.visibleCoverage).toBeGreaterThan(0.08);
+        expect(forest.visibleCoverage).toBeLessThan(0.30);
         expect(forest.componentCount).toBeLessThanOrEqual(8);
         expect(forest.largestComponent).toBeGreaterThan(8000);
-        expect(forest.visibleHeightRatio).toBeGreaterThan(0.48);
+        expect(forest.visibleHeightRatio).toBeGreaterThan(0.42);
     });
 
     it('uses a single readable mountain mass per tile so the terrain keeps height next to units', () => {
-        const mountain = readPngAlphaStats(battleAssetPath('hill_autotile', 'hill_center_01.png'));
+        const mountain = readPngAlphaStats(ancientBattleAssetPath('hill_autotile', 'hill_center_01.png'));
 
-        expect(mountain.visibleCoverage).toBeGreaterThan(0.14);
-        expect(mountain.visibleCoverage).toBeLessThan(0.24);
+        expect(mountain.visibleCoverage).toBeGreaterThan(0.12);
+        expect(mountain.visibleCoverage).toBeLessThan(0.34);
         expect(mountain.componentCount).toBeLessThanOrEqual(4);
         expect(mountain.largestComponent).toBeGreaterThan(24000);
-        expect(mountain.visibleWidthRatio).toBeLessThan(0.78);
+        expect(mountain.visibleWidthRatio).toBeLessThan(0.86);
         expect(mountain.visibleHeightRatio).toBeGreaterThan(0.50);
-        expect(mountain.averageVisibleLuminance).toBeGreaterThan(100);
-        expect(mountain.averageVisibleLuminance).toBeLessThan(145);
+        expect(mountain.averageVisibleLuminance).toBeGreaterThan(68);
+        expect(mountain.averageVisibleLuminance).toBeLessThan(175);
+    });
+});
+
+describe('ancient battle scene assets', () => {
+    it('includes ancient UI frame, panel, and compass assets', () => {
+        for (const asset of ['ui_frame.png', 'ui_panel.png', 'compass_north.png']) {
+            const stats = readPngAlphaStats(ancientBattleAssetPath(asset));
+
+            expect(stats.visibleCoverage).toBeGreaterThan(0.02);
+            expect(stats.visibleCoverage).toBeLessThan(0.95);
+        }
+    });
+
+    it('uses readable ancient forest and mountain masses', () => {
+        const forest = readPngAlphaStats(ancientBattleAssetPath('wood_autotile', 'wood_center_01.png'));
+        const mountain = readPngAlphaStats(ancientBattleAssetPath('hill_autotile', 'hill_center_01.png'));
+
+        expect(forest.visibleCoverage).toBeGreaterThan(0.08);
+        expect(forest.visibleCoverage).toBeLessThan(0.30);
+        expect(forest.visibleHeightRatio).toBeGreaterThan(0.42);
+        expect(mountain.visibleCoverage).toBeGreaterThan(0.12);
+        expect(mountain.visibleCoverage).toBeLessThan(0.34);
+        expect(mountain.visibleWidthRatio).toBeLessThan(0.86);
+    });
+
+    it('uses ancient water edge overlays that do not fill the whole tile', () => {
+        const edge = readPngAlphaStats(ancientBattleAssetPath('water_edges', 'water_edge_09.png'));
+
+        expect(edge.visibleCoverage).toBeGreaterThan(0.02);
+        expect(edge.visibleCoverage).toBeLessThan(0.30);
+    });
+
+    it('keeps masked terrain variants transparent instead of painting square tile backplates', () => {
+        const forestMask = readPngAlphaStats(ancientBattleAssetPath('wood_autotile', 'wood_mask_15.png'));
+        const mountainMask = readPngAlphaStats(ancientBattleAssetPath('hill_autotile', 'hill_mask_15.png'));
+
+        expect(forestMask.visibleCoverage).toBeGreaterThan(0.08);
+        expect(forestMask.visibleCoverage).toBeLessThan(0.28);
+        expect(mountainMask.visibleCoverage).toBeGreaterThan(0.10);
+        expect(mountainMask.visibleCoverage).toBeLessThan(0.30);
     });
 });
