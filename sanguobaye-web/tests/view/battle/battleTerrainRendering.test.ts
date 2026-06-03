@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { TerrainType, type BattleMap } from '../../../src/core/battle/BattleTypes';
 import {
     PLAIN_MAP_BACKGROUND_IMAGE,
+    WATER_MAP_BACKGROUND_IMAGE,
     getEdgeMask,
     getTerrainRenderLayers,
 } from '../../../src/view/battle/battleTerrainRendering';
@@ -13,7 +14,7 @@ const makeMap = (tiles: TerrainType[][]): BattleMap => ({
 });
 
 describe('battle terrain rendering', () => {
-    it('returns water edge 00 when a water tile is surrounded by water', () => {
+    it('returns water edge 00 without a per-tile water base when surrounded by water', () => {
         const map = makeMap([
             [TerrainType.RIVER, TerrainType.RIVER, TerrainType.RIVER],
             [TerrainType.RIVER, TerrainType.RIVER, TerrainType.RIVER],
@@ -22,12 +23,17 @@ describe('battle terrain rendering', () => {
 
         const layers = getTerrainRenderLayers(1, 1, map);
 
-        expect(layers.baseImage).toBe('/assets/images/battle/tile_base_water.png');
+        expect(layers.baseImage).toBeNull();
+        expect(layers.fallbackColor).toBe('transparent');
         expect(layers.overlays).toEqual(['/assets/images/battle/water_edges/water_edge_00.png']);
     });
 
     it('exposes the plain texture for the map-level background', () => {
         expect(PLAIN_MAP_BACKGROUND_IMAGE).toBe('/assets/images/battle/tile_base_plain.png');
+    });
+
+    it('exposes the water texture for map-aligned water tiles', () => {
+        expect(WATER_MAP_BACKGROUND_IMAGE).toBe('/assets/images/battle/tile_base_water.png');
     });
 
     it('keeps plain tiles transparent so the map-level plain texture shows through', () => {
@@ -70,7 +76,7 @@ describe('battle terrain rendering', () => {
         });
     });
 
-    it('uses only the forest center texture until real edge assets exist', () => {
+    it('renders a forest masked terrain variant for non-forest neighbors', () => {
         const map = makeMap([
             [TerrainType.PLAIN, TerrainType.FOREST, TerrainType.FOREST],
             [TerrainType.PLAIN, TerrainType.FOREST, TerrainType.FOREST],
@@ -79,11 +85,11 @@ describe('battle terrain rendering', () => {
 
         expect(getEdgeMask(1, 1, map, TerrainType.FOREST)).toBe(8);
         expect(getTerrainRenderLayers(1, 1, map).overlays).toEqual([
-            '/assets/images/battle/wood_autotile/wood_center_01.png',
+            '/assets/images/battle/wood_autotile/wood_mask_08.png',
         ]);
     });
 
-    it('uses only the mountain center texture until real edge assets exist', () => {
+    it('renders a mountain masked terrain variant for non-mountain neighbors', () => {
         const map = makeMap([
             [TerrainType.MOUNTAIN, TerrainType.PLAIN, TerrainType.MOUNTAIN],
             [TerrainType.MOUNTAIN, TerrainType.MOUNTAIN, TerrainType.PLAIN],
@@ -92,7 +98,7 @@ describe('battle terrain rendering', () => {
 
         expect(getEdgeMask(1, 1, map, TerrainType.MOUNTAIN)).toBe(3);
         expect(getTerrainRenderLayers(1, 1, map).overlays).toEqual([
-            '/assets/images/battle/hill_autotile/hill_center_01.png',
+            '/assets/images/battle/hill_autotile/hill_mask_03.png',
         ]);
     });
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useBattleStore } from '../../core/battle/useBattleStore';
 import { TerrainType, ArmsType } from '../../core/battle/BattleTypes';
 import { GameButton } from '../components/ui/GameButton';
-import { PLAIN_MAP_BACKGROUND_IMAGE, getTerrainRenderLayers } from '../battle/battleTerrainRendering';
+import { PLAIN_MAP_BACKGROUND_IMAGE, WATER_MAP_BACKGROUND_IMAGE, getTerrainRenderLayers } from '../battle/battleTerrainRendering';
 
 const TILE_SIZE = 80;
 
@@ -212,10 +212,11 @@ export const BattleScreen: React.FC = () => {
                     }}>
                         {/* 绘制地形底图和覆盖物 */}
                         {map.tiles.map((row, y) => 
-                            row.map((_terrain, x) => {
+                            row.map((terrain, x) => {
                                 const isReachable = reachableTiles.some(t => t.x === x && t.y === y);
                                 const isAttackable = attackableTiles.some(t => t.x === x && t.y === y);
                                 const terrainLayers = getTerrainRenderLayers(x, y, map);
+                                const isWater = terrain === TerrainType.RIVER;
 
                                 return (
                                     <div 
@@ -229,9 +230,12 @@ export const BattleScreen: React.FC = () => {
                                             width: TILE_SIZE,
                                             height: TILE_SIZE,
                                             backgroundColor: terrainLayers.fallbackColor,
-                                            backgroundImage: terrainLayers.baseImage ? `url(${terrainLayers.baseImage})` : undefined,
-                                            backgroundSize: 'cover',
-                                            backgroundPosition: 'center',
+                                            backgroundImage: isWater
+                                                ? `url(${WATER_MAP_BACKGROUND_IMAGE})`
+                                                : (terrainLayers.baseImage ? `url(${terrainLayers.baseImage})` : undefined),
+                                            backgroundRepeat: isWater ? 'repeat' : undefined,
+                                            backgroundSize: isWater ? `${TILE_SIZE}px ${TILE_SIZE}px` : 'cover',
+                                            backgroundPosition: isWater ? 'center' : 'center',
                                             boxSizing: 'border-box',
                                             cursor: (isReachable || isAttackable) ? 'pointer' : 'default',
                                         }}

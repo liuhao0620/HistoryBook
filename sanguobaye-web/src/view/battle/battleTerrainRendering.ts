@@ -3,6 +3,7 @@ import { TerrainType, type BattleMap } from '../../core/battle/BattleTypes';
 const BATTLE_ASSET_ROOT = '/assets/images/battle';
 
 export const PLAIN_MAP_BACKGROUND_IMAGE = `${BATTLE_ASSET_ROOT}/tile_base_plain.png`;
+export const WATER_MAP_BACKGROUND_IMAGE = `${BATTLE_ASSET_ROOT}/tile_base_water.png`;
 
 export const TERRAIN_FALLBACK_COLORS: Record<TerrainType, string> = {
     [TerrainType.GRASS]: '#4caf50',
@@ -51,18 +52,22 @@ export const getTerrainRenderLayers = (
     map: BattleMap,
 ): TerrainRenderLayers => {
     const terrain = map.tiles[y]?.[x] ?? TerrainType.PLAIN;
-    const baseImage = terrain === TerrainType.RIVER
-        ? `${BATTLE_ASSET_ROOT}/tile_base_water.png`
-        : null;
+    const baseImage = null;
     const overlays: string[] = [];
 
     if (terrain === TerrainType.RIVER) {
         const mask = getEdgeMask(x, y, map, TerrainType.RIVER);
         overlays.push(`${BATTLE_ASSET_ROOT}/water_edges/water_edge_${mask.toString().padStart(2, '0')}.png`);
     } else if (terrain === TerrainType.FOREST) {
-        overlays.push(`${BATTLE_ASSET_ROOT}/wood_autotile/wood_center_01.png`);
+        const mask = getEdgeMask(x, y, map, TerrainType.FOREST);
+        overlays.push(mask === 0
+            ? `${BATTLE_ASSET_ROOT}/wood_autotile/wood_center_01.png`
+            : `${BATTLE_ASSET_ROOT}/wood_autotile/wood_mask_${mask.toString().padStart(2, '0')}.png`);
     } else if (terrain === TerrainType.MOUNTAIN) {
-        overlays.push(`${BATTLE_ASSET_ROOT}/hill_autotile/hill_center_01.png`);
+        const mask = getEdgeMask(x, y, map, TerrainType.MOUNTAIN);
+        overlays.push(mask === 0
+            ? `${BATTLE_ASSET_ROOT}/hill_autotile/hill_center_01.png`
+            : `${BATTLE_ASSET_ROOT}/hill_autotile/hill_mask_${mask.toString().padStart(2, '0')}.png`);
     } else {
         const propOverlay = getPropOverlay(terrain);
         if (propOverlay) overlays.push(propOverlay);
@@ -71,7 +76,7 @@ export const getTerrainRenderLayers = (
     return {
         baseImage,
         overlays,
-        fallbackColor: terrain === TerrainType.RIVER ? TERRAIN_FALLBACK_COLORS[terrain] : 'transparent',
+        fallbackColor: 'transparent',
     };
 };
 
