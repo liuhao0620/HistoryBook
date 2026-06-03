@@ -308,7 +308,7 @@ export const BattleScreen: React.FC = () => {
                                                 ? `url(${WATER_MAP_BACKGROUND_IMAGE})`
                                                 : (terrainLayers.baseImage ? `url(${terrainLayers.baseImage})` : undefined),
                                             backgroundRepeat: isWater ? 'repeat' : undefined,
-                                            backgroundSize: isWater ? `${TILE_SIZE}px ${TILE_SIZE}px` : 'cover',
+                                            backgroundSize: isWater ? '512px 512px' : 'cover',
                                             backgroundPosition: isWater ? `${-x * TILE_SIZE}px ${-y * TILE_SIZE}px` : 'center',
                                             boxSizing: 'border-box',
                                             cursor: (isReachable || isAttackable) ? 'pointer' : 'default',
