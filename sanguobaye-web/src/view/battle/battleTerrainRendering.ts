@@ -1,9 +1,19 @@
 import { TerrainType, type BattleMap } from '../../core/battle/BattleTypes';
 
 const BATTLE_ASSET_ROOT = '/assets/images/battle';
+const ANCIENT_BATTLE_ASSET_ROOT = `${BATTLE_ASSET_ROOT}/ancient`;
 
-export const PLAIN_MAP_BACKGROUND_IMAGE = `${BATTLE_ASSET_ROOT}/tile_base_plain.png`;
-export const WATER_MAP_BACKGROUND_IMAGE = `${BATTLE_ASSET_ROOT}/tile_base_water.png`;
+export const PLAIN_MAP_BACKGROUND_IMAGE = `${ANCIENT_BATTLE_ASSET_ROOT}/tile_base_parchment.png`;
+export const WATER_MAP_BACKGROUND_IMAGE = `${ANCIENT_BATTLE_ASSET_ROOT}/tile_base_water.png`;
+export const BATTLE_FRAME_IMAGE = `${ANCIENT_BATTLE_ASSET_ROOT}/ui_frame.png`;
+export const BATTLE_PANEL_BACKGROUND_IMAGE = `${ANCIENT_BATTLE_ASSET_ROOT}/ui_panel.png`;
+export const COMPASS_NORTH_IMAGE = `${ANCIENT_BATTLE_ASSET_ROOT}/compass_north.png`;
+
+export const getBattleSceneThemeAssets = () => ({
+    frameImage: BATTLE_FRAME_IMAGE,
+    panelBackgroundImage: BATTLE_PANEL_BACKGROUND_IMAGE,
+    compassNorthImage: COMPASS_NORTH_IMAGE,
+});
 
 export const TERRAIN_FALLBACK_COLORS: Record<TerrainType, string> = {
     [TerrainType.GRASS]: '#4caf50',
@@ -57,17 +67,17 @@ export const getTerrainRenderLayers = (
 
     if (terrain === TerrainType.RIVER) {
         const mask = getEdgeMask(x, y, map, TerrainType.RIVER);
-        overlays.push(`${BATTLE_ASSET_ROOT}/water_edges/water_edge_${mask.toString().padStart(2, '0')}.png`);
+        overlays.push(`${ANCIENT_BATTLE_ASSET_ROOT}/water_edges/water_edge_${mask.toString().padStart(2, '0')}.png`);
     } else if (terrain === TerrainType.FOREST) {
         const mask = getEdgeMask(x, y, map, TerrainType.FOREST);
         overlays.push(mask === 0
-            ? `${BATTLE_ASSET_ROOT}/wood_autotile/wood_center_01.png`
-            : `${BATTLE_ASSET_ROOT}/wood_autotile/wood_mask_${mask.toString().padStart(2, '0')}.png`);
+            ? `${ANCIENT_BATTLE_ASSET_ROOT}/wood_autotile/wood_center_01.png`
+            : `${ANCIENT_BATTLE_ASSET_ROOT}/wood_autotile/wood_mask_${mask.toString().padStart(2, '0')}.png`);
     } else if (terrain === TerrainType.MOUNTAIN) {
         const mask = getEdgeMask(x, y, map, TerrainType.MOUNTAIN);
         overlays.push(mask === 0
-            ? `${BATTLE_ASSET_ROOT}/hill_autotile/hill_center_01.png`
-            : `${BATTLE_ASSET_ROOT}/hill_autotile/hill_mask_${mask.toString().padStart(2, '0')}.png`);
+            ? `${ANCIENT_BATTLE_ASSET_ROOT}/hill_autotile/hill_center_01.png`
+            : `${ANCIENT_BATTLE_ASSET_ROOT}/hill_autotile/hill_mask_${mask.toString().padStart(2, '0')}.png`);
     } else {
         const propOverlay = getPropOverlay(terrain);
         if (propOverlay) overlays.push(propOverlay);
@@ -83,14 +93,56 @@ export const getTerrainRenderLayers = (
 const getPropOverlay = (terrain: TerrainType): string | null => {
     switch (terrain) {
         case TerrainType.GRASS:
-            return `${BATTLE_ASSET_ROOT}/tile_lea.png`;
+            return `${ANCIENT_BATTLE_ASSET_ROOT}/tile_lea.png`;
         case TerrainType.VILLAGE:
-            return `${BATTLE_ASSET_ROOT}/tile_thorp.png`;
+            return `${ANCIENT_BATTLE_ASSET_ROOT}/tile_thorp.png`;
         case TerrainType.CITY:
-            return `${BATTLE_ASSET_ROOT}/tile_city.png`;
+            return `${ANCIENT_BATTLE_ASSET_ROOT}/tile_city.png`;
         case TerrainType.CAMP:
-            return `${BATTLE_ASSET_ROOT}/tile_tent.png`;
+            return `${ANCIENT_BATTLE_ASSET_ROOT}/tile_tent.png`;
         default:
             return null;
     }
+};
+
+export interface MountainBlockInfo {
+    type: '2x2' | '1x2' | '1x1';
+    isOrigin: boolean;
+}
+
+export const computeMountainBlocks = (map: BattleMap): Map<string, MountainBlockInfo> => {
+    const blocks = new Map<string, MountainBlockInfo>();
+    
+    for (let y = 0; y < map.height; y++) {
+        for (let x = 0; x < map.width; x++) {
+            if (map.tiles[y]?.[x] === TerrainType.MOUNTAIN && !blocks.has(`${x},${y}`)) {
+                // Check 2x2
+                if (
+                    x + 1 < map.width && y + 1 < map.height &&
+                    map.tiles[y]?.[x+1] === TerrainType.MOUNTAIN && !blocks.has(`${x+1},${y}`) &&
+                    map.tiles[y+1]?.[x] === TerrainType.MOUNTAIN && !blocks.has(`${x},${y+1}`) &&
+                    map.tiles[y+1]?.[x+1] === TerrainType.MOUNTAIN && !blocks.has(`${x+1},${y+1}`)
+                ) {
+                    blocks.set(`${x},${y}`, { type: '2x2', isOrigin: true });
+                    blocks.set(`${x+1},${y}`, { type: '2x2', isOrigin: false });
+                    blocks.set(`${x},${y+1}`, { type: '2x2', isOrigin: false });
+                    blocks.set(`${x+1},${y+1}`, { type: '2x2', isOrigin: false });
+                } 
+                // Check 1x2 (horizontal)
+                else if (
+                    x + 1 < map.width &&
+                    map.tiles[y]?.[x+1] === TerrainType.MOUNTAIN && !blocks.has(`${x+1},${y}`)
+                ) {
+                    blocks.set(`${x},${y}`, { type: '1x2', isOrigin: true });
+                    blocks.set(`${x+1},${y}`, { type: '1x2', isOrigin: false });
+                }
+                // Fallback to 1x1
+                else {
+                    blocks.set(`${x},${y}`, { type: '1x1', isOrigin: true });
+                }
+            }
+        }
+    }
+    
+    return blocks;
 };
