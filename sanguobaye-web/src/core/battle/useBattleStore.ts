@@ -5,6 +5,13 @@ import { Weather, TerrainType, ArmsType, BattleUnitState } from './BattleTypes';
 import { useGameStore } from '../state/useGameStore';
 import { C_MAP, CITY_MAP_W, dCityMapId } from '../constants/cityMap';
 import { FgtIntMove, AtkModulus, DfModulus, LandResistance, MOV_NOT, SubduModu, TerrDfModu } from './BattleConstants';
+import { 
+    calculateUnitInitStats, 
+    calculatePhysicalDamage, 
+    calculateSkillDamage, 
+    calculateFoodConsumption, 
+    calculateExperience 
+} from './battleCalculations';
 
 export interface BattleStore extends BattleStateData {
     initBattle: (attackerCityId: number, defenderCityId: number, attackerPersonIds: number[], defenderPersonIds: number[]) => Promise<void>;
@@ -61,16 +68,16 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
         const dx = dIndex % CITY_MAP_W;
         const dy = Math.floor(dIndex / CITY_MAP_W);
         
-        // 方向：N=0, EN=1, E=2, ES=3, S=4, WS=5, W=6, WN=7
+        // 方向：N=0, NE=1, E=2, SE=3, S=4, SW=5, W=6, NW=7
         let way = 0;
-        if (ax === dx && ay > dy) way = 0; // N
-        else if (ax < dx && ay > dy) way = 1; // EN
-        else if (ax < dx && ay === dy) way = 2; // E
-        else if (ax < dx && ay < dy) way = 3; // ES
-        else if (ax === dx && ay < dy) way = 4; // S
-        else if (ax > dx && ay < dy) way = 5; // WS
-        else if (ax > dx && ay === dy) way = 6; // W
-        else if (ax > dx && ay > dy) way = 7; // WN
+        if (ax === dx && ay < dy) way = 0; // N
+        else if (ax > dx && ay < dy) way = 1; // NE
+        else if (ax > dx && ay === dy) way = 2; // E
+        else if (ax > dx && ay > dy) way = 3; // SE
+        else if (ax === dx && ay > dy) way = 4; // S
+        else if (ax < dx && ay > dy) way = 5; // SW
+        else if (ax < dx && ay === dy) way = 6; // W
+        else if (ax < dx && ay < dy) way = 7; // NW
 
         // 2. 加载战斗地图
         const mapId = dCityMapId[defenderCityId];
@@ -108,17 +115,17 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
         }
         
         // 4. 根据进攻方向确定攻方初始基准坐标 (sx, sy)
-        let sx = map.width - 5;
-        let sy = map.height - 5;
+        let sx = Math.floor(map.width / 2) - 2;
+        let sy = Math.floor(map.height / 2) - 2;
         switch (way) {
-            case 0: sx = Math.floor(map.width / 2) - 2; sy = 0; break; // N
-            case 1: sy = 2; break; // EN
-            case 2: sy = Math.floor(map.height / 2) - 2; break; // E
-            case 3: break; // ES (default sx, sy)
-            case 4: sx = Math.floor(map.width / 2) - 2; break; // S
-            case 5: sx = 2; break; // WS
-            case 6: sx = 2; sy = Math.floor(map.height / 2) - 2; break; // W
-            case 7: sx = 0; sy = 0; break; // WN
+            case 0: sy = 1; break; // N
+            case 1: sx = map.width - 3; sy = 1; break; // NE
+            case 2: sx = map.width - 3; break; // E
+            case 3: sx = map.width - 3; sy = map.height - 3; break; // SE
+            case 4: sy = map.height - 3; break; // S
+            case 5: sx = 1; sy = map.height - 3; break; // SW
+            case 6: sx = 1; break; // W
+            case 7: sx = 1; sy = 1; break; // NW
         }
         
         // 守方基准坐标在城池附近
@@ -143,6 +150,10 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
                     else if (direction === 4) offsets.push({ dx: col, dy: -row }); // 从南来，往上排
                     else if (direction === 6) offsets.push({ dx: row, dy: col }); // 从西来，往右排
                     else if (direction === 2) offsets.push({ dx: -row, dy: col }); // 从东来，往左排
+                    else if (direction === 1) offsets.push({ dx: -col, dy: row }); // NE
+                    else if (direction === 3) offsets.push({ dx: -col, dy: -row }); // SE
+                    else if (direction === 5) offsets.push({ dx: col, dy: -row }); // SW
+                    else if (direction === 7) offsets.push({ dx: col, dy: row }); // NW
                     else offsets.push({ dx: col, dy: row });
                 } else {
                     // 守方围绕城池
@@ -164,9 +175,12 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
             const uid = `A_${pid}`;
             const armsType = p.armsType as ArmsType || ArmsType.INFANTRY;
             
-            const maxHp = Math.floor((p.force * 0.8 + p.iq * 0.3 + p.level) * p.thew / 100);
-            const maxMp = Math.floor((p.iq * 0.8 + p.force / 2 + p.level) * p.thew / 100);
-            const moveRange = FgtIntMove[armsType] || 4;
+            const stats = calculateUnitInitStats({
+                force: p.force,
+                iq: p.iq,
+                level: p.level,
+                armsType
+            }, p.thew);
             
             units[uid] = {
                 id: uid,
@@ -175,20 +189,20 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
                 forceId: aCity.belong,
                 isAttacker: true,
                 armsType,
-                armsCount: p.arms || 1000,
-                maxArms: p.arms || 1000,
+                armsCount: Math.max(100, p.arms || 0),
+                maxArms: stats.maxArms,
                 force: p.force,
                 iq: p.iq,
                 level: p.level,
                 x: Math.max(0, Math.min(map.width - 1, sx + attackerOffsets[idx].dx)),
                 y: Math.max(0, Math.min(map.height - 1, sy + attackerOffsets[idx].dy)),
-                hp: maxHp,
-                maxHp: maxHp,
-                mp: maxMp,
-                maxMp: maxMp,
-                moveRange,
-                attack: Math.floor(p.force * (p.level + 10) * (AtkModulus[armsType] || 1)),
-                defense: Math.floor(p.iq * (p.level + 10) * (DfModulus[armsType] || 1)),
+                hp: stats.maxHp,
+                maxHp: stats.maxHp,
+                mp: stats.maxMp,
+                maxMp: stats.maxMp,
+                moveRange: stats.moveRange,
+                attack: stats.attack,
+                defense: stats.defense,
                 state: BattleUnitState.NORMAL,
                 hasActed: false,
                 color: gameStore.forces[aCity.belong]?.color || '#ff0000'
@@ -202,9 +216,12 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
             const uid = `D_${pid}`;
             const armsType = p.armsType as ArmsType || ArmsType.INFANTRY;
             
-            const maxHp = Math.floor((p.force * 0.8 + p.iq * 0.3 + p.level) * p.thew / 100);
-            const maxMp = Math.floor((p.iq * 0.8 + p.force / 2 + p.level) * p.thew / 100);
-            const moveRange = FgtIntMove[armsType] || 4;
+            const stats = calculateUnitInitStats({
+                force: p.force,
+                iq: p.iq,
+                level: p.level,
+                armsType
+            }, p.thew);
 
             units[uid] = {
                 id: uid,
@@ -213,20 +230,20 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
                 forceId: dCity.belong,
                 isAttacker: false,
                 armsType,
-                armsCount: p.arms || 1000,
-                maxArms: p.arms || 1000,
+                armsCount: Math.max(100, p.arms || 0),
+                maxArms: stats.maxArms,
                 force: p.force,
                 iq: p.iq,
                 level: p.level,
                 x: Math.max(0, Math.min(map.width - 1, cx + defenderOffsets[idx].dx)),
                 y: Math.max(0, Math.min(map.height - 1, cy + defenderOffsets[idx].dy)),
-                hp: maxHp,
-                maxHp: maxHp,
-                mp: maxMp,
-                maxMp: maxMp,
-                moveRange,
-                attack: Math.floor(p.force * (p.level + 10) * (AtkModulus[armsType] || 1)),
-                defense: Math.floor(p.iq * (p.level + 10) * (DfModulus[armsType] || 1)),
+                hp: stats.maxHp,
+                maxHp: stats.maxHp,
+                mp: stats.maxMp,
+                maxMp: stats.maxMp,
+                moveRange: stats.moveRange,
+                attack: stats.attack,
+                defense: stats.defense,
                 state: BattleUnitState.NORMAL,
                 hasActed: false,
                 color: gameStore.forces[dCity.belong]?.color || '#0000ff'
@@ -275,12 +292,15 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
                 s.day += 1;
                 s.weather = Math.floor(Math.random() * 5) as Weather; // 随机天气
                 
-                // 粮草消耗
+                // 粮草消耗 (原版逻辑：消耗 = sqrt(总兵力) / 3)
                 const attackerTotalArms = Object.values(s.units).filter(u => u.isAttacker && u.armsCount > 0).reduce((sum, u) => sum + u.armsCount, 0);
                 const defenderTotalArms = Object.values(s.units).filter(u => !u.isAttacker && u.armsCount > 0).reduce((sum, u) => sum + u.armsCount, 0);
                 
-                s.attackerFood -= Math.floor(attackerTotalArms / 10);
-                s.defenderFood -= Math.floor(defenderTotalArms / 10);
+                const attackerConsume = calculateFoodConsumption(attackerTotalArms);
+                const defenderConsume = calculateFoodConsumption(defenderTotalArms);
+
+                s.attackerFood = s.attackerFood > attackerConsume ? s.attackerFood - attackerConsume : 0;
+                s.defenderFood = s.defenderFood > defenderConsume ? s.defenderFood - defenderConsume : 0;
 
                 s.battleLogs.unshift(`【系统】进入第 ${s.day} 天。`);
             } else {
@@ -429,12 +449,19 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
 
         // 原版伤害公式
         const dTerrain = state.map.tiles[defender.y][defender.x];
-        const defVal = Math.max(1, defender.defense * (TerrDfModu[dTerrain] || 1.0));
-        let baseDmg = (attacker.attack / defVal) * (attacker.armsCount / 8);
-        baseDmg *= SubduModu[attacker.armsType]?.[defender.armsType] || 1.0;
-        baseDmg = Math.floor(baseDmg) + 10;
-        
-        const actualDmg = Math.min(defender.armsCount, baseDmg);
+        const actualDmg = calculatePhysicalDamage({
+            attacker: {
+                attack: attacker.attack,
+                armsCount: attacker.armsCount,
+                armsType: attacker.armsType
+            },
+            defender: {
+                defense: defender.defense,
+                armsCount: defender.armsCount,
+                armsType: defender.armsType
+            },
+            defenderTerrain: dTerrain
+        });
         
         defender.armsCount -= actualDmg;
         state.battleLogs.unshift(`【战斗】${attacker.name} 攻击了 ${defender.name}，造成了 ${actualDmg} 兵力损失！`);
@@ -446,13 +473,13 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
         }
         
         // 经验结算
-        const exp = Math.floor(actualDmg / 100) + 2;
-        let bonus = 0;
-        if (defender.armsCount === 0) {
-            const levelDiff = defender.level - attacker.level;
-            bonus = levelDiff > 0 ? 24 : (levelDiff === 0 ? 16 : 8);
-        }
-        attacker.expGained = (attacker.expGained || 0) + exp + bonus;
+        const expGained = calculateExperience({
+            actualDmg,
+            defenderArmsCountAfter: defender.armsCount,
+            attackerLevel: attacker.level,
+            defenderLevel: defender.level
+        });
+        attacker.expGained = (attacker.expGained || 0) + expGained;
 
         attacker.hasActed = true;
         state.activeUnitId = null;
@@ -485,12 +512,17 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
         attacker.mp -= mpCost;
 
         // 技能伤害基础公式 (智力影响)
-        let baseDmg = Math.floor((attacker.iq / Math.max(1, defender.iq)) * (attacker.armsCount / 5) + 20);
-        // 这里只是简单地使用技能ID作为一个占位标识，未来可以根据skillId获取不同的技能效果
-        if (skillId === 4) {
-            baseDmg = Math.floor(baseDmg * 1.5); // 火攻伤害加成
-        }
-        const actualDmg = Math.min(defender.armsCount, baseDmg);
+        const actualDmg = calculateSkillDamage({
+            attacker: {
+                iq: attacker.iq,
+                armsCount: attacker.armsCount
+            },
+            defender: {
+                iq: defender.iq,
+                armsCount: defender.armsCount
+            },
+            skillId
+        });
         
         defender.armsCount -= actualDmg;
         state.battleLogs.unshift(`【技能】${attacker.name} 对 ${defender.name} 使用了技能，造成了 ${actualDmg} 兵力损失！`);
@@ -502,13 +534,13 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
         }
 
         // 经验结算
-        const exp = Math.floor(actualDmg / 100) + 2;
-        let bonus = 0;
-        if (defender.armsCount === 0) {
-            const levelDiff = defender.level - attacker.level;
-            bonus = levelDiff > 0 ? 24 : (levelDiff === 0 ? 16 : 8);
-        }
-        attacker.expGained = (attacker.expGained || 0) + exp + bonus;
+        const expGained = calculateExperience({
+            actualDmg,
+            defenderArmsCountAfter: defender.armsCount,
+            attackerLevel: attacker.level,
+            defenderLevel: defender.level
+        });
+        attacker.expGained = (attacker.expGained || 0) + expGained;
 
         attacker.hasActed = true;
         state.activeUnitId = null;
