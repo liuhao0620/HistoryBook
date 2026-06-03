@@ -49,6 +49,8 @@ export const getTerrainRenderLayers = (
 
     if (terrain === TerrainType.RIVER) {
         // No overlays for RIVER, rely on tile_base_water.png in BattleScreen
+    } else if (terrain === TerrainType.PLAIN) {
+        // No overlays for PLAIN, rely on tile_base_plane.png in BattleScreen
     } else if (terrain === TerrainType.FOREST) {
         overlays.push({ src: `${BATTLE_ASSET_ROOT}/tile_wood.png` });
     } else if (terrain === TerrainType.MOUNTAIN) {
