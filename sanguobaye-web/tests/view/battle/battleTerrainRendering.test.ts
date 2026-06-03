@@ -7,7 +7,6 @@ import {
     PLAIN_MAP_BACKGROUND_IMAGE,
     WATER_MAP_BACKGROUND_IMAGE,
     getBattleSceneThemeAssets,
-    getEdgeMask,
     getTerrainRenderLayers,
     computeMountainBlocks,
 } from '../../../src/view/battle/battleTerrainRendering';
@@ -19,32 +18,24 @@ const makeMap = (tiles: TerrainType[][]): BattleMap => ({
 });
 
 describe('battle terrain rendering', () => {
-    it('returns water edge 00 without a per-tile water base when surrounded by water', () => {
-        const map = makeMap([
-            [TerrainType.RIVER, TerrainType.RIVER, TerrainType.RIVER],
-            [TerrainType.RIVER, TerrainType.RIVER, TerrainType.RIVER],
-            [TerrainType.RIVER, TerrainType.RIVER, TerrainType.RIVER],
-        ]);
-
-        const layers = getTerrainRenderLayers(1, 1, map);
-
-        expect(layers.baseImage).toBeNull();
-        expect(layers.fallbackColor).toBe('transparent');
-        expect(layers.overlays).toEqual(['/assets/images/battle/ancient/water_edges/water_edge_00.png']);
+    it('returns empty overlays for river without water edges', () => {
+        const map = makeMap([[TerrainType.RIVER]]);
+        const layers = getTerrainRenderLayers(0, 0, map);
+        expect(layers.overlays).toEqual([]);
     });
 
     it('exposes the plain texture for the map-level background', () => {
-        expect(PLAIN_MAP_BACKGROUND_IMAGE).toBe('/assets/images/battle/ancient/tile_base_parchment.png');
+        expect(PLAIN_MAP_BACKGROUND_IMAGE).toBe('/assets/images/battle/tile_base_plane.png');
     });
 
     it('exposes the water texture for map-aligned water tiles', () => {
-        expect(WATER_MAP_BACKGROUND_IMAGE).toBe('/assets/images/battle/ancient/tile_base_water.png');
+        expect(WATER_MAP_BACKGROUND_IMAGE).toBe('/assets/images/battle/tile_base_water.png');
     });
 
     it('exposes the ancient battle scene theme assets', () => {
-        expect(BATTLE_FRAME_IMAGE).toBe('/assets/images/battle/ancient/ui_frame.png');
-        expect(BATTLE_PANEL_BACKGROUND_IMAGE).toBe('/assets/images/battle/ancient/ui_panel.png');
-        expect(COMPASS_NORTH_IMAGE).toBe('/assets/images/battle/ancient/compass_north.png');
+        expect(BATTLE_FRAME_IMAGE).toBe('/assets/images/battle/ui_frame.png');
+        expect(BATTLE_PANEL_BACKGROUND_IMAGE).toBe('/assets/images/battle/ui_panel.png');
+        expect(COMPASS_NORTH_IMAGE).toBe('/assets/images/battle/compass_north.png');
         expect(getBattleSceneThemeAssets()).toEqual({
             frameImage: BATTLE_FRAME_IMAGE,
             panelBackgroundImage: BATTLE_PANEL_BACKGROUND_IMAGE,
@@ -60,77 +51,38 @@ describe('battle terrain rendering', () => {
         expect(layers.overlays).toEqual([]);
     });
 
-    it('returns water edge 09 when north and west neighbors are land', () => {
-        const map = makeMap([
-            [TerrainType.PLAIN, TerrainType.PLAIN, TerrainType.RIVER],
-            [TerrainType.PLAIN, TerrainType.RIVER, TerrainType.RIVER],
-            [TerrainType.RIVER, TerrainType.RIVER, TerrainType.RIVER],
-        ]);
-
-        expect(getEdgeMask(1, 1, map, TerrainType.RIVER)).toBe(9);
-        expect(getTerrainRenderLayers(1, 1, map).overlays).toEqual([
-            '/assets/images/battle/ancient/water_edges/water_edge_09.png',
-        ]);
+    it('returns tile_wood.png for forest', () => {
+        const map = makeMap([[TerrainType.FOREST]]);
+        const layers = getTerrainRenderLayers(0, 0, map);
+        expect(layers.overlays).toEqual([{ src: '/assets/images/battle/tile_wood.png' }]);
     });
 
-    it('treats out-of-bounds neighbors as the same terrain', () => {
-        const map = makeMap([[TerrainType.RIVER, TerrainType.RIVER]]);
-
-        expect(getEdgeMask(0, 0, map, TerrainType.RIVER)).toBe(0);
-    });
-
-    it('renders a forest center without edges when surrounded by forest', () => {
+    it('returns correct mountain origin and dimensions', () => {
         const map = makeMap([
-            [TerrainType.FOREST, TerrainType.FOREST, TerrainType.FOREST],
-            [TerrainType.FOREST, TerrainType.FOREST, TerrainType.FOREST],
-            [TerrainType.FOREST, TerrainType.FOREST, TerrainType.FOREST],
+            [TerrainType.MOUNTAIN, TerrainType.MOUNTAIN],
+            [TerrainType.MOUNTAIN, TerrainType.MOUNTAIN],
         ]);
-
-        expect(getTerrainRenderLayers(1, 1, map)).toMatchObject({
-            baseImage: null,
-            overlays: ['/assets/images/battle/ancient/wood_autotile/wood_center_01.png'],
-        });
-    });
-
-    it('renders a forest masked terrain variant for non-forest neighbors', () => {
-        const map = makeMap([
-            [TerrainType.PLAIN, TerrainType.FOREST, TerrainType.FOREST],
-            [TerrainType.PLAIN, TerrainType.FOREST, TerrainType.FOREST],
-            [TerrainType.FOREST, TerrainType.FOREST, TerrainType.FOREST],
-        ]);
-
-        expect(getEdgeMask(1, 1, map, TerrainType.FOREST)).toBe(8);
-        expect(getTerrainRenderLayers(1, 1, map).overlays).toEqual([
-            '/assets/images/battle/ancient/wood_autotile/wood_mask_08.png',
-        ]);
-    });
-
-    it('renders a mountain masked terrain variant for non-mountain neighbors', () => {
-        const map = makeMap([
-            [TerrainType.MOUNTAIN, TerrainType.PLAIN, TerrainType.MOUNTAIN],
-            [TerrainType.MOUNTAIN, TerrainType.MOUNTAIN, TerrainType.PLAIN],
-            [TerrainType.MOUNTAIN, TerrainType.MOUNTAIN, TerrainType.MOUNTAIN],
-        ]);
-
-        expect(getEdgeMask(1, 1, map, TerrainType.MOUNTAIN)).toBe(3);
-        expect(getTerrainRenderLayers(1, 1, map).overlays).toEqual([
-            '/assets/images/battle/ancient/hill_autotile/hill_mask_03.png',
-        ]);
+        const blocks = computeMountainBlocks(map);
+        const originLayers = getTerrainRenderLayers(0, 0, map, blocks);
+        expect(originLayers.overlays).toEqual([{ src: '/assets/images/battle/tile_hill_2_2.png', width: '200%', height: '200%' }]);
+        
+        const nonOriginLayers = getTerrainRenderLayers(1, 0, map, blocks);
+        expect(nonOriginLayers.overlays).toEqual([]);
     });
 
     it('renders land props over the plain base image', () => {
         const cases: Array<[TerrainType, string]> = [
-            [TerrainType.GRASS, '/assets/images/battle/ancient/tile_lea.png'],
-            [TerrainType.VILLAGE, '/assets/images/battle/ancient/tile_thorp.png'],
-            [TerrainType.CITY, '/assets/images/battle/ancient/tile_city.png'],
-            [TerrainType.CAMP, '/assets/images/battle/ancient/tile_tent.png'],
+            [TerrainType.GRASS, '/assets/images/battle/tile_lea.png'],
+            [TerrainType.VILLAGE, '/assets/images/battle/tile_thorp.png'],
+            [TerrainType.CITY, '/assets/images/battle/tile_city.png'],
+            [TerrainType.CAMP, '/assets/images/battle/tile_tent.png'],
         ];
 
         for (const [terrain, overlay] of cases) {
             const layers = getTerrainRenderLayers(0, 0, makeMap([[terrain]]));
 
             expect(layers.baseImage).toBeNull();
-            expect(layers.overlays).toEqual([overlay]);
+            expect(layers.overlays).toEqual([{ src: overlay }]);
         }
     });
 });
