@@ -3,9 +3,7 @@ import { useBattleStore } from '../../core/battle/useBattleStore';
 import { TerrainType, ArmsType } from '../../core/battle/BattleTypes';
 import { GameButton } from '../components/ui/GameButton';
 import {
-    BATTLE_FRAME_IMAGE,
     BATTLE_PANEL_BACKGROUND_IMAGE,
-    COMPASS_NORTH_IMAGE,
     PLAIN_MAP_BACKGROUND_IMAGE,
     WATER_MAP_BACKGROUND_IMAGE,
     getTerrainRenderLayers,
@@ -80,6 +78,17 @@ export const BattleScreen: React.FC = () => {
     // 如果没有选择武将，不显示技能面板，也不锁定地图交互
     const [showUnitInfo, setShowUnitInfo] = useState<string | null>(null);
     const [showTerrainInfo, setShowTerrainInfo] = useState<{x: number, y: number} | null>(null);
+
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [hoveredMenuItem, setHoveredMenuItem] = useState<number | null>(null);
+
+    const menuItems = [
+        { label: '回合结束', action: () => { store.endTurn(); setIsMenuOpen(false); } },
+        { label: '全军撤退', action: () => { setIsMenuOpen(false); } },
+        { label: '战斗动画', action: () => { setIsMenuOpen(false); } },
+        { label: '移动速度', action: () => { setIsMenuOpen(false); } },
+        { label: '敌军移动', action: () => { setIsMenuOpen(false); } },
+    ];
 
     const winStatus = store.checkWinCondition();
 
@@ -206,12 +215,8 @@ export const BattleScreen: React.FC = () => {
                     flexDirection: 'column',
                     position: 'relative',
                     overflow: 'hidden',
-                    backgroundColor: '#3a2411',
-                    backgroundImage: `url(${BATTLE_FRAME_IMAGE}), radial-gradient(circle at center, rgba(250, 213, 125, 0.08), rgba(0, 0, 0, 0.55) 76%)`,
-                    backgroundSize: '100% 100%, cover',
+                    backgroundColor: '#25180d',
                     color: '#e3bd70',
-                    boxShadow: '0 0 22px rgba(0,0,0,0.9), inset 0 0 24px rgba(255,192,80,0.18)',
-                    border: '1px solid #8f6426',
                 }}
             >
             <style>
@@ -246,7 +251,7 @@ export const BattleScreen: React.FC = () => {
             </style>
             
             {/* 顶部状态栏取消，改为底部信息栏 */}
-            <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative', padding: '18px' }}>
+            <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
                 {/* 战场地图区 */}
                 <div 
                     style={{
@@ -321,8 +326,11 @@ export const BattleScreen: React.FC = () => {
                                                 key={`overlay-${index}`}
                                                 style={{
                                                     position: 'absolute',
+                                                    left: overlay.left || '0',
+                                                    top: overlay.top || '0',
                                                     width: overlay.width || '100%',
                                                     height: overlay.height || '100%',
+                                                    transform: overlay.transform,
                                                     backgroundImage: `url(${overlay.src})`,
                                                     backgroundSize: '100% 100%',
                                                     backgroundPosition: 'center',
@@ -424,28 +432,11 @@ export const BattleScreen: React.FC = () => {
                 </div>
                 
                 {/* 底部信息面板 */}
-                <div
-                    data-testid="ancient-compass-north"
-                    aria-label="北"
-                    style={{
-                        position: 'absolute',
-                        top: '28px',
-                        right: '34px',
-                        width: '64px',
-                        height: '96px',
-                        backgroundImage: `url(${COMPASS_NORTH_IMAGE})`,
-                        backgroundSize: 'contain',
-                        backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'center',
-                        zIndex: 120,
-                        filter: 'drop-shadow(0 3px 3px rgba(0,0,0,0.65))',
-                    }}
-                />
 
                 <div data-testid="ancient-battle-panel" style={{
                     position: 'absolute',
-                    bottom: '18px',
-                    left: '18px',
+                    bottom: '0',
+                    left: '0',
                     width: `${PANEL_WIDTH}px`,
                     height: `${PANEL_HEIGHT}px`,
                     backgroundColor: '#2a1609',
@@ -491,12 +482,59 @@ export const BattleScreen: React.FC = () => {
                                 </button>
                             </>
                         )}
-                        <button 
-                            onClick={() => store.endTurn()} disabled={isAiThinking}
-                            style={{ padding: '0 18px', border: 'none', backgroundColor: 'transparent', cursor: isAiThinking ? 'not-allowed' : 'pointer', fontSize: '20px', fontWeight: 'bold', color: isAiThinking ? '#766244' : '#d6a85b', fontFamily: ancientFontFamily }}
-                        >
-                            结束回合
-                        </button>
+                        <div style={{ position: 'relative', display: 'flex', height: '100%' }}>
+                            <button 
+                                onClick={() => setIsMenuOpen(!isMenuOpen)} disabled={isAiThinking}
+                                style={{ padding: '0 18px', border: 'none', backgroundColor: 'transparent', cursor: isAiThinking ? 'not-allowed' : 'pointer', fontSize: '20px', fontWeight: 'bold', color: isAiThinking ? '#766244' : '#d6a85b', fontFamily: ancientFontFamily }}
+                            >
+                                菜单
+                            </button>
+                            {isMenuOpen && (
+                                <>
+                                    <div 
+                                        style={{ position: 'fixed', inset: 0, zIndex: 199 }} 
+                                        onClick={() => setIsMenuOpen(false)}
+                                    />
+                                    <div style={{
+                                        position: 'absolute',
+                                        bottom: '100%',
+                                        right: '0',
+                                        marginBottom: '4px',
+                                        backgroundColor: '#c0c0c0',
+                                        border: '2px solid #000',
+                                        color: '#000',
+                                        fontFamily: '"SimSun", "Songti SC", serif',
+                                        boxShadow: '4px 4px 0px rgba(0,0,0,0.4)',
+                                        zIndex: 200,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        width: '140px',
+                                        fontSize: '24px',
+                                        fontWeight: 'bold',
+                                        padding: '2px'
+                                    }}>
+                                        {menuItems.map((item, idx) => (
+                                            <div 
+                                                key={item.label}
+                                                onMouseEnter={() => setHoveredMenuItem(idx)}
+                                                onMouseLeave={() => setHoveredMenuItem(null)}
+                                                onClick={item.action}
+                                                style={{
+                                                    padding: '8px 12px',
+                                                    textAlign: 'center',
+                                                    cursor: 'pointer',
+                                                    backgroundColor: hoveredMenuItem === idx ? '#000' : 'transparent',
+                                                    color: hoveredMenuItem === idx ? '#fff' : '#000',
+                                                    userSelect: 'none'
+                                                }}
+                                            >
+                                                {item.label}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

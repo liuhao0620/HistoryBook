@@ -166,13 +166,14 @@ export const useGameStore = create<GameState>((set) => ({
             state.persons[p.id] = { 
                 ...p, 
                 thew: 100, 
+                arms: 100,
                 equip: [p.equip0, p.equip1].filter(e => e !== undefined && e > 0).map(e => e - 1),
                 acted: false 
             }; 
         });
         
         data.cities.forEach((c: any) => { 
-            state.cities[c.id] = { ...c, peopleDevotion: c.peopleDevotion !== undefined ? c.peopleDevotion : (c.devotion || 50) }; 
+            state.cities[c.id] = { ...c, state: 0, peopleDevotion: c.peopleDevotion !== undefined ? c.peopleDevotion : (c.devotion || 50) }; 
             
             const pQueue: number[] = [];
             for (let i = 0; i < c.persons; i++) {
@@ -255,8 +256,23 @@ export const useGameStore = create<GameState>((set) => ({
         });
 
         state.playerForceId = forceId;
-        state.selectedCityId = data.cities[0].id;
+
+        // 根据原版逻辑，敌方城池增加 1000 粮食，敌方将领初始化 800 兵力
+        Object.values(state.cities).forEach(city => {
+            if (city.belong !== forceId && city.belong > 0 && city.belong !== 255) {
+                city.food += 1000;
+                const personsInCity = Object.values(state.persons).filter(p => p.city === city.id && p.belong === city.belong);
+                personsInCity.forEach(p => {
+                    p.arms = 800;
+                });
+            }
+        });
+
+        const playerFirstCity = Object.values(state.cities).find(c => c.belong === forceId);
+        state.selectedCityId = playerFirstCity ? playerFirstCity.id : data.cities[0].id;
         state.delayedTasks = [];
+        state.orderQueue = [];
+        state.reportQueue = [];
         state.logs = [`【系统】载入剧本：${data.name}，您选择了势力君主 ${state.persons[state.forces[forceId]?.kingId]?.name || forceId}`];
         state.currentScreen = 'GAME';
     })),

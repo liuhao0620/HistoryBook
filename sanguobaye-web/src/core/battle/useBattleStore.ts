@@ -4,7 +4,7 @@ import type { BattleStateData, BattleUnit, BattleMap } from './BattleTypes';
 import { Weather, TerrainType, ArmsType, BattleUnitState } from './BattleTypes';
 import { useGameStore } from '../state/useGameStore';
 import { C_MAP, CITY_MAP_W, dCityMapId } from '../constants/cityMap';
-import { FgtIntMove, AtkModulus, DfModulus, LandResistance, MOV_NOT, SubduModu, TerrDfModu } from './BattleConstants';
+import { LandResistance, MOV_NOT } from './BattleConstants';
 import { 
     calculateUnitInitStats, 
     calculatePhysicalDamage, 
@@ -115,56 +115,63 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
         }
         
         // 4. 根据进攻方向确定攻方初始基准坐标 (sx, sy)
-        let sx = Math.floor(map.width / 2) - 2;
-        let sy = Math.floor(map.height / 2) - 2;
+        let sx = map.width - 5;
+        let sy = map.height - 5;
         switch (way) {
-            case 0: sy = 1; break; // N
-            case 1: sx = map.width - 3; sy = 1; break; // NE
-            case 2: sx = map.width - 3; break; // E
-            case 3: sx = map.width - 3; sy = map.height - 3; break; // SE
-            case 4: sy = map.height - 3; break; // S
-            case 5: sx = 1; sy = map.height - 3; break; // SW
-            case 6: sx = 1; break; // W
-            case 7: sx = 1; sy = 1; break; // NW
+            case 0: // N
+                sx = Math.floor(map.width / 2) - 2;
+                sy = 0;
+                break;
+            case 1: // NE
+                sy = 2;
+                break;
+            case 2: // E
+                sy = Math.floor(map.height / 2) - 2;
+                break;
+            case 3: // SE
+                break;
+            case 4: // S
+                sx = Math.floor(map.width / 2) - 2;
+                break;
+            case 5: // SW
+                sx = 2;
+                break;
+            case 6: // W
+                sx = 2;
+                sy = Math.floor(map.height / 2) - 2;
+                break;
+            case 7: // NW
+                sx = 2;
+                sy = 2;
+                break;
         }
         
         // 守方基准坐标在城池附近
         cx = cx - 2;
         cy = cy - 2;
-        if (cx < 0) cx = 0;
-        if (cy < 0) cy = 0;
 
-        // 5. 将领坐标偏移表 (dFgtIntPos in sanguobaye_c)
-        // 共8个方向，每个方向20字节(10个武将，每人x,y)
-        // 简化起见，我们生成一个简单的排兵布阵
-        const getFormationOffsets = (isAttacker: boolean, direction: number) => {
-            const offsets = [];
-            // 一个简单的两排5列阵型
-            for (let i = 0; i < 10; i++) {
-                const row = Math.floor(i / 5);
-                const col = i % 5;
-                // 根据方向可以做旋转，这里简单处理
-                if (isAttacker) {
-                    // 攻方根据way稍微调整
-                    if (direction === 0) offsets.push({ dx: col, dy: row }); // 从北来，往下排
-                    else if (direction === 4) offsets.push({ dx: col, dy: -row }); // 从南来，往上排
-                    else if (direction === 6) offsets.push({ dx: row, dy: col }); // 从西来，往右排
-                    else if (direction === 2) offsets.push({ dx: -row, dy: col }); // 从东来，往左排
-                    else if (direction === 1) offsets.push({ dx: -col, dy: row }); // NE
-                    else if (direction === 3) offsets.push({ dx: -col, dy: -row }); // SE
-                    else if (direction === 5) offsets.push({ dx: col, dy: -row }); // SW
-                    else if (direction === 7) offsets.push({ dx: col, dy: row }); // NW
-                    else offsets.push({ dx: col, dy: row });
-                } else {
-                    // 守方围绕城池
-                    offsets.push({ dx: col, dy: row });
-                }
-            }
-            return offsets;
-        };
-
-        const attackerOffsets = getFormationOffsets(true, way);
-        const defenderOffsets = getFormationOffsets(false, way);
+// 5. 原版静态坐标偏移表 FGT_INT_POS (dFgtIntPos)
+// 共9个方向（前8个为攻方8个方向，第9个为守方阵型），每个方向20字节(10个武将，每人x,y)
+const FGT_INT_POS: number[][] = [
+    [2,2, 2,3, 1,2, 3,2, 2,1, 0,4, 4,4, 1,1, 3,1, 2,0], // 0: N
+    [2,2, 2,3, 1,2, 3,2, 2,1, 1,3, 0,1, 3,4, 3,1, 4,0], // 1: NE
+    [2,2, 2,3, 1,2, 3,2, 2,1, 0,0, 0,4, 3,1, 3,3, 4,2], // 2: E
+    [2,2, 2,3, 1,2, 3,2, 2,1, 1,1, 0,3, 3,0, 3,3, 4,4], // 3: SE
+    [2,2, 2,3, 1,2, 3,2, 2,1, 0,0, 4,0, 1,3, 3,3, 2,4], // 4: S
+    [2,2, 2,3, 1,2, 3,2, 2,1, 3,1, 1,0, 4,3, 1,3, 0,4], // 5: SW
+    [2,2, 2,3, 1,2, 3,2, 2,1, 4,0, 4,4, 1,1, 1,3, 0,2], // 6: W
+    [2,2, 2,3, 1,2, 3,2, 2,1, 3,3, 1,4, 4,1, 1,1, 0,0], // 7: NW
+    [2,2, 2,3, 1,2, 3,2, 2,1, 1,1, 3,3, 1,3, 3,1, 2,0]  // 8: Defender
+];
+        const attackerOffsets = [];
+        for (let i = 0; i < 10; i++) {
+            attackerOffsets.push({ dx: FGT_INT_POS[way][i * 2], dy: FGT_INT_POS[way][i * 2 + 1] });
+        }
+        
+        const defenderOffsets = [];
+        for (let i = 0; i < 10; i++) {
+            defenderOffsets.push({ dx: FGT_INT_POS[8][i * 2], dy: FGT_INT_POS[8][i * 2 + 1] });
+        }
 
         const units: Record<string, BattleUnit> = {};
         
@@ -189,7 +196,7 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
                 forceId: aCity.belong,
                 isAttacker: true,
                 armsType,
-                armsCount: Math.max(100, p.arms || 0),
+                armsCount: p.arms || 0,
                 maxArms: stats.maxArms,
                 force: p.force,
                 iq: p.iq,

@@ -1,9 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { TerrainType, type BattleMap } from '../../../src/core/battle/BattleTypes';
 import {
-    BATTLE_FRAME_IMAGE,
     BATTLE_PANEL_BACKGROUND_IMAGE,
-    COMPASS_NORTH_IMAGE,
     PLAIN_MAP_BACKGROUND_IMAGE,
     WATER_MAP_BACKGROUND_IMAGE,
     getBattleSceneThemeAssets,
@@ -24,6 +22,25 @@ describe('battle terrain rendering', () => {
         expect(layers.overlays).toEqual([]);
     });
 
+    it('returns water edges for river with land neighbors', () => {
+        const map = makeMap([
+            [TerrainType.PLAIN, TerrainType.PLAIN, TerrainType.PLAIN],
+            [TerrainType.PLAIN, TerrainType.RIVER, TerrainType.PLAIN],
+            [TerrainType.PLAIN, TerrainType.PLAIN, TerrainType.PLAIN],
+        ]);
+        const layers = getTerrainRenderLayers(1, 1, map);
+        expect(layers.overlays).toEqual([
+            { src: '/assets/images/battle/bank/bank_straight.png', top: '-46%', transform: 'rotate(90deg)' },
+            { src: '/assets/images/battle/bank/bank_straight.png', top: '46%', transform: 'rotate(-90deg)' },
+            { src: '/assets/images/battle/bank/bank_straight.png', left: '-46%', transform: 'rotate(0deg)' },
+            { src: '/assets/images/battle/bank/bank_straight.png', left: '46%', transform: 'rotate(180deg)' },
+            { src: '/assets/images/battle/bank/bank_inner_corner.png', top: '-15%', left: '-15%', transform: 'rotate(180deg)' },
+            { src: '/assets/images/battle/bank/bank_inner_corner.png', top: '-15%', left: '15%', transform: 'rotate(-90deg)' },
+            { src: '/assets/images/battle/bank/bank_inner_corner.png', top: '15%', left: '15%', transform: 'rotate(0deg)' },
+            { src: '/assets/images/battle/bank/bank_inner_corner.png', top: '15%', left: '-15%', transform: 'rotate(90deg)' },
+        ]);
+    });
+
     it('exposes the plain texture for the map-level background', () => {
         expect(PLAIN_MAP_BACKGROUND_IMAGE).toBe('/assets/images/battle/tile_base_plane.png');
     });
@@ -33,13 +50,9 @@ describe('battle terrain rendering', () => {
     });
 
     it('exposes the ancient battle scene theme assets', () => {
-        expect(BATTLE_FRAME_IMAGE).toBe('/assets/images/battle/ui_frame.png');
         expect(BATTLE_PANEL_BACKGROUND_IMAGE).toBe('/assets/images/battle/ui_panel.png');
-        expect(COMPASS_NORTH_IMAGE).toBe('/assets/images/battle/compass_north.png');
         expect(getBattleSceneThemeAssets()).toEqual({
-            frameImage: BATTLE_FRAME_IMAGE,
             panelBackgroundImage: BATTLE_PANEL_BACKGROUND_IMAGE,
-            compassNorthImage: COMPASS_NORTH_IMAGE,
         });
     });
 

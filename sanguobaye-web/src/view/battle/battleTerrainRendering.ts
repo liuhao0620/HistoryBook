@@ -4,14 +4,10 @@ const BATTLE_ASSET_ROOT = '/assets/images/battle';
 
 export const PLAIN_MAP_BACKGROUND_IMAGE = `${BATTLE_ASSET_ROOT}/tile_base_plane.png`;
 export const WATER_MAP_BACKGROUND_IMAGE = `${BATTLE_ASSET_ROOT}/tile_base_water.png`;
-export const BATTLE_FRAME_IMAGE = `${BATTLE_ASSET_ROOT}/ui_frame.png`;
 export const BATTLE_PANEL_BACKGROUND_IMAGE = `${BATTLE_ASSET_ROOT}/ui_panel.png`;
-export const COMPASS_NORTH_IMAGE = `${BATTLE_ASSET_ROOT}/compass_north.png`;
 
 export const getBattleSceneThemeAssets = () => ({
-    frameImage: BATTLE_FRAME_IMAGE,
     panelBackgroundImage: BATTLE_PANEL_BACKGROUND_IMAGE,
-    compassNorthImage: COMPASS_NORTH_IMAGE,
 });
 
 export const TERRAIN_FALLBACK_COLORS: Record<TerrainType, string> = {
@@ -29,6 +25,9 @@ export interface TerrainOverlay {
     src: string;
     width?: string;
     height?: string;
+    left?: string;
+    top?: string;
+    transform?: string;
 }
 
 export interface TerrainRenderLayers {
@@ -48,7 +47,116 @@ export const getTerrainRenderLayers = (
     const overlays: TerrainOverlay[] = [];
 
     if (terrain === TerrainType.RIVER) {
-        // No overlays for RIVER, rely on tile_base_water.png in BattleScreen
+        const isLand = (tileX: number, tileY: number) => {
+            const t = map.tiles[tileY]?.[tileX];
+            return t !== undefined && t !== TerrainType.RIVER;
+        };
+
+        const isLandN = isLand(x, y - 1);
+        const isLandS = isLand(x, y + 1);
+        const isLandW = isLand(x - 1, y);
+        const isLandE = isLand(x + 1, y);
+        
+        const isLandNW = isLand(x - 1, y - 1);
+        const isLandNE = isLand(x + 1, y - 1);
+        const isLandSW = isLand(x - 1, y + 1);
+        const isLandSE = isLand(x + 1, y + 1);
+
+        if (isLandN) {
+            overlays.push({ 
+                src: `${BATTLE_ASSET_ROOT}/bank/bank_straight.png`,
+                top: '-46%',
+                transform: 'rotate(90deg)'
+            });
+        }
+        if (isLandS) {
+            overlays.push({ 
+                src: `${BATTLE_ASSET_ROOT}/bank/bank_straight.png`,
+                top: '46%',
+                transform: 'rotate(-90deg)'
+            });
+        }
+        if (isLandW) {
+            overlays.push({ 
+                src: `${BATTLE_ASSET_ROOT}/bank/bank_straight.png`,
+                left: '-46%',
+                transform: 'rotate(0deg)'
+            });
+        }
+        if (isLandE) {
+            overlays.push({ 
+                src: `${BATTLE_ASSET_ROOT}/bank/bank_straight.png`,
+                left: '46%',
+                transform: 'rotate(180deg)'
+            });
+        }
+
+        // Inner corners (where water forms an outer corner, e.g. NW is land but N and W are water)
+        if (!isLandN && !isLandW && isLandNW) {
+            overlays.push({
+                src: `${BATTLE_ASSET_ROOT}/bank/bank_outer_corner.png`,
+                top: '-80%',
+                left: '-77%',
+                transform: 'rotate(0deg)'
+            });
+        }
+        if (!isLandN && !isLandE && isLandNE) {
+            overlays.push({
+                src: `${BATTLE_ASSET_ROOT}/bank/bank_outer_corner.png`,
+                top: '-77%',
+                left: '80%',
+                transform: 'rotate(90deg)'
+            });
+        }
+        if (!isLandS && !isLandE && isLandSE) {
+            overlays.push({
+                src: `${BATTLE_ASSET_ROOT}/bank/bank_outer_corner.png`,
+                top: '80%',
+                left: '77%',
+                transform: 'rotate(180deg)'
+            });
+        }
+        if (!isLandS && !isLandW && isLandSW) {
+            overlays.push({
+                src: `${BATTLE_ASSET_ROOT}/bank/bank_outer_corner.png`,
+                top: '77%',
+                left: '-80%',
+                transform: 'rotate(-90deg)'
+            });
+        }
+        // Inner corners (where water is surrounded by land on two adjacent sides)
+        if (isLandN && isLandW) {
+            overlays.push({
+                src: `${BATTLE_ASSET_ROOT}/bank/bank_inner_corner.png`,
+                top: '-15%',
+                left: '-15%',
+                transform: 'rotate(180deg)'
+            });
+        }
+        if (isLandN && isLandE) {
+            overlays.push({
+                src: `${BATTLE_ASSET_ROOT}/bank/bank_inner_corner.png`,
+                top: '-15%',
+                left: '15%',
+                transform: 'rotate(-90deg)'
+            });
+        }
+        if (isLandS && isLandE) {
+            overlays.push({
+                src: `${BATTLE_ASSET_ROOT}/bank/bank_inner_corner.png`,
+                top: '15%',
+                left: '15%',
+                transform: 'rotate(0deg)'
+            });
+        }
+        if (isLandS && isLandW) {
+            overlays.push({
+                src: `${BATTLE_ASSET_ROOT}/bank/bank_inner_corner.png`,
+                top: '15%',
+                left: '-15%',
+                transform: 'rotate(90deg)'
+            });
+        }
     } else if (terrain === TerrainType.PLAIN) {
         // No overlays for PLAIN, rely on tile_base_plane.png in BattleScreen
     } else if (terrain === TerrainType.FOREST) {
