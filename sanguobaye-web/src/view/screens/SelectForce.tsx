@@ -6,6 +6,8 @@ import { C_MAP, CITY_MAP_W, CITY_MAP_H, getCityCenterCoords } from '../../core/c
 export const SelectForce: React.FC = () => {
     const { selectedScenario, loadScenarioAndStart, setScreen } = useGameStore();
     const scale = useScale();
+    const resolution = useGameStore(state => state.resolution);
+    const scaleY = resolution.height / 1080;
     const [hoveredForce, setHoveredForce] = useState<number | null>(null);
     const [cityLinks, setCityLinks] = useState<any[]>([]);
 
@@ -78,16 +80,16 @@ export const SelectForce: React.FC = () => {
                 </div>
 
                 {/* 右侧：标题与地图区域 */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: `${40 * scale}px`, zIndex: 1 }}>
-                    <div style={{ fontSize: `${72 * scale}px`, marginBottom: `${40 * scale}px`, letterSpacing: `${16 * scale}px`, fontWeight: 'bold' }}>
+                <div style={{ flex: 1, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', boxSizing: 'border-box', zIndex: 1 }}>
+                    <div style={{ fontSize: `${72 * scale}px`, marginBottom: `${30 * scale}px`, letterSpacing: `${16 * scale}px`, fontWeight: 'bold', flexShrink: 0 }}>
                         势力形势图
                     </div>
 
                     {/* 右侧：地图渲染 */}
                     <div style={{ 
-                        width: `${1200 * scale}px`, height: `${800 * scale}px`, border: `${6 * scale}px solid #d6a85b`, 
+                        width: '100%', flex: 1, border: `${6 * scale}px solid #d6a85b`, 
                         backgroundColor: '#000',
-                        backgroundImage: 'url(/assets/images/bg_world_map.jpg)',
+                        backgroundImage: 'url(/assets/images/bg_world_map_new.png)',
                         backgroundSize: '100% 100%',
                         backgroundPosition: 'center',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative',
@@ -108,10 +110,8 @@ export const SelectForce: React.FC = () => {
                             
                                 <div style={{ 
                                     position: 'relative', 
-                                    width: `${1620 * scale}px`, 
-                                    height: `${1080 * scale}px`,
-                                    transform: `scale(${1200 / 1620})`,
-                                    transformOrigin: 'center center'
+                                    width: '100%', 
+                                    height: '100%',
                                 }}>
                             {/* SVG 层用于绘制连线 */}
                             <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 5 }}>
@@ -128,10 +128,10 @@ export const SelectForce: React.FC = () => {
                                         return (
                                             <line 
                                                 key={`${cityLink.cityId}-${link.targetId}-${idx}`}
-                                                x1={startCoords.x * scale} 
-                                                y1={startCoords.y * scale} 
-                                                x2={endCoords.x * scale} 
-                                                y2={endCoords.y * scale} 
+                                                x1={`${(startCoords.x / 1620) * 100}%`} 
+                                                y1={`${(startCoords.y / 1080) * 100}%`} 
+                                                x2={`${(endCoords.x / 1620) * 100}%`} 
+                                                y2={`${(endCoords.y / 1080) * 100}%`} 
                                                 stroke="#8d6e63" 
                                                 strokeWidth={4 * scale}
                                                 strokeDasharray={`${8 * scale},${8 * scale}`}
@@ -159,8 +159,8 @@ export const SelectForce: React.FC = () => {
                                          <div 
                                             style={{
                                                 position: 'absolute',
-                                                top: `${cityCoords.y * scale}px`, 
-                                                left: `${cityCoords.x * scale}px`,
+                                                top: `${(cityCoords.y / 1080) * 100}%`, 
+                                                left: `${(cityCoords.x / 1620) * 100}%`,
                                                 transform: 'translate(-50%, -50%)',
                                                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                                                 zIndex: isCurrentForceHovered ? 20 : 10
