@@ -17,3 +17,15 @@ export const C_MAP: number[] = [
 // Each city's corresponding map id (0-6)
 export const dCityMapId = [6,0,1,6,3,4,2,5,6,3,1,0,2,3,4,0,2,1,4,6,1,1,3,5,6,6,3,3,4,2,6,6,1,2,3,4,5,1];
 
+export const getCityCenterCoords = (cityId: number) => {
+    const mapIndex = C_MAP.indexOf(cityId + 1);
+    if (mapIndex === -1) return null;
+    
+    const x = mapIndex % CITY_MAP_W;
+    const y = Math.floor(mapIndex / CITY_MAP_W);
+    return {
+        x: x * 135 + 105,
+        y: y * 120 - 15
+    };
+};
+

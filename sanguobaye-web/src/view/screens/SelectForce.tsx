@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore } from '../../core/state/useGameStore';
 import { useScale } from '../../core/hooks/useScale';
-import { C_MAP, CITY_MAP_W, CITY_MAP_H } from '../../core/constants/cityMap';
+import { C_MAP, CITY_MAP_W, CITY_MAP_H, getCityCenterCoords } from '../../core/constants/cityMap';
 
 export const SelectForce: React.FC = () => {
     const { selectedScenario, loadScenarioAndStart, setScreen } = useGameStore();
@@ -108,35 +108,30 @@ export const SelectForce: React.FC = () => {
                             
                                 <div style={{ 
                                     position: 'relative', 
-                                    width: `${CITY_MAP_W * 75 * scale}px`, 
-                                    height: `${CITY_MAP_H * 75 * scale}px`,
-                                    transform: 'scale(1)', // 因为格子变大了，所以不需要缩小
-                                    transformOrigin: 'center center',
-                                    marginTop: `${50 * scale}px` // 整体往下挪一格使之在形势图中居中
+                                    width: `${1620 * scale}px`, 
+                                    height: `${1080 * scale}px`,
+                                    transform: `scale(${1200 / 1620})`,
+                                    transformOrigin: 'center center'
                                 }}>
                             {/* SVG 层用于绘制连线 */}
                             <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 5 }}>
                                 {cityLinks.map((cityLink) => {
-                                    const mapIndex = C_MAP.indexOf(cityLink.cityId + 1);
-                                    if (mapIndex === -1) return null;
-                                    const startX = ((mapIndex % CITY_MAP_W) * 75 + 37.5) * scale;
-                                    const startY = (Math.floor(mapIndex / CITY_MAP_W) * 75 + 37.5) * scale;
+                                    const startCoords = getCityCenterCoords(cityLink.cityId);
+                                    if (!startCoords) return null;
 
                                     return cityLink.links.map((link: any, idx: number) => {
                                         if (cityLink.cityId >= link.targetId) return null;
                                         
-                                        const targetIndex = C_MAP.indexOf(link.targetId + 1);
-                                        if (targetIndex === -1) return null;
-                                        const endX = ((targetIndex % CITY_MAP_W) * 75 + 37.5) * scale;
-                                        const endY = (Math.floor(targetIndex / CITY_MAP_W) * 75 + 37.5) * scale;
+                                        const endCoords = getCityCenterCoords(link.targetId);
+                                        if (!endCoords) return null;
 
                                         return (
                                             <line 
                                                 key={`${cityLink.cityId}-${link.targetId}-${idx}`}
-                                                x1={startX} 
-                                                y1={startY} 
-                                                x2={endX} 
-                                                y2={endY} 
+                                                x1={startCoords.x * scale} 
+                                                y1={startCoords.y * scale} 
+                                                x2={endCoords.x * scale} 
+                                                y2={endCoords.y * scale} 
                                                 stroke="#8d6e63" 
                                                 strokeWidth={4 * scale}
                                                 strokeDasharray={`${8 * scale},${8 * scale}`}
@@ -151,8 +146,8 @@ export const SelectForce: React.FC = () => {
                                 const city = selectedScenario.cities[cityIndex - 1];
                                 if (!city) return null;
 
-                                const x = index % CITY_MAP_W;
-                                const y = Math.floor(index / CITY_MAP_W);
+                                const cityCoords = getCityCenterCoords(city.id);
+                                if (!cityCoords) return null;
                                  
                                 // 查找该势力信息，为了获取颜色
                                 const force = selectedScenario.forces ? selectedScenario.forces.find((f: any) => f.id === city.belong) : { id: city.belong, kingId: city.belong - 1, color: '#555' };
@@ -164,10 +159,9 @@ export const SelectForce: React.FC = () => {
                                          <div 
                                             style={{
                                                 position: 'absolute',
-                                                top: `${y * 75 * scale}px`, 
-                                                left: `${x * 75 * scale}px`,
-                                                width: `${75 * scale}px`,
-                                                height: `${75 * scale}px`,
+                                                top: `${cityCoords.y * scale}px`, 
+                                                left: `${cityCoords.x * scale}px`,
+                                                transform: 'translate(-50%, -50%)',
                                                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                                                 zIndex: isCurrentForceHovered ? 20 : 10
                                             }}>

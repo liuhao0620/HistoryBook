@@ -9,7 +9,7 @@ const bounceKeyframes = `
 }
 `;
 import { useBattleStore } from '../../core/battle/useBattleStore';
-import { C_MAP, CITY_MAP_W } from '../../core/constants/cityMap';
+import { C_MAP, CITY_MAP_W, getCityCenterCoords } from '../../core/constants/cityMap';
 import { 
     AssartCommand, AccractbusinessCommand, SearchCommand, 
     FatherCommand, InspectionCommand, SurrenderCommand, 
@@ -165,18 +165,6 @@ export const GameScreen: React.FC = () => {
     const [reportMsg, setReportMsg] = useState<{avatarId: number, text: string} | null>(null);
     const [aiBattleReports, setAiBattleReports] = useState<string[]>([]);
     const [saveSlots, setSaveSlots] = useState<any[]>([]);
-
-    const getCityCenterCoords = (cityId: number) => {
-        const mapIndex = C_MAP.indexOf(cityId + 1);
-        if (mapIndex === -1) return null;
-        
-        const x = mapIndex % CITY_MAP_W;
-        const y = Math.floor(mapIndex / CITY_MAP_W);
-        return {
-            x: (x * 120 + 135) * scale,
-            y: (y * 120 + 105) * scale
-        };
-    };
 
     const handleCommandClick = (cmd: string) => {
         setCommandCtx({ cmd, step: 'SELECT_EXECUTORS', executors: [], amounts: {} });
@@ -754,10 +742,10 @@ export const GameScreen: React.FC = () => {
                                 return (
                                     <line 
                                         key={`${cityLink.cityId}-${link.targetId}-${idx}`}
-                                        x1={startCoords.x} 
-                                        y1={startCoords.y} 
-                                        x2={endCoords.x} 
-                                        y2={endCoords.y} 
+                                        x1={startCoords.x * scale} 
+                                        y1={startCoords.y * scale} 
+                                        x2={endCoords.x * scale} 
+                                        y2={endCoords.y * scale} 
                                         stroke="#8d6e63" 
                                         strokeWidth={2 * scale}
                                         strokeDasharray={`${5 * scale},${5 * scale}`}
@@ -772,8 +760,9 @@ export const GameScreen: React.FC = () => {
                         const city = cities[cityIndex - 1];
                         if (!city) return null;
 
-                        const x = index % CITY_MAP_W;
-                        const y = Math.floor(index / CITY_MAP_W);
+                        const cityCoords = getCityCenterCoords(city.id);
+                        if (!cityCoords) return null;
+                        
                         const force = forces[city.belong];
 
                         // 计算城池规模和图片
@@ -803,8 +792,8 @@ export const GameScreen: React.FC = () => {
                                 }}
                                 style={{
                                     position: 'absolute',
-                                    top: `${(y * 120 + 105) * scale - citySize / 2}px`,
-                                    left: `${(x * 120 + 135) * scale}px`,
+                                    top: `${cityCoords.y * scale - citySize / 2}px`,
+                                    left: `${cityCoords.x * scale}px`,
                                     transform: 'translate(-50%, 0)',
                                     display: 'flex', flexDirection: 'column', alignItems: 'center',
                                     cursor: commandCtx.step === 'SELECT_TARGET_CITY' ? 'crosshair' : 'pointer',
