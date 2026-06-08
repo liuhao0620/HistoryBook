@@ -39,17 +39,6 @@ export const SelectForce: React.FC = () => {
                 {/* 增加半透明遮罩层 */}
                 <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 0 }}></div>
 
-                <button 
-                    onClick={() => setScreen('SELECT_SCENARIO')}
-                    style={{ 
-                        position: 'absolute', top: `${40 * scale}px`, right: `${40 * scale}px`,
-                        padding: `${16 * scale}px ${32 * scale}px`, backgroundColor: 'rgba(26, 17, 12, 0.8)', color: '#d6a85b', 
-                        border: `${4 * scale}px solid #d6a85b`, cursor: 'pointer', fontSize: `${32 * scale}px`, fontFamily: '"STKaiti", "KaiTi", serif',
-                        zIndex: 100
-                    }}>
-                    返回
-                </button>
-
                 {/* 左侧：势力列表 */}
                 <div className="custom-scrollbar" style={{ 
                     width: `${350 * scale}px`, border: `${6 * scale}px solid #d6a85b`, backgroundColor: 'rgba(26, 17, 12, 0.8)', 
@@ -81,8 +70,20 @@ export const SelectForce: React.FC = () => {
 
                 {/* 右侧：标题与地图区域 */}
                 <div style={{ flex: 1, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', boxSizing: 'border-box', zIndex: 1 }}>
-                    <div style={{ fontSize: `${72 * scale}px`, marginBottom: `${30 * scale}px`, letterSpacing: `${16 * scale}px`, fontWeight: 'bold', flexShrink: 0 }}>
-                        势力形势图
+                    <div style={{ width: '100%', position: 'relative', display: 'flex', justifyContent: 'center', marginBottom: `${30 * scale}px`, flexShrink: 0 }}>
+                        <div style={{ fontSize: `${72 * scale}px`, letterSpacing: `${16 * scale}px`, fontWeight: 'bold' }}>
+                            势力形势图
+                        </div>
+                        <button 
+                            onClick={() => setScreen('SELECT_SCENARIO')}
+                            style={{ 
+                                position: 'absolute', top: '50%', right: 0, transform: 'translateY(-50%)',
+                                padding: `${16 * scale}px ${32 * scale}px`, backgroundColor: 'rgba(26, 17, 12, 0.8)', color: '#d6a85b', 
+                                border: `${4 * scale}px solid #d6a85b`, cursor: 'pointer', fontSize: `${32 * scale}px`, fontFamily: '"STKaiti", "KaiTi", serif',
+                                zIndex: 100
+                            }}>
+                            返回
+                        </button>
                     </div>
 
                     {/* 右侧：地图渲染 */}
@@ -159,10 +160,10 @@ export const SelectForce: React.FC = () => {
                                          <div 
                                             style={{
                                                 position: 'absolute',
-                                                top: `${(cityCoords.y / 1080) * 100}%`, 
+                                                top: `calc(${(cityCoords.y / 1080) * 100}% - ${24 * scale}px)`, 
                                                 left: `${(cityCoords.x / 1620) * 100}%`,
-                                                transform: 'translate(-50%, -50%)',
-                                                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                                                transform: 'translate(-50%, 0)',
+                                                display: 'flex', flexDirection: 'column', alignItems: 'center',
                                                 zIndex: isCurrentForceHovered ? 20 : 10
                                             }}>
                                             {/* 城池实心色块 */}
@@ -173,22 +174,29 @@ export const SelectForce: React.FC = () => {
                                                 backgroundColor: 'transparent',
                                                 filter: isCurrentForceHovered ? `drop-shadow(0 0 ${15 * scale}px #FFF)` : (force && force.color ? `drop-shadow(0 0 ${8 * scale}px ${force.color})` : 'none'),
                                                 transition: 'all 0.2s',
-                                                transform: isCurrentForceHovered ? 'scale(1.5)' : 'scale(1)'
+                                                transform: isCurrentForceHovered ? 'scale(1.5)' : 'scale(1)',
+                                                position: 'relative', zIndex: 2
                                             }}></div>
                                             {/* 城市名称 */}
-                                            <span style={{ 
-                                                marginTop: `${4 * scale}px`, 
-                                                backgroundColor: city.belong !== 0 ? '#d6a85b' : '#2a1609', 
-                                                color: city.belong !== 0 ? '#2a1609' : '#d6a85b',
-                                                padding: `${2 * scale}px ${4 * scale}px`, 
-                                                fontSize: `${12 * scale}px`, 
-                                                fontWeight: city.belong !== 0 ? 'bold' : 'normal',
-                                                border: `${1 * scale}px solid #d6a85b`, 
-                                                whiteSpace: 'nowrap',
+                                            <div style={{
+                                                marginTop: `${4 * scale}px`,
+                                                transform: `scale(${scale})`,
+                                                transformOrigin: 'top center',
                                                 zIndex: 10
                                             }}>
-                                                {city.name}
-                                            </span>
+                                                <span style={{ 
+                                                    display: 'block',
+                                                    backgroundColor: city.belong !== 0 ? '#d6a85b' : '#2a1609', 
+                                                    color: city.belong !== 0 ? '#2a1609' : '#d6a85b',
+                                                    padding: `2px 4px`, 
+                                                    fontSize: `16px`, 
+                                                    fontWeight: city.belong !== 0 ? 'bold' : 'normal',
+                                                    border: `2px solid #d6a85b`, 
+                                                    whiteSpace: 'nowrap'
+                                                }}>
+                                                    {city.name}
+                                                </span>
+                                            </div>
                                         </div>
                                      </React.Fragment>
                                  );
