@@ -70,7 +70,7 @@ export const SelectForce: React.FC = () => {
 
                 {/* 右侧：标题与地图区域 */}
                 <div style={{ flex: 1, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', boxSizing: 'border-box', zIndex: 1 }}>
-                    <div style={{ width: '100%', position: 'relative', display: 'flex', justifyContent: 'center', marginBottom: `${20 * scale}px`, flexShrink: 0 }}>
+                    <div style={{ width: '100%', position: 'relative', display: 'flex', justifyContent: 'center', marginBottom: `${60 * scale}px`, flexShrink: 0 }}>
                         <div style={{ fontSize: `${72 * scale}px`, letterSpacing: `${16 * scale}px`, fontWeight: 'bold' }}>
                             势力形势图
                         </div>
@@ -88,8 +88,10 @@ export const SelectForce: React.FC = () => {
 
                     {/* 右侧：地图渲染 */}
                     <div style={{ 
-                        width: 'calc(100% - ' + `${80 * scale}px` + ')', flex: 1, border: `${6 * scale}px solid #d6a85b`, 
-                        marginBottom: `${40 * scale}px`,
+                        width: 'calc(100% - ' + `${160 * scale}px` + ')', 
+                        flex: 1,
+                        border: `${6 * scale}px solid #d6a85b`, 
+                        marginBottom: `${60 * scale}px`,
                         backgroundColor: '#000',
                         backgroundImage: 'url(/assets/images/bg_world_map_new.png)',
                         backgroundSize: '100% 100%',
