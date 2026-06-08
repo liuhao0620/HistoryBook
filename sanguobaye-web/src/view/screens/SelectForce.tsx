@@ -34,15 +34,17 @@ export const SelectForce: React.FC = () => {
                 backgroundPosition: 'center',
                 boxShadow: '0 0 20px rgba(0,0,0,0.8)',
                 display: 'flex', color: '#d6a85b', fontFamily: '"STKaiti", "KaiTi", serif',
-                position: 'relative', padding: `${40 * scale}px`, boxSizing: 'border-box', gap: `${40 * scale}px`
+                position: 'relative', padding: `${40 * scale}px`, boxSizing: 'border-box'
             }}>
                 {/* 增加半透明遮罩层 */}
                 <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 0 }}></div>
 
                 {/* 左侧：势力列表 */}
                 <div className="custom-scrollbar" style={{ 
-                    width: `${350 * scale}px`, border: `${6 * scale}px solid #d6a85b`, backgroundColor: 'rgba(26, 17, 12, 0.8)', 
-                    display: 'flex', flexDirection: 'column', overflowY: 'auto', padding: `${20 * scale}px 0`, boxSizing: 'border-box', zIndex: 1
+                    width: `${350 * scale}px`, height: `calc(100% - ${40 * scale}px)`,
+                    border: `${6 * scale}px solid #d6a85b`, backgroundColor: 'rgba(26, 17, 12, 0.8)', 
+                    display: 'flex', flexDirection: 'column', overflowY: 'auto', padding: `${20 * scale}px 0`, boxSizing: 'border-box', zIndex: 1,
+                    marginTop: `${40 * scale}px`
                 }}>
                     <div style={{ flex: '1 1 auto' }}>
                         {selectedScenario.forces.map((force: any) => {
@@ -69,7 +71,7 @@ export const SelectForce: React.FC = () => {
                 </div>
 
                 {/* 右侧：标题与地图区域 */}
-                <div style={{ flex: 1, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', boxSizing: 'border-box', zIndex: 1 }}>
+                <div style={{ flex: 1, height: `calc(100% - ${40 * scale}px)`, display: 'flex', flexDirection: 'column', alignItems: 'center', boxSizing: 'border-box', zIndex: 1, marginTop: `${40 * scale}px` }}>
                     <div style={{ width: '100%', position: 'relative', display: 'flex', justifyContent: 'center', marginBottom: `${60 * scale}px`, flexShrink: 0 }}>
                         <div style={{ fontSize: `${72 * scale}px`, letterSpacing: `${16 * scale}px`, fontWeight: 'bold' }}>
                             势力形势图
@@ -77,7 +79,7 @@ export const SelectForce: React.FC = () => {
                         <button 
                             onClick={() => setScreen('SELECT_SCENARIO')}
                             style={{ 
-                                position: 'absolute', top: '50%', right: `${40 * scale}px`, transform: 'translateY(-50%)',
+                                position: 'absolute', top: '50%', right: `${0 * scale}px`, transform: 'translateY(-50%)',
                                 padding: `${16 * scale}px ${32 * scale}px`, backgroundColor: 'rgba(26, 17, 12, 0.8)', color: '#d6a85b', 
                                 border: `${4 * scale}px solid #d6a85b`, cursor: 'pointer', fontSize: `${32 * scale}px`, fontFamily: '"STKaiti", "KaiTi", serif',
                                 zIndex: 100
@@ -88,10 +90,9 @@ export const SelectForce: React.FC = () => {
 
                     {/* 右侧：地图渲染 */}
                     <div style={{ 
-                        width: 'calc(100% - ' + `${160 * scale}px` + ')', 
+                        width: 'calc(100% - ' + `${80 * scale}px` + ')', 
                         flex: 1,
                         border: `${6 * scale}px solid #d6a85b`, 
-                        marginBottom: `${60 * scale}px`,
                         backgroundColor: '#000',
                         backgroundImage: 'url(/assets/images/bg_world_map_new.png)',
                         backgroundSize: '100% 100%',
