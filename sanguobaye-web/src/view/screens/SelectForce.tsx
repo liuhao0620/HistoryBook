@@ -70,14 +70,14 @@ export const SelectForce: React.FC = () => {
 
                 {/* 右侧：标题与地图区域 */}
                 <div style={{ flex: 1, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', boxSizing: 'border-box', zIndex: 1 }}>
-                    <div style={{ width: '100%', position: 'relative', display: 'flex', justifyContent: 'center', marginBottom: `${30 * scale}px`, flexShrink: 0 }}>
+                    <div style={{ width: '100%', position: 'relative', display: 'flex', justifyContent: 'center', marginBottom: `${20 * scale}px`, flexShrink: 0 }}>
                         <div style={{ fontSize: `${72 * scale}px`, letterSpacing: `${16 * scale}px`, fontWeight: 'bold' }}>
                             势力形势图
                         </div>
                         <button 
                             onClick={() => setScreen('SELECT_SCENARIO')}
                             style={{ 
-                                position: 'absolute', top: '50%', right: 0, transform: 'translateY(-50%)',
+                                position: 'absolute', top: '50%', right: `${40 * scale}px`, transform: 'translateY(-50%)',
                                 padding: `${16 * scale}px ${32 * scale}px`, backgroundColor: 'rgba(26, 17, 12, 0.8)', color: '#d6a85b', 
                                 border: `${4 * scale}px solid #d6a85b`, cursor: 'pointer', fontSize: `${32 * scale}px`, fontFamily: '"STKaiti", "KaiTi", serif',
                                 zIndex: 100
@@ -88,7 +88,8 @@ export const SelectForce: React.FC = () => {
 
                     {/* 右侧：地图渲染 */}
                     <div style={{ 
-                        width: '100%', flex: 1, border: `${6 * scale}px solid #d6a85b`, 
+                        width: 'calc(100% - ' + `${80 * scale}px` + ')', flex: 1, border: `${6 * scale}px solid #d6a85b`, 
+                        marginBottom: `${40 * scale}px`,
                         backgroundColor: '#000',
                         backgroundImage: 'url(/assets/images/bg_world_map_new.png)',
                         backgroundSize: '100% 100%',
