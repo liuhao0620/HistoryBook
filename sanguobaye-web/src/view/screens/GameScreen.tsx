@@ -543,7 +543,7 @@ export const GameScreen: React.FC = () => {
                             height: '100%',
                             backgroundColor: '#b0c4de',
                             backgroundImage: 'url(/assets/images/bg_world_map_new.png)',
-                            backgroundSize: 'cover',
+                            backgroundSize: '100% 100%',
                             backgroundPosition: 'center',
                             border: 'none',
                             boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)'

@@ -88,7 +88,7 @@ export const SelectForce: React.FC = () => {
                         width: `${1200 * scale}px`, height: `${800 * scale}px`, border: `${6 * scale}px solid #d6a85b`, 
                         backgroundColor: '#000',
                         backgroundImage: 'url(/assets/images/bg_world_map.jpg)',
-                        backgroundSize: 'cover',
+                        backgroundSize: '100% 100%',
                         backgroundPosition: 'center',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative',
                         overflow: 'hidden'
