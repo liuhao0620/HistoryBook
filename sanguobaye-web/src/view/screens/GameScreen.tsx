@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore, getSaveSlotsInfo } from '../../core/state/useGameStore';
+import { useScale } from '../../core/hooks/useScale';
 
 const bounceKeyframes = `
 @keyframes bounce {
@@ -32,6 +33,7 @@ type CommandStep = 'NONE' | 'SELECT_EXECUTORS' | 'SELECT_TARGET_CITY' | 'SELECT_
 export const GameScreen: React.FC = () => {
     const { year, month, selectedCityId, cities, persons, forces, playerForceId, nextTurn, setScreen, selectCity, delayedTasks, processDelayedTasks, updateCity, updatePerson, addReport, aiThinkingForceId, reportQueue, clearReports } = useGameStore();
     const initBattle = useBattleStore(state => state.initBattle);
+    const scale = useScale();
     const [cityLinks, setCityLinks] = useState<any[]>([]);
 
     const [currentReportIndex, setCurrentReportIndex] = useState<number>(0);
@@ -173,8 +175,8 @@ export const GameScreen: React.FC = () => {
         const x = mapIndex % CITY_MAP_W;
         const y = Math.floor(mapIndex / CITY_MAP_W);
         return {
-            x: x * 80 + 40,
-            y: y * 80 + 69
+            x: (x * 120 + 135) * scale,
+            y: (y * 120 + 105) * scale
         };
     };
 
@@ -355,73 +357,79 @@ export const GameScreen: React.FC = () => {
             }
 
             return (
-                <GameModal 
-                    isOpen={true} 
-                    onClose={() => setCommandCtx({ cmd: null, step: 'NONE', executors: [], amounts: {} })}
-                    title={`请选择【${commandCtx.cmd}】的${isTargetOnlyCmd ? '目标' : '执行武将'}`}
-                    style={{ width: '600px' }}
-                >
-                    <div style={{ display: 'flex', borderBottom: '2px solid var(--theme-brown)', padding: '5px 10px', fontSize: '20px', fontWeight: 'bold' }}>
-                        {isMulti && <div style={{ width: '30px' }}></div>}
-                        <div style={{ flex: 1.2 }}>姓名</div>
-                        <div style={{ flex: 1 }}>等级</div>
-                        <div style={{ flex: 1.5 }}>武力/智力</div>
-                        <div style={{ flex: 1.5 }}>体力/忠诚</div>
-                        <div style={{ flex: 1.5 }}>兵种/兵力</div>
-                        <div style={{ flex: 1.5 }}>装备道具</div>
-                        {commandCtx.cmd === '分配' && <div style={{ width: '100px' }}>分配兵力</div>}
+                <div style={{ position: 'absolute', inset: 0, zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div 
+                        style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)' }} 
+                        onClick={() => setCommandCtx({ cmd: null, step: 'NONE', executors: [], amounts: {} })}
+                    />
+                    <div className="ancient-menu-panel" style={{ width: `${800 * scale}px`, padding: `${24 * scale}px`, position: 'relative' }}>
+                        <div style={{ paddingBottom: `${16 * scale}px`, marginBottom: `${16 * scale}px`, borderBottom: `${2 * scale}px solid #b78031`, fontSize: `${28 * scale}px`, color: '#f1c66f', fontWeight: 'bold' }}>
+                            {`请选择【${commandCtx.cmd}】的${isTargetOnlyCmd ? '目标' : '执行武将'}`}
+                        </div>
+                        <div style={{ display: 'flex', borderBottom: `${2 * scale}px solid #b78031`, padding: `${8 * scale}px ${10 * scale}px`, fontSize: `${22 * scale}px`, fontWeight: 'bold', color: '#d6a85b' }}>
+                            {isMulti && <div style={{ width: `${30 * scale}px` }}></div>}
+                            <div style={{ flex: 1.2 }}>姓名</div>
+                            <div style={{ flex: 1 }}>等级</div>
+                            <div style={{ flex: 1.5 }}>武力/智力</div>
+                            <div style={{ flex: 1.5 }}>体力/忠诚</div>
+                            <div style={{ flex: 1.5 }}>兵种/兵力</div>
+                            <div style={{ flex: 1.5 }}>装备道具</div>
+                            {commandCtx.cmd === '分配' && <div style={{ width: `${100 * scale}px` }}>分配兵力</div>}
+                        </div>
+                        <div className="custom-scrollbar" style={{ maxHeight: `${400 * scale}px`, overflowY: 'auto' }}>
+                            {availablePersons.length === 0 ? (
+                                <div style={{ padding: `${32 * scale}px`, textAlign: 'center', fontSize: `${24 * scale}px`, color: '#766244' }}>无可选择的武将。</div>
+                            ) : availablePersons.map(p => {
+                                const isSelected = commandCtx.executors.includes(p.id);
+                                const armsTypeName = p.armsType === 0 ? '步兵' : p.armsType === 1 ? '弓兵' : p.armsType === 2 ? '骑兵' : p.armsType === 3 ? '水军' : '未知';
+                                const equipNames = p.equip && p.equip.length > 0 ? p.equip.map(eid => useGameStore.getState().goods[eid]?.name || '未知').join(', ') : '无';
+                                
+                                return (
+                                    <div 
+                                        key={p.id} 
+                                        onClick={() => handleGeneralClick(p.id)} 
+                                        style={{ 
+                                            display: 'flex', padding: `${12 * scale}px ${10 * scale}px`, fontSize: `${22 * scale}px`, 
+                                            cursor: 'pointer', borderBottom: `${1 * scale}px solid #766244`,
+                                            backgroundColor: isSelected ? 'rgba(174, 121, 43, 0.3)' : 'transparent',
+                                            alignItems: 'center',
+                                            color: isSelected ? '#f1c66f' : '#d6a85b',
+                                            transition: 'background-color 0.2s'
+                                        }}
+                                        onMouseEnter={(e) => { if(!isSelected) e.currentTarget.style.backgroundColor = 'rgba(174, 121, 43, 0.15)'; }}
+                                        onMouseLeave={(e) => { if(!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
+                                    >
+                                        {isMulti && <div style={{ width: `${30 * scale}px` }}><input type="checkbox" checked={isSelected} readOnly /></div>}
+                                        <div style={{ flex: 1.2, fontWeight: 'bold' }}>{p.name}</div>
+                                        <div style={{ flex: 1 }}>{p.level}</div>
+                                        <div style={{ flex: 1.5 }}>{p.force} / {p.iq}</div>
+                                        <div style={{ flex: 1.5 }}>{p.thew} / {p.devotion}</div>
+                                        <div style={{ flex: 1.5 }}>{armsTypeName} / {p.arms}</div>
+                                        <div style={{ flex: 1.5, fontSize: `${18 * scale}px`, color: '#b78031' }}>{equipNames}</div>
+                                        {commandCtx.cmd === '分配' && isSelected && (
+                                            <div style={{ width: `${100 * scale}px` }}>
+                                                <input 
+                                                    type="number" 
+                                                    value={commandCtx.amounts?.[p.id] ?? p.arms ?? 0} 
+                                                    onChange={(e) => setCommandCtx(prev => ({
+                                                        ...prev, 
+                                                        amounts: { ...prev.amounts, [p.id]: parseInt(e.target.value) || 0 }
+                                                    }))}
+                                                    onClick={e => e.stopPropagation()}
+                                                    style={{ width: `${80 * scale}px`, fontSize: `${20 * scale}px`, backgroundColor: '#2a1609', border: `${1 * scale}px solid #b78031`, padding: `${4 * scale}px ${8 * scale}px`, color: '#f1c66f', fontFamily: '"Kaiti", "STKaiti", "KaiTi", "Songti SC", serif' }}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                )
+                            })}
+                        </div>
+                        <div style={{ textAlign: 'center', paddingTop: `${24 * scale}px`, display: 'flex', justifyContent: 'center', gap: `${32 * scale}px` }}>
+                            {isMulti && <button className="ancient-menu-button" onClick={handleMultiSelectConfirm}>确认</button>}
+                            <button className="ancient-menu-button" style={{ color: '#766244' }} onClick={() => setCommandCtx({ cmd: null, step: 'NONE', executors: [], amounts: {} })}>取消</button>
+                        </div>
                     </div>
-                    <div className="custom-scrollbar" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                        {availablePersons.length === 0 ? (
-                            <div style={{ padding: '20px', textAlign: 'center', fontSize: '20px' }}>无可选择的武将。</div>
-                        ) : availablePersons.map(p => {
-                            const isSelected = commandCtx.executors.includes(p.id);
-                            const armsTypeName = p.armsType === 0 ? '步兵' : p.armsType === 1 ? '弓兵' : p.armsType === 2 ? '骑兵' : p.armsType === 3 ? '水军' : '未知';
-                            const equipNames = p.equip && p.equip.length > 0 ? p.equip.map(eid => useGameStore.getState().goods[eid]?.name || '未知').join(', ') : '无';
-                            
-                            return (
-                                <div 
-                                    key={p.id} 
-                                    onClick={() => handleGeneralClick(p.id)} 
-                                    style={{ 
-                                        display: 'flex', padding: '10px', fontSize: '20px', 
-                                        cursor: 'pointer', borderBottom: '1px solid var(--theme-border)',
-                                        backgroundColor: isSelected ? 'rgba(0,0,0,0.2)' : 'transparent',
-                                        alignItems: 'center'
-                                    }}
-                                    onMouseEnter={(e) => { if(!isSelected) e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.1)'; }}
-                                    onMouseLeave={(e) => { if(!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
-                                >
-                                    {isMulti && <div style={{ width: '30px' }}><input type="checkbox" checked={isSelected} readOnly /></div>}
-                                    <div style={{ flex: 1.2, fontWeight: 'bold' }}>{p.name}</div>
-                                    <div style={{ flex: 1 }}>{p.level}</div>
-                                    <div style={{ flex: 1.5 }}>{p.force} / {p.iq}</div>
-                                    <div style={{ flex: 1.5 }}>{p.thew} / {p.devotion}</div>
-                                    <div style={{ flex: 1.5 }}>{armsTypeName} / {p.arms}</div>
-                                    <div style={{ flex: 1.5, fontSize: '16px', color: 'var(--theme-gold)' }}>{equipNames}</div>
-                                    {commandCtx.cmd === '分配' && isSelected && (
-                                        <div style={{ width: '100px' }}>
-                                            <input 
-                                                type="number" 
-                                                value={commandCtx.amounts?.[p.id] ?? p.arms ?? 0} 
-                                                onChange={(e) => setCommandCtx(prev => ({
-                                                    ...prev, 
-                                                    amounts: { ...prev.amounts, [p.id]: parseInt(e.target.value) || 0 }
-                                                }))}
-                                                onClick={e => e.stopPropagation()}
-                                                style={{ width: '80px', fontSize: '18px', backgroundColor: '#fff', border: '1px solid var(--theme-brown)', padding: '2px 5px', color: '#000' }}
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            )
-                        })}
-                    </div>
-                    <div style={{ textAlign: 'center', padding: '15px 0 5px 0', display: 'flex', justifyContent: 'center', gap: '20px' }}>
-                        {isMulti && <GameButton onClick={handleMultiSelectConfirm}>确认</GameButton>}
-                        <GameButton variant="secondary" onClick={() => setCommandCtx({ cmd: null, step: 'NONE', executors: [], amounts: {} })}>取消</GameButton>
-                    </div>
-                </GameModal>
+                </div>
             );
         }
 
@@ -447,20 +455,20 @@ export const GameScreen: React.FC = () => {
                     isOpen={true} 
                     onClose={() => setCommandCtx({ cmd: null, step: 'NONE', executors: [], amounts: {} })}
                     title="请选择目标武将"
-                    style={{ width: '500px' }}
+                    style={{ width: `${500 * scale}px` }}
                 >
-                    <div style={{ display: 'flex', borderBottom: '2px solid var(--theme-brown)', padding: '5px 10px', fontSize: '20px', fontWeight: 'bold' }}>
+                    <div style={{ display: 'flex', borderBottom: '2px solid var(--theme-brown)', padding: `${5 * scale}px ${10 * scale}px`, fontSize: `${20 * scale}px`, fontWeight: 'bold' }}>
                         <div style={{ flex: 1.2 }}>姓名</div>
                         <div style={{ flex: 1 }}>势力</div>
                         <div style={{ flex: 1 }}>所在城市</div>
                         <div style={{ flex: 1.5 }}>武力/智力</div>
                         <div style={{ flex: 1 }}>忠诚</div>
                     </div>
-                    <div className="custom-scrollbar" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                    <div className="custom-scrollbar" style={{ maxHeight: `${300 * scale}px`, overflowY: 'auto' }}>
                         {availablePersons.length === 0 ? (
-                            <div style={{ padding: '20px', textAlign: 'center', fontSize: '20px' }}>无符合条件的武将。</div>
+                            <div style={{ padding: `${20 * scale}px`, textAlign: 'center', fontSize: `${20 * scale}px` }}>无符合条件的武将。</div>
                         ) : availablePersons.map(p => (
-                            <div key={p.id} onClick={() => handleTargetPersonSelected(p.id)} style={{ display: 'flex', padding: '10px', fontSize: '20px', cursor: 'pointer', borderBottom: '1px solid var(--theme-border)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.1)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                            <div key={p.id} onClick={() => handleTargetPersonSelected(p.id)} style={{ display: 'flex', padding: `${10 * scale}px`, fontSize: `${20 * scale}px`, cursor: 'pointer', borderBottom: '1px solid var(--theme-border)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.1)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                                 <div style={{ flex: 1.2 }}>{p.name}</div>
                                 <div style={{ flex: 1 }}>{p.belong ? persons[forces[p.belong]?.kingId]?.name || '君主' : '在野'}</div>
                                 <div style={{ flex: 1 }}>{p.city !== undefined ? cities[p.city]?.name : '未知'}</div>
@@ -469,7 +477,7 @@ export const GameScreen: React.FC = () => {
                             </div>
                         ))}
                     </div>
-                    <div style={{ textAlign: 'center', marginTop: '15px' }}>
+                    <div style={{ textAlign: 'center', marginTop: `${15 * scale}px` }}>
                         <GameButton variant="secondary" onClick={() => setCommandCtx({ cmd: null, step: 'NONE', executors: [], amounts: {} })}>取消</GameButton>
                     </div>
                 </GameModal>
@@ -482,21 +490,21 @@ export const GameScreen: React.FC = () => {
                     isOpen={true} 
                     onClose={() => setCommandCtx({ cmd: null, step: 'NONE', executors: [], amounts: {} })}
                     title="输入输送数量"
-                    style={{ width: '400px' }}
+                    style={{ width: `${400 * scale}px` }}
                 >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: `${15 * scale}px`, alignItems: 'center' }}>
                         <span>金钱 (最大 {currentCity?.money}):</span>
-                        <input type="number" min="0" max={currentCity?.money} value={commandCtx.amounts?.money || 0} onChange={e => setCommandCtx(prev => ({ ...prev, amounts: { ...prev.amounts, money: parseInt(e.target.value) || 0 } }))} style={{ width: '100px', fontSize: '20px', padding: '2px 5px' }} />
+                        <input type="number" min="0" max={currentCity?.money} value={commandCtx.amounts?.money || 0} onChange={e => setCommandCtx(prev => ({ ...prev, amounts: { ...prev.amounts, money: parseInt(e.target.value) || 0 } }))} style={{ width: `${100 * scale}px`, fontSize: `${20 * scale}px`, padding: `${2 * scale}px ${5 * scale}px` }} />
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: `${15 * scale}px`, alignItems: 'center' }}>
                         <span>粮食 (最大 {currentCity?.food}):</span>
-                        <input type="number" min="0" max={currentCity?.food} value={commandCtx.amounts?.food || 0} onChange={e => setCommandCtx(prev => ({ ...prev, amounts: { ...prev.amounts, food: parseInt(e.target.value) || 0 } }))} style={{ width: '100px', fontSize: '20px', padding: '2px 5px' }} />
+                        <input type="number" min="0" max={currentCity?.food} value={commandCtx.amounts?.food || 0} onChange={e => setCommandCtx(prev => ({ ...prev, amounts: { ...prev.amounts, food: parseInt(e.target.value) || 0 } }))} style={{ width: `${100 * scale}px`, fontSize: `${20 * scale}px`, padding: `${2 * scale}px ${5 * scale}px` }} />
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '25px', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: `${25 * scale}px`, alignItems: 'center' }}>
                         <span>兵力 (最大 {currentCity?.mothballArms}):</span>
-                        <input type="number" min="0" max={currentCity?.mothballArms} value={commandCtx.amounts?.arms || 0} onChange={e => setCommandCtx(prev => ({ ...prev, amounts: { ...prev.amounts, arms: parseInt(e.target.value) || 0 } }))} style={{ width: '100px', fontSize: '20px', padding: '2px 5px' }} />
+                        <input type="number" min="0" max={currentCity?.mothballArms} value={commandCtx.amounts?.arms || 0} onChange={e => setCommandCtx(prev => ({ ...prev, amounts: { ...prev.amounts, arms: parseInt(e.target.value) || 0 } }))} style={{ width: `${100 * scale}px`, fontSize: `${20 * scale}px`, padding: `${2 * scale}px ${5 * scale}px` }} />
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: `${20 * scale}px` }}>
                         <GameButton onClick={() => executeCommands(commandCtx.cmd!, commandCtx.executors, { targetCityId: commandCtx.targetCityId, amounts: commandCtx.amounts })}>确认输送</GameButton>
                         <GameButton variant="secondary" onClick={() => setCommandCtx({ cmd: null, step: 'NONE', executors: [], amounts: {} })}>取消</GameButton>
                     </div>
@@ -508,12 +516,12 @@ export const GameScreen: React.FC = () => {
     };
 
     return (
-        <div style={{ display: 'flex', height: '100vh', backgroundColor: '#2b1d14', color: '#cda654', fontFamily: '"STKaiti", "KaiTi", serif', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', height: '100%', width: '100%', backgroundColor: '#20150d', color: '#d6a85b', fontFamily: '"STKaiti", "KaiTi", serif', alignItems: 'center', justifyContent: 'center', userSelect: 'none' }}>
             <style>{bounceKeyframes}</style>
             
-            <div style={{ display: 'flex', width: '1180px', height: '720px', backgroundColor: '#000', boxShadow: '0 0 20px rgba(0,0,0,0.8)' }}>
+            <div style={{ display: 'flex', width: '100%', height: '100%', backgroundColor: '#25180d' }}>
                 
-                <div style={{ width: '960px', position: 'relative', borderRight: '4px solid #cda654', backgroundColor: '#3e2723', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ flex: 1, position: 'relative', borderRight: `${2 * scale}px solid #b78031`, backgroundColor: '#25180d', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 0 90px rgba(0,0,0,0.45)' }}>
                     
                     {aiThinkingForceId !== null && (
                         <div style={{
@@ -541,7 +549,7 @@ export const GameScreen: React.FC = () => {
                                     return;
                                 }
                                 setMenuState('MAIN');
-                                setMenuPosition({ x: CITY_MAP_W * 80 / 2, y: 150 });
+                                setMenuPosition({ x: CITY_MAP_W * 120 * scale / 2, y: 150 * scale });
                             }
                         }}
                         style={{ 
@@ -552,152 +560,187 @@ export const GameScreen: React.FC = () => {
                             backgroundImage: 'url(/assets/images/bg_world_map.jpg)',
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
-                            border: '4px solid #1a110c',
+                            border: '4px solid #2a1609',
                             boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)'
                         }}>
                         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.3)', pointerEvents: 'none', zIndex: 0 }}></div>
                         
-                        {menuState !== 'NONE' && menuPosition && (
-                            <GamePanel style={{ 
-                                position: 'absolute', 
-                                top: `${menuPosition.y}px`, 
-                                left: `${menuPosition.x}px`, 
-                                transform: 'translate(-50%, 0)',
-                                zIndex: 100, 
-                                minWidth: '160px',
-                                maxHeight: '400px',
-                                overflowY: 'auto',
-                                pointerEvents: 'auto',
-                                backgroundColor: 'rgba(43, 29, 20, 0.95)',
-                                backdropFilter: 'blur(4px)'
-                            }}>
-                                {menuState === 'MAIN' && (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '10px', fontSize: '24px' }}>
-                                            <span style={{ color: 'var(--theme-gold)', letterSpacing: '4px' }}>策略</span>
-                                            <span onClick={() => setMenuState('NONE')} style={{ cursor: 'pointer', color: 'var(--theme-text)' }}>[X]</span>
+                        {menuState !== 'NONE' && (
+                            <>
+                                <div 
+                                    style={{ position: 'absolute', inset: 0, zIndex: 99, backgroundColor: 'rgba(0,0,0,0.5)' }} 
+                                    onClick={() => setMenuState('NONE')}
+                                />
+                                <div className="ancient-menu-panel" style={{ 
+                                    position: 'absolute', 
+                                    top: '50%', 
+                                    left: '50%', 
+                                    transform: 'translate(-50%, -50%)',
+                                    zIndex: 100, 
+                                    minWidth: '280px',
+                                    maxHeight: '80vh',
+                                    overflowY: 'auto',
+                                    pointerEvents: 'auto',
+                                    padding: '10px 0',
+                                    display: 'flex',
+                                    flexDirection: 'column'
+                                }}>
+                                    {menuState === 'MAIN' && (
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <button className="ancient-menu-button" onClick={() => { nextTurn(); setMenuState('NONE'); }}>策略结束</button>
+                                            <button className="ancient-menu-button" onClick={() => { 
+                                                setSaveSlots(getSaveSlotsInfo());
+                                                setMenuState('SAVE'); 
+                                            }}>存储进度</button>
+                                            <button className="ancient-menu-button" style={{ borderBottom: 'none' }} onClick={() => setScreen('MAIN_MENU')}>结束游戏</button>
                                         </div>
-                                        <GameButton onClick={() => { nextTurn(); setMenuState('NONE'); }}>策略结束</GameButton>
-                                        <GameButton onClick={() => { 
-                                            setSaveSlots(getSaveSlotsInfo());
-                                            setMenuState('SAVE'); 
-                                        }}>存储进度</GameButton>
-                                        <GameButton onClick={() => setScreen('MAIN_MENU')}>结束游戏</GameButton>
-                                    </div>
-                                )}
+                                    )}
 
-                                {menuState === 'SAVE' && (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '260px' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '10px', fontSize: '24px' }}>
-                                            <span style={{ color: 'var(--theme-gold)', letterSpacing: '4px' }}>选择进度</span>
-                                            <span onClick={() => setMenuState('MAIN')} style={{ cursor: 'pointer', color: 'var(--theme-text)' }}>[X]</span>
+                                    {menuState === 'SAVE' && (
+                                        <div style={{ display: 'flex', flexDirection: 'column', width: '360px' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'center', borderBottom: '2px solid #b78031', padding: '0 24px 16px', fontSize: '32px', fontWeight: 'bold' }}>
+                                                <span style={{ color: '#f1c66f', letterSpacing: '8px' }}>选择进度</span>
+                                            </div>
+                                            {saveSlots.map((s, idx) => (
+                                                <button 
+                                                    key={s.slot} 
+                                                    className="ancient-menu-button"
+                                                    onClick={() => {
+                                                        useGameStore.getState().saveGame(s.slot);
+                                                        setMenuState('NONE');
+                                                    }}
+                                                    style={{ 
+                                                        padding: '16px 24px', 
+                                                        display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: '1.4',
+                                                        borderBottom: idx === saveSlots.length - 1 ? 'none' : '1px solid rgba(183, 128, 49, 0.3)'
+                                                    }}
+                                                >
+                                                    <span>进度 {s.slot}</span>
+                                                    <span style={{ fontSize: '18px', opacity: 0.8, marginTop: '8px', color: '#d6a85b', textShadow: 'none' }}>
+                                                        {s.empty ? '空' : `${s.year}年${s.month}月 ${s.forceName}`}
+                                                    </span>
+                                                </button>
+                                            ))}
                                         </div>
-                                        {saveSlots.map(s => (
-                                            <GameButton 
-                                                key={s.slot} 
-                                                onClick={() => {
-                                                    useGameStore.getState().saveGame(s.slot);
-                                                    setMenuState('NONE');
-                                                }}
-                                                style={{ padding: '10px', fontSize: '18px', display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: '1.2' }}
-                                            >
-                                                <span>进度 {s.slot}</span>
-                                                <span style={{ fontSize: '14px', opacity: 0.8, marginTop: '5px' }}>
-                                                    {s.empty ? '空' : `${s.year}年${s.month}月 ${s.forceName}`}
-                                                </span>
-                                            </GameButton>
-                                        ))}
-                                    </div>
-                                )}
+                                    )}
 
-                                {menuState === 'CITY' && (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '10px', fontSize: '24px' }}>
-                                            <span style={{ color: 'var(--theme-gold)', letterSpacing: '4px' }}>城市指令</span>
-                                            <span onClick={() => setMenuState('NONE')} style={{ cursor: 'pointer', color: 'var(--theme-text)' }}>[X]</span>
+                                    {menuState === 'CITY' && currentCity && (
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'center', borderBottom: '2px solid #b78031', padding: '0 24px 16px', fontSize: '32px', fontWeight: 'bold' }}>
+                                                <span style={{ color: '#f1c66f', letterSpacing: '8px' }}>{currentCity.name}</span>
+                                            </div>
+                                            <button className="ancient-menu-button" onClick={() => setMenuState('DOMESTIC')}>内政</button>
+                                            <button className="ancient-menu-button" onClick={() => setMenuState('DIPLOMACY')}>外交</button>
+                                            <button className="ancient-menu-button" onClick={() => setMenuState('MILITARY')}>军备</button>
+                                            <button className="ancient-menu-button" style={{ borderBottom: 'none' }} onClick={() => setMenuState('STATUS')}>状况</button>
                                         </div>
-                                        <GameButton onClick={() => setMenuState('DOMESTIC')}>内政</GameButton>
-                                        <GameButton onClick={() => setMenuState('DIPLOMACY')}>外交</GameButton>
-                                        <GameButton onClick={() => setMenuState('MILITARY')}>军备</GameButton>
-                                        <GameButton onClick={() => setMenuState('STATUS')}>状况</GameButton>
-                                    </div>
-                                )}
+                                    )}
 
-                                {menuState === 'DOMESTIC' && (
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5px' }}>
-                                        <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '5px', fontSize: '24px' }}>
-                                            <span style={{ color: 'var(--theme-gold)', letterSpacing: '4px' }}>内政</span>
-                                            <span onClick={() => setMenuState('CITY')} style={{ cursor: 'pointer', color: 'var(--theme-text)' }}>[X]</span>
+                                    {menuState === 'DOMESTIC' && (
+                                        <div style={{ display: 'flex', flexDirection: 'column', width: '380px' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'center', borderBottom: '2px solid #b78031', padding: '0 24px 16px', fontSize: '32px', fontWeight: 'bold' }}>
+                                                <span style={{ color: '#f1c66f', letterSpacing: '8px' }}>内政</span>
+                                            </div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1px 1fr' }}>
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('开垦')}>开垦</button>
+                                                <div style={{ backgroundColor: 'rgba(183, 128, 49, 0.3)' }}></div>
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('招商')}>招商</button>
+                                                
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('搜寻')}>搜寻</button>
+                                                <div style={{ backgroundColor: 'rgba(183, 128, 49, 0.3)' }}></div>
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('治理')}>治理</button>
+                                                
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('出巡')}>出巡</button>
+                                                <div style={{ backgroundColor: 'rgba(183, 128, 49, 0.3)' }}></div>
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('招降')}>招降</button>
+                                                
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('处斩')}>处斩</button>
+                                                <div style={{ backgroundColor: 'rgba(183, 128, 49, 0.3)' }}></div>
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('流放')}>流放</button>
+                                                
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('赏赐')}>赏赐</button>
+                                                <div style={{ backgroundColor: 'rgba(183, 128, 49, 0.3)' }}></div>
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('没收')}>没收</button>
+                                                
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('交易')}>交易</button>
+                                                <div style={{ backgroundColor: 'rgba(183, 128, 49, 0.3)' }}></div>
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('宴请')}>宴请</button>
+                                                
+                                                <button className="ancient-menu-button" style={{ borderBottom: 'none' }} onClick={() => handleCommandClick('输送')}>输送</button>
+                                                <div style={{ backgroundColor: 'rgba(183, 128, 49, 0.3)' }}></div>
+                                                <button className="ancient-menu-button" style={{ borderBottom: 'none' }} onClick={() => handleCommandClick('移动')}>移动</button>
+                                            </div>
                                         </div>
-                                        <GameButton onClick={() => handleCommandClick('开垦')}>开垦</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('招商')}>招商</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('搜寻')}>搜寻</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('治理')}>治理</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('出巡')}>出巡</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('招降')}>招降</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('处斩')}>处斩</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('流放')}>流放</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('赏赐')}>赏赐</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('没收')}>没收</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('交易')}>交易</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('宴请')}>宴请</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('输送')}>输送</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('移动')}>移动</GameButton>
-                                    </div>
-                                )}
+                                    )}
 
-                                {menuState === 'DIPLOMACY' && (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '5px', fontSize: '24px' }}>
-                                            <span style={{ color: 'var(--theme-gold)', letterSpacing: '4px' }}>外交</span>
-                                            <span onClick={() => setMenuState('CITY')} style={{ cursor: 'pointer', color: 'var(--theme-text)' }}>[X]</span>
+                                    {menuState === 'DIPLOMACY' && (
+                                        <div style={{ display: 'flex', flexDirection: 'column', width: '380px' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'center', borderBottom: '2px solid #b78031', padding: '0 24px 16px', fontSize: '32px', fontWeight: 'bold' }}>
+                                                <span style={{ color: '#f1c66f', letterSpacing: '8px' }}>外交</span>
+                                            </div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1px 1fr' }}>
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('结盟')}>结盟</button>
+                                                <div style={{ backgroundColor: 'rgba(183, 128, 49, 0.3)' }}></div>
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('离间')}>离间</button>
+                                                
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('招揽')}>招揽</button>
+                                                <div style={{ backgroundColor: 'rgba(183, 128, 49, 0.3)' }}></div>
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('策反')}>策反</button>
+                                                
+                                                <button className="ancient-menu-button" style={{ borderBottom: 'none' }} onClick={() => handleCommandClick('反间')}>反间</button>
+                                                <div style={{ backgroundColor: 'rgba(183, 128, 49, 0.3)' }}></div>
+                                                <button className="ancient-menu-button" style={{ borderBottom: 'none' }} onClick={() => handleCommandClick('劝降')}>劝降</button>
+                                            </div>
                                         </div>
-                                        <GameButton onClick={() => handleCommandClick('离间')}>离间</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('招揽')}>招揽</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('策反')}>策反</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('反间')}>反间</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('劝降')}>劝降</GameButton>
-                                    </div>
-                                )}
+                                    )}
 
-                                {menuState === 'MILITARY' && (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '5px', fontSize: '24px' }}>
-                                            <span style={{ color: 'var(--theme-gold)', letterSpacing: '4px' }}>军备</span>
-                                            <span onClick={() => setMenuState('CITY')} style={{ cursor: 'pointer', color: 'var(--theme-text)' }}>[X]</span>
+                                    {menuState === 'MILITARY' && (
+                                        <div style={{ display: 'flex', flexDirection: 'column', width: '380px' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'center', borderBottom: '2px solid #b78031', padding: '0 24px 16px', fontSize: '32px', fontWeight: 'bold' }}>
+                                                <span style={{ color: '#f1c66f', letterSpacing: '8px' }}>军备</span>
+                                            </div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1px 1fr' }}>
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('侦察')}>侦察</button>
+                                                <div style={{ backgroundColor: 'rgba(183, 128, 49, 0.3)' }}></div>
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('征兵')}>征兵</button>
+                                                
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('分配')}>分配</button>
+                                                <div style={{ backgroundColor: 'rgba(183, 128, 49, 0.3)' }}></div>
+                                                <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('掠夺')}>掠夺</button>
+                                                
+                                                <button className="ancient-menu-button" style={{ borderBottom: 'none' }} onClick={() => handleCommandClick('出征')}>出征</button>
+                                                <div style={{ backgroundColor: 'rgba(183, 128, 49, 0.3)' }}></div>
+                                                <div style={{ borderBottom: 'none' }}></div>
+                                            </div>
                                         </div>
-                                        <GameButton onClick={() => handleCommandClick('侦察')}>侦察</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('征兵')}>征兵</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('分配')}>分配</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('掠夺')}>掠夺</GameButton>
-                                        <GameButton onClick={() => handleCommandClick('出征')}>出征</GameButton>
-                                    </div>
-                                )}
+                                    )}
 
-                                {menuState === 'STATUS' && currentCity && (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '220px', fontSize: '18px' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-gold)', paddingBottom: '5px', marginBottom: '5px', fontSize: '24px' }}>
-                                            <span style={{ color: 'var(--theme-gold)' }}>{currentCity.name}</span>
-                                            <span onClick={() => setMenuState('CITY')} style={{ cursor: 'pointer', color: 'var(--theme-text)' }}>[X]</span>
+                                    {menuState === 'STATUS' && currentCity && (
+                                        <div style={{ display: 'flex', flexDirection: 'column', width: '380px', fontSize: '22px', padding: '0 24px' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'center', borderBottom: '2px solid #b78031', paddingBottom: '16px', marginBottom: '16px', fontSize: '32px', fontWeight: 'bold' }}>
+                                                <span style={{ color: '#f1c66f', letterSpacing: '4px' }}>{currentCity.name}</span>
+                                            </div>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>归属:</span> <span style={{ color: '#f1c66f' }}>{forces[currentCity.belong] ? persons[forces[currentCity.belong].kingId]?.name : '无'}</span></div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>太守:</span> <span style={{ color: '#f1c66f' }}>
+                                                    {currentCity.satrapId === 0 
+                                                        ? '无' 
+                                                        : (persons[currentCity.satrapId - 1]?.name || '无')}
+                                                </span></div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>农业:</span> <span style={{ color: '#f1c66f' }}>{currentCity.farming}/{currentCity.farmingLimit}</span></div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>商业:</span> <span style={{ color: '#f1c66f' }}>{currentCity.commerce}/{currentCity.commerceLimit}</span></div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>民忠:</span> <span style={{ color: '#f1c66f' }}>{currentCity.peopleDevotion}</span></div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>防灾:</span> <span style={{ color: '#f1c66f' }}>{currentCity.avoidCalamity}</span></div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>人口:</span> <span style={{ color: '#f1c66f' }}>{currentCity.population}</span></div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>金钱:</span> <span style={{ color: '#f1c66f' }}>{currentCity.money}</span></div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>粮食:</span> <span style={{ color: '#f1c66f' }}>{currentCity.food}</span></div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>后备兵力:</span> <span style={{ color: '#f1c66f' }}>{currentCity.mothballArms}</span></div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>状态:</span> <span style={{ color: '#f1c66f' }}>{['正常', '饥荒', '旱灾', '水灾', '暴动'][currentCity.state] || '正常'}</span></div>
+                                            </div>
                                         </div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>归属:</span> <span>{forces[currentCity.belong] ? persons[forces[currentCity.belong].kingId]?.name : '无'}</span></div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>太守:</span> <span>
-                                            {currentCity.satrapId === 0 
-                                                ? '无' 
-                                                : (persons[currentCity.satrapId - 1]?.name || '无')}
-                                        </span></div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>农业:</span> <span>{currentCity.farming}/{currentCity.farmingLimit}</span></div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>商业:</span> <span>{currentCity.commerce}/{currentCity.commerceLimit}</span></div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>民忠:</span> <span>{currentCity.peopleDevotion}</span></div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>防灾:</span> <span>{currentCity.avoidCalamity}</span></div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>人口:</span> <span>{currentCity.population}</span></div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>金钱:</span> <span>{currentCity.money}</span></div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>粮食:</span> <span>{currentCity.food}</span></div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>后备兵力:</span> <span>{currentCity.mothballArms}</span></div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>状态:</span> <span>{['正常', '饥荒', '旱灾', '水灾', '暴动'][currentCity.state] || '正常'}</span></div>
-                                    </div>
-                                )}
-                            </GamePanel>
+                                    )}
+                                </div>
+                            </>
                         )}
 
                     <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 5 }}>
@@ -719,8 +762,8 @@ export const GameScreen: React.FC = () => {
                                         x2={endCoords.x} 
                                         y2={endCoords.y} 
                                         stroke="#8d6e63" 
-                                        strokeWidth="2"
-                                        strokeDasharray="5,5"
+                                        strokeWidth={2 * scale}
+                                        strokeDasharray={`${5 * scale},${5 * scale}`}
                                     />
                                 );
                             });
@@ -735,6 +778,12 @@ export const GameScreen: React.FC = () => {
                         const x = index % CITY_MAP_W;
                         const y = Math.floor(index / CITY_MAP_W);
                         const force = forces[city.belong];
+
+                        // 计算城池规模和图片
+                        const isFriendly = city.belong === playerForceId;
+                        const isNeutral = city.belong === 0;
+                        const cityImage = isFriendly ? 'url(/assets/images/city_friendly.png)' : (isNeutral ? 'url(/assets/images/city_neutral.png)' : 'url(/assets/images/city_enemy.png)');
+                        const citySize = (isFriendly ? 75 : 60) * scale; // 按照 1.5 倍等比例放大 (原本为 50 和 40)
 
                         return (
                             <div 
@@ -751,54 +800,55 @@ export const GameScreen: React.FC = () => {
                                     selectCity(city.id);
                                     if (city.belong === playerForceId) {
                                         setMenuState('CITY');
-                                        setMenuPosition({ x: CITY_MAP_W * 80 / 2, y: 100 });
+                                        setMenuPosition({ x: CITY_MAP_W * 120 * scale / 2, y: 100 * scale });
                                     } else {
                                         setMenuState('NONE');
                                     }
                                 }}
                                 style={{
                                     position: 'absolute',
-                                    top: `${y * 80 + 50}px`,
-                                    left: `${x * 80 + 10}px`,
-                                    width: '60px',
-                                    height: '60px',
-                                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                                    cursor: 'pointer',
+                                    top: `${(y * 120 + 105) * scale - citySize / 2}px`,
+                                    left: `${(x * 120 + 135) * scale}px`,
+                                    transform: 'translate(-50%, 0)',
+                                    display: 'flex', flexDirection: 'column', alignItems: 'center',
+                                    cursor: commandCtx.step === 'SELECT_TARGET_CITY' ? 'crosshair' : 'pointer',
                                     zIndex: 10
                                 }}>
+                                
+                                {/* 城池实心色块 */}
                                 <div style={{ 
-                                    width: city.belong === playerForceId ? '50px' : '40px', 
-                                    height: city.belong === playerForceId ? '50px' : '40px', 
-                                    backgroundImage: city.belong === playerForceId ? 'url(/assets/images/city_friendly.png)' : (city.belong === 0 ? 'url(/assets/images/city_neutral.png)' : 'url(/assets/images/city_enemy.png)'),
-                                    backgroundSize: 'cover',
-                                    backgroundPosition: 'center',
+                                    width: `${citySize}px`, height: `${citySize}px`,
+                                    backgroundImage: cityImage,
+                                    backgroundSize: 'cover', backgroundPosition: 'center',
                                     backgroundColor: 'transparent',
                                     filter: selectedCityId === city.id 
-                                        ? 'drop-shadow(0 0 10px #FFF)' 
-                                        : (city.belong === playerForceId ? 'drop-shadow(0 0 8px #cda654)' : (force ? `drop-shadow(0 0 5px ${force.color})` : 'none')),
+                                        ? `drop-shadow(0 0 ${20 * scale}px #FFF)` 
+                                        : (force ? `drop-shadow(0 0 ${10 * scale}px ${force.color})` : 'none'),
                                     transition: 'all 0.2s',
-                                    transform: city.belong === playerForceId ? 'translateY(-5px)' : 'none',
+                                    transform: selectedCityId === city.id ? 'scale(1.2)' : 'scale(1)',
                                     zIndex: city.belong === playerForceId ? 10 : 1,
                                     position: 'relative'
                                 }}>
                                     {city.belong === playerForceId && (
                                         <div style={{
-                                            position: 'absolute', top: '-25px', left: '50%', transform: 'translateX(-50%)',
-                                            color: '#cda654', fontSize: '20px', fontWeight: 'bold', textShadow: '0 0 5px #000',
+                                            position: 'absolute', top: `${-25 * scale}px`, left: '50%', transform: 'translateX(-50%)',
+                                            color: '#d6a85b', fontSize: `${24 * scale}px`, fontWeight: 'bold', textShadow: `0 0 ${5 * scale}px #000`,
                                             animation: 'bounce 1s infinite alternate'
                                         }}>
                                             ▼
                                         </div>
                                     )}
                                 </div>
+
+                                {/* 城市名称 */}
                                 <span style={{ 
-                                    marginTop: '4px', 
-                                    backgroundColor: city.belong === playerForceId ? '#cda654' : '#1a110c', 
-                                    color: city.belong === playerForceId ? '#1a110c' : '#cda654',
-                                    padding: '2px 4px', 
-                                    fontSize: '12px', 
+                                    marginTop: `${6 * scale}px`, 
+                                    backgroundColor: city.belong === playerForceId ? '#d6a85b' : '#2a1609', 
+                                    color: city.belong === playerForceId ? '#2a1609' : '#d6a85b',
+                                    padding: `${3 * scale}px ${6 * scale}px`, 
+                                    fontSize: `${18 * scale}px`, 
                                     fontWeight: city.belong === playerForceId ? 'bold' : 'normal',
-                                    border: '1px solid #cda654', 
+                                    border: `${2 * scale}px solid #d6a85b`, 
                                     whiteSpace: 'nowrap',
                                     zIndex: 10
                                 }}>
@@ -898,26 +948,27 @@ export const GameScreen: React.FC = () => {
                 </div>
             </div>
 
-            <div style={{ width: '220px', backgroundColor: '#1a110c', display: 'flex', flexDirection: 'column', padding: '10px', boxSizing: 'border-box', borderLeft: '2px solid #cda654' }}>
+            <div style={{ width: `${300 * scale}px`, backgroundColor: '#2a1609', display: 'flex', flexDirection: 'column', padding: `${16 * scale}px`, boxSizing: 'border-box', borderLeft: `${2 * scale}px solid #b78031`, boxShadow: `inset 0 0 0 ${2 * scale}px #2a1609, inset 0 0 0 ${4 * scale}px #b78031` }}>
                 
                 <div style={{ 
-                    width: '100%', height: '220px', border: '2px solid #cda654', marginBottom: '20px', 
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#2b1d14',
+                    width: '100%', height: `${300 * scale}px`, border: `${2 * scale}px solid #b78031`, marginBottom: `${30 * scale}px`, 
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#2a1609',
                     backgroundImage: forces[playerForceId] && persons[forces[playerForceId].kingId] ? `url(/assets/images/generals/${persons[forces[playerForceId].kingId].name}.png)` : 'none',
-                    backgroundSize: 'cover', backgroundPosition: 'top'
+                    backgroundSize: 'cover', backgroundPosition: 'top',
+                    boxShadow: `inset 0 0 ${8 * scale}px rgba(0,0,0,0.8)`
                 }}>
                     {!(forces[playerForceId] && persons[forces[playerForceId].kingId]) && "[君主头像]"}
                 </div>
                 
-                <div style={{ display: 'flex', justifyContent: 'space-around', color: '#cda654', fontSize: '24px', marginBottom: 'auto' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-around', color: '#d6a85b', fontSize: `${32 * scale}px`, marginBottom: 'auto' }}>
                     <span>城: {myCities.length}</span>
                     <span>将: {myPersons.length}</span>
                 </div>
 
-                <div style={{ borderTop: '2px solid #cda654', paddingTop: '20px', textAlign: 'center', fontSize: '32px', letterSpacing: '2px', paddingBottom: '20px' }}>
+                <div style={{ borderTop: `${2 * scale}px solid #b78031`, paddingTop: `${30 * scale}px`, textAlign: 'center', fontSize: `${42 * scale}px`, letterSpacing: `${4 * scale}px`, paddingBottom: `${30 * scale}px`, color: '#d6a85b' }}>
                     <div>{year} 年</div>
-                    <div style={{ margin: '10px 0' }}>{month} 月</div>
-                    <div style={{ marginTop: '20px', fontWeight: 'bold' }}>{currentCity?.name || '平原'}</div>
+                    <div style={{ margin: `${15 * scale}px 0` }}>{month} 月</div>
+                    <div style={{ marginTop: `${30 * scale}px`, fontWeight: 'bold' }}>{currentCity?.name || '平原'}</div>
                 </div>
             </div>
 
