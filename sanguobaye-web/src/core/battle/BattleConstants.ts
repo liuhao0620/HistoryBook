@@ -51,10 +51,10 @@ export const TerrDfModu: Record<TerrainType, number> = {
 export const MOV_NOT = 255;
 
 export const LandResistance: Record<ArmsType, Record<TerrainType, number>> = {
-    [ArmsType.CAVALRY]: { [TerrainType.GRASS]: 1, [TerrainType.PLAIN]: 1, [TerrainType.MOUNTAIN]: MOV_NOT, [TerrainType.FOREST]: 2, [TerrainType.VILLAGE]: 1, [TerrainType.CITY]: 1, [TerrainType.CAMP]: 1, [TerrainType.RIVER]: MOV_NOT },
-    [ArmsType.INFANTRY]: { [TerrainType.GRASS]: 1, [TerrainType.PLAIN]: 1, [TerrainType.MOUNTAIN]: 2, [TerrainType.FOREST]: 1, [TerrainType.VILLAGE]: 1, [TerrainType.CITY]: 1, [TerrainType.CAMP]: 1, [TerrainType.RIVER]: MOV_NOT },
-    [ArmsType.ARCHER]: { [TerrainType.GRASS]: 1, [TerrainType.PLAIN]: 1, [TerrainType.MOUNTAIN]: 2, [TerrainType.FOREST]: 1, [TerrainType.VILLAGE]: 1, [TerrainType.CITY]: 1, [TerrainType.CAMP]: 1, [TerrainType.RIVER]: MOV_NOT },
-    [ArmsType.WATER]: { [TerrainType.GRASS]: 2, [TerrainType.PLAIN]: 2, [TerrainType.MOUNTAIN]: MOV_NOT, [TerrainType.FOREST]: MOV_NOT, [TerrainType.VILLAGE]: 2, [TerrainType.CITY]: 2, [TerrainType.CAMP]: 2, [TerrainType.RIVER]: 1 },
-    [ArmsType.JI]: { [TerrainType.GRASS]: 1, [TerrainType.PLAIN]: 1, [TerrainType.MOUNTAIN]: 2, [TerrainType.FOREST]: 1, [TerrainType.VILLAGE]: 1, [TerrainType.CITY]: 1, [TerrainType.CAMP]: 1, [TerrainType.RIVER]: MOV_NOT },
-    [ArmsType.XUAN]: { [TerrainType.GRASS]: 1, [TerrainType.PLAIN]: 1, [TerrainType.MOUNTAIN]: 1, [TerrainType.FOREST]: 1, [TerrainType.VILLAGE]: 1, [TerrainType.CITY]: 1, [TerrainType.CAMP]: 1, [TerrainType.RIVER]: 1 }
+    [ArmsType.CAVALRY]: { [TerrainType.GRASS]: 1, [TerrainType.PLAIN]: 1, [TerrainType.MOUNTAIN]: 3, [TerrainType.FOREST]: 3, [TerrainType.VILLAGE]: 2, [TerrainType.CITY]: 2, [TerrainType.CAMP]: 2, [TerrainType.RIVER]: 3 },
+    [ArmsType.INFANTRY]: { [TerrainType.GRASS]: 1, [TerrainType.PLAIN]: 1, [TerrainType.MOUNTAIN]: 1, [TerrainType.FOREST]: 1, [TerrainType.VILLAGE]: 2, [TerrainType.CITY]: 2, [TerrainType.CAMP]: 2, [TerrainType.RIVER]: 3 },
+    [ArmsType.ARCHER]: { [TerrainType.GRASS]: 1, [TerrainType.PLAIN]: 1, [TerrainType.MOUNTAIN]: 1, [TerrainType.FOREST]: 1, [TerrainType.VILLAGE]: 2, [TerrainType.CITY]: 2, [TerrainType.CAMP]: 2, [TerrainType.RIVER]: 3 },
+    [ArmsType.WATER]: { [TerrainType.GRASS]: 2, [TerrainType.PLAIN]: 2, [TerrainType.MOUNTAIN]: 3, [TerrainType.FOREST]: 3, [TerrainType.VILLAGE]: 2, [TerrainType.CITY]: 2, [TerrainType.CAMP]: 2, [TerrainType.RIVER]: 1 },
+    [ArmsType.JI]: { [TerrainType.GRASS]: 1, [TerrainType.PLAIN]: 1, [TerrainType.MOUNTAIN]: 2, [TerrainType.FOREST]: 3, [TerrainType.VILLAGE]: 2, [TerrainType.CITY]: 2, [TerrainType.CAMP]: 2, [TerrainType.RIVER]: 3 },
+    [ArmsType.XUAN]: { [TerrainType.GRASS]: 1, [TerrainType.PLAIN]: 1, [TerrainType.MOUNTAIN]: 1, [TerrainType.FOREST]: 1, [TerrainType.VILLAGE]: 2, [TerrainType.CITY]: 2, [TerrainType.CAMP]: 2, [TerrainType.RIVER]: 2 }
 };

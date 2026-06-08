@@ -25,8 +25,8 @@ export const MapEditorScreen: React.FC = () => {
             if (mapIndex !== -1) {
                 // 原有的 GameScreen 坐标计算公式
                 initialPos[i] = {
-                    x: (mapIndex % CITY_MAP_W) * 80 + 10,
-                    y: Math.floor(mapIndex / CITY_MAP_W) * 80 + 50
+                    x: (mapIndex % CITY_MAP_W) * 120 + 105,
+                    y: Math.floor(mapIndex / CITY_MAP_W) * 120 + 75
                 };
             }
         }
@@ -63,14 +63,14 @@ export const MapEditorScreen: React.FC = () => {
         <div style={{
             display: 'flex',
             height: '100vh',
-            backgroundColor: '#1a110c',
+            backgroundColor: '#2a1609',
             alignItems: 'center',
             justifyContent: 'center',
             userSelect: 'none'
         }}>
             <div style={{
-                width: '1180px',
-                height: '720px',
+                width: '1920px',
+                height: '1080px',
                 backgroundColor: '#000',
                 display: 'flex',
                 boxShadow: '0 0 20px rgba(0,0,0,0.8)'
@@ -81,13 +81,13 @@ export const MapEditorScreen: React.FC = () => {
                     onMouseUp={handleMouseUp}
                     onMouseLeave={handleMouseUp}
                     style={{
-                        width: '960px',
-                        height: '720px',
+                        width: '1620px',
+                        height: '1080px',
                         position: 'relative',
                         backgroundImage: 'url(/assets/images/bg_world_map.jpg)',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
-                        borderRight: '4px solid #cda654',
+                        borderRight: '4px solid #d6a85b',
                         overflow: 'hidden'
                     }}
                 >
@@ -131,7 +131,7 @@ export const MapEditorScreen: React.FC = () => {
                                     width: '60px',
                                     height: '60px',
                                     backgroundColor: isDragging ? 'rgba(205, 166, 84, 0.6)' : 'rgba(85, 85, 85, 0.6)',
-                                    border: isDragging ? '2px solid #FFF' : '2px solid #cda654',
+                                    border: isDragging ? '2px solid #FFF' : '2px solid #d6a85b',
                                     cursor: isDragging ? 'grabbing' : 'grab',
                                     zIndex: isDragging ? 10 : 2,
                                     display: 'flex',
@@ -152,15 +152,15 @@ export const MapEditorScreen: React.FC = () => {
 
                 {/* 右侧：操作面板 */}
                 <div style={{
-                    width: '220px',
+                    width: '300px',
                     padding: '20px',
                     backgroundColor: 'rgba(26, 17, 12, 0.95)',
-                    color: '#cda654',
+                    color: '#d6a85b',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '20px'
                 }}>
-                    <h2 style={{ margin: 0, borderBottom: '1px solid #cda654', paddingBottom: '10px' }}>地图编辑器</h2>
+                    <h2 style={{ margin: 0, borderBottom: '1px solid #d6a85b', paddingBottom: '10px' }}>地图编辑器</h2>
                     <p style={{ fontSize: '14px', lineHeight: '1.6', color: '#FFF' }}>
                         你可以在左侧地图中任意拖拽城市方块。<br/><br/>
                         连线会实时跟随变化。当你排版到完美匹配背景地貌时，点击下方按钮导出坐标数据。
@@ -172,8 +172,8 @@ export const MapEditorScreen: React.FC = () => {
                         onClick={handleExport}
                         style={{
                             padding: '12px',
-                            backgroundColor: '#cda654',
-                            color: '#1a110c',
+                            backgroundColor: '#d6a85b',
+                            color: '#2a1609',
                             border: 'none',
                             fontWeight: 'bold',
                             fontSize: '16px',
@@ -187,8 +187,8 @@ export const MapEditorScreen: React.FC = () => {
                         style={{
                             padding: '12px',
                             backgroundColor: 'transparent',
-                            color: '#cda654',
-                            border: '2px solid #cda654',
+                            color: '#d6a85b',
+                            border: '2px solid #d6a85b',
                             fontWeight: 'bold',
                             fontSize: '16px',
                             cursor: 'pointer'

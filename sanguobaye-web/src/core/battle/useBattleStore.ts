@@ -163,12 +163,12 @@ const FGT_INT_POS: number[][] = [
     [2,2, 2,3, 1,2, 3,2, 2,1, 3,3, 1,4, 4,1, 1,1, 0,0], // 7: NW
     [2,2, 2,3, 1,2, 3,2, 2,1, 1,1, 3,3, 1,3, 3,1, 2,0]  // 8: Defender
 ];
-        const attackerOffsets = [];
+        const attackerOffsets: { dx: number, dy: number }[] = [];
         for (let i = 0; i < 10; i++) {
             attackerOffsets.push({ dx: FGT_INT_POS[way][i * 2], dy: FGT_INT_POS[way][i * 2 + 1] });
         }
         
-        const defenderOffsets = [];
+        const defenderOffsets: { dx: number, dy: number }[] = [];
         for (let i = 0; i < 10; i++) {
             defenderOffsets.push({ dx: FGT_INT_POS[8][i * 2], dy: FGT_INT_POS[8][i * 2 + 1] });
         }
@@ -726,7 +726,9 @@ const FGT_INT_POS: number[][] = [
             const reachable = get().reachableTiles;
             let bestTile = { x: unit.x, y: unit.y };
             
-            if (reachable.length > 0) {
+            if (!isAttackerTurn && get().map.tiles[unit.y][unit.x] === TerrainType.CITY) {
+                bestTile = { x: unit.x, y: unit.y };
+            } else if (reachable.length > 0) {
                 let minDist = Math.abs(targetX - unit.x) + Math.abs(targetY - unit.y);
                 for (const t of reachable) {
                     const d = Math.abs(targetX - t.x) + Math.abs(targetY - t.y);

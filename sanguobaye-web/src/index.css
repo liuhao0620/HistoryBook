@@ -13,14 +13,14 @@
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
   /* 游戏主题颜色（复古策略风格） */
-  --theme-primary: #cda654;
-  --theme-primary-hover: #e2c275;
-  --theme-primary-active: #a0780a;
-  --theme-bg-dark: #1a110c;
-  --theme-bg-panel: rgba(43, 29, 20, 0.95); /* 更明显的面板底色 */
-  --theme-border: #5d4037;
-  --theme-text: #f4e8c1;
-  --theme-text-dark: #2d1f18;
+  --theme-primary: #d6a85b;
+  --theme-primary-hover: #f1c66f;
+  --theme-primary-active: #b78031;
+  --theme-bg-dark: #2a1609;
+  --theme-bg-panel: rgba(42, 22, 9, 0.95); /* 更明显的面板底色 */
+  --theme-border: #b78031;
+  --theme-text: #d6a85b;
+  --theme-text-dark: #20150d;
   --theme-disabled: #5a5a5a;
   --theme-shadow: rgba(0, 0, 0, 0.6) 0 4px 8px;
 
@@ -64,7 +64,7 @@
 }
 
 #root {
-  width: 1126px;
+  width: 1920px;
   max-width: 100%;
   margin: 0 auto;
   text-align: center;
@@ -86,15 +86,15 @@ body {
     width: 8px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-    background: #1a110c;
-    border-left: 1px solid #5d4037;
+    background: #2a1609;
+    border-left: 1px solid #b78031;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #5d4037;
-    border: 1px solid #cda654;
+    background: #b78031;
+    border: 1px solid #d6a85b;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #cda654;
+    background: #d6a85b;
 }
 
 h1,

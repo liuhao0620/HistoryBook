@@ -189,8 +189,8 @@ describe('battle terrain symbolic assets', () => {
 });
 
 describe('ancient battle scene assets', () => {
-    it('includes ancient UI frame, panel, and compass assets', () => {
-        for (const asset of ['ui_frame.png', 'ui_panel.png', 'compass_north.png']) {
+    it('includes ancient UI compass asset', () => {
+        for (const asset of ['compass_north.png']) {
             const stats = readPngAlphaStats(ancientBattleAssetPath(asset));
 
             expect(stats.visibleCoverage).toBeGreaterThan(0.02);

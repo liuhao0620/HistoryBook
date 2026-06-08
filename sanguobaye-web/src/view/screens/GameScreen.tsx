@@ -25,7 +25,6 @@ import {
 } from '../../core/commands/DiplomacyCommands';
 import { AIBattleSimulator } from '../../core/ai/AIBattleSimulator';
 import { GameButton } from '../components/ui/GameButton';
-import { GamePanel } from '../components/ui/GamePanel';
 import { GameModal } from '../components/ui/GameModal';
 
 type CommandStep = 'NONE' | 'SELECT_EXECUTORS' | 'SELECT_TARGET_CITY' | 'SELECT_TARGET_PERSON' | 'INPUT_AMOUNTS';
@@ -153,7 +152,6 @@ export const GameScreen: React.FC = () => {
     const currentCity = selectedCityId !== null ? cities[selectedCityId] : null;
 
     const [menuState, setMenuState] = useState<'NONE' | 'MAIN' | 'CITY' | 'DOMESTIC' | 'DIPLOMACY' | 'MILITARY' | 'STATUS' | 'SAVE'>('NONE');
-    const [menuPosition, setMenuPosition] = useState<{x: number, y: number} | null>(null);
 
     const [commandCtx, setCommandCtx] = useState<{
         cmd: string | null;
@@ -549,7 +547,6 @@ export const GameScreen: React.FC = () => {
                                     return;
                                 }
                                 setMenuState('MAIN');
-                                setMenuPosition({ x: CITY_MAP_W * 120 * scale / 2, y: 150 * scale });
                             }
                         }}
                         style={{ 
@@ -800,7 +797,6 @@ export const GameScreen: React.FC = () => {
                                     selectCity(city.id);
                                     if (city.belong === playerForceId) {
                                         setMenuState('CITY');
-                                        setMenuPosition({ x: CITY_MAP_W * 120 * scale / 2, y: 100 * scale });
                                     } else {
                                         setMenuState('NONE');
                                     }
