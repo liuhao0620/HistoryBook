@@ -507,7 +507,7 @@ export const GameScreen: React.FC = () => {
             
             <div style={{ display: 'flex', width: '100%', height: '100%', backgroundColor: '#25180d' }}>
                 
-                <div style={{ flex: 1, position: 'relative', borderRight: `${2 * scale}px solid #b78031`, backgroundColor: '#25180d', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 0 90px rgba(0,0,0,0.45)' }}>
+                <div style={{ flex: 1, position: 'relative', borderRight: `${2 * scale}px solid #b78031`, boxSizing: 'border-box', backgroundColor: '#25180d', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 0 90px rgba(0,0,0,0.45)' }}>
                     
                     {aiThinkingForceId !== null && (
                         <div style={{
@@ -545,7 +545,7 @@ export const GameScreen: React.FC = () => {
                             backgroundImage: 'url(/assets/images/bg_world_map_new.png)',
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
-                            border: '4px solid #2a1609',
+                            border: 'none',
                             boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)'
                         }}>
                         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.3)', pointerEvents: 'none', zIndex: 0 }}></div>

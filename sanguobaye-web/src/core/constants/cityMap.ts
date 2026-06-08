@@ -24,8 +24,8 @@ export const getCityCenterCoords = (cityId: number) => {
     const x = mapIndex % CITY_MAP_W;
     const y = Math.floor(mapIndex / CITY_MAP_W);
     return {
-        x: x * 135 + 105,
-        y: y * 120 - 15
+        x: x * 135 + 75,
+        y: y * 120 + 55
     };
 };
 
