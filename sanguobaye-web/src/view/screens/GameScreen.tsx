@@ -594,9 +594,9 @@ export const GameScreen: React.FC = () => {
                                     )}
 
                                     {menuState === 'SAVE' && (
-                                        <div style={{ display: 'flex', flexDirection: 'column', width: '360px' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'center', borderBottom: '2px solid #b78031', padding: '0 24px 16px', fontSize: '32px', fontWeight: 'bold' }}>
-                                                <span style={{ color: '#f1c66f', letterSpacing: '8px' }}>选择进度</span>
+                                        <div style={{ display: 'flex', flexDirection: 'column', width: `${360 * scale}px` }}>
+                                            <div style={{ display: 'flex', justifyContent: 'center', borderBottom: `${2 * scale}px solid #b78031`, padding: `0 ${24 * scale}px ${16 * scale}px`, fontSize: `${32 * scale}px`, fontWeight: 'bold' }}>
+                                                <span style={{ color: '#f1c66f', letterSpacing: `${8 * scale}px` }}>选择进度</span>
                                             </div>
                                             {saveSlots.map((s, idx) => (
                                                 <button 
@@ -607,13 +607,13 @@ export const GameScreen: React.FC = () => {
                                                         setMenuState('NONE');
                                                     }}
                                                     style={{ 
-                                                        padding: '16px 24px', 
+                                                        padding: `${16 * scale}px ${24 * scale}px`, 
                                                         display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: '1.4',
-                                                        borderBottom: idx === saveSlots.length - 1 ? 'none' : '1px solid rgba(183, 128, 49, 0.3)'
+                                                        borderBottom: idx === saveSlots.length - 1 ? 'none' : `${1 * scale}px solid rgba(183, 128, 49, 0.3)`
                                                     }}
                                                 >
-                                                    <span>进度 {s.slot}</span>
-                                                    <span style={{ fontSize: '18px', opacity: 0.8, marginTop: '8px', color: '#d6a85b', textShadow: 'none' }}>
+                                                    <span style={{ fontSize: `${24 * scale}px` }}>进度 {s.slot}</span>
+                                                    <span style={{ fontSize: `${18 * scale}px`, opacity: 0.8, marginTop: `${8 * scale}px`, color: '#d6a85b', textShadow: 'none' }}>
                                                         {s.empty ? '空' : `${s.year}年${s.month}月 ${s.forceName}`}
                                                     </span>
                                                 </button>
@@ -623,8 +623,8 @@ export const GameScreen: React.FC = () => {
 
                                     {menuState === 'CITY' && currentCity && (
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'center', borderBottom: '2px solid #b78031', padding: '0 24px 16px', fontSize: '32px', fontWeight: 'bold' }}>
-                                                <span style={{ color: '#f1c66f', letterSpacing: '8px' }}>{currentCity.name}</span>
+                                            <div style={{ display: 'flex', justifyContent: 'center', borderBottom: `${2 * scale}px solid #b78031`, padding: `0 ${24 * scale}px ${16 * scale}px`, fontSize: `${32 * scale}px`, fontWeight: 'bold' }}>
+                                                <span style={{ color: '#f1c66f', letterSpacing: `${8 * scale}px` }}>{currentCity.name}</span>
                                             </div>
                                             <button className="ancient-menu-button" onClick={() => setMenuState('DOMESTIC')}>内政</button>
                                             <button className="ancient-menu-button" onClick={() => setMenuState('DIPLOMACY')}>外交</button>
@@ -634,9 +634,9 @@ export const GameScreen: React.FC = () => {
                                     )}
 
                                     {menuState === 'DOMESTIC' && (
-                                        <div style={{ display: 'flex', flexDirection: 'column', width: '380px' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'center', borderBottom: '2px solid #b78031', padding: '0 24px 16px', fontSize: '32px', fontWeight: 'bold' }}>
-                                                <span style={{ color: '#f1c66f', letterSpacing: '8px' }}>内政</span>
+                                        <div style={{ display: 'flex', flexDirection: 'column', width: `${380 * scale}px` }}>
+                                            <div style={{ display: 'flex', justifyContent: 'center', borderBottom: `${2 * scale}px solid #b78031`, padding: `0 ${24 * scale}px ${16 * scale}px`, fontSize: `${32 * scale}px`, fontWeight: 'bold' }}>
+                                                <span style={{ color: '#f1c66f', letterSpacing: `${8 * scale}px` }}>内政</span>
                                             </div>
                                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1px 1fr' }}>
                                                 <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('开垦')}>开垦</button>
@@ -671,9 +671,9 @@ export const GameScreen: React.FC = () => {
                                     )}
 
                                     {menuState === 'DIPLOMACY' && (
-                                        <div style={{ display: 'flex', flexDirection: 'column', width: '380px' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'center', borderBottom: '2px solid #b78031', padding: '0 24px 16px', fontSize: '32px', fontWeight: 'bold' }}>
-                                                <span style={{ color: '#f1c66f', letterSpacing: '8px' }}>外交</span>
+                                        <div style={{ display: 'flex', flexDirection: 'column', width: `${380 * scale}px` }}>
+                                            <div style={{ display: 'flex', justifyContent: 'center', borderBottom: `${2 * scale}px solid #b78031`, padding: `0 ${24 * scale}px ${16 * scale}px`, fontSize: `${32 * scale}px`, fontWeight: 'bold' }}>
+                                                <span style={{ color: '#f1c66f', letterSpacing: `${8 * scale}px` }}>外交</span>
                                             </div>
                                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1px 1fr' }}>
                                                 <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('结盟')}>结盟</button>
@@ -692,9 +692,9 @@ export const GameScreen: React.FC = () => {
                                     )}
 
                                     {menuState === 'MILITARY' && (
-                                        <div style={{ display: 'flex', flexDirection: 'column', width: '380px' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'center', borderBottom: '2px solid #b78031', padding: '0 24px 16px', fontSize: '32px', fontWeight: 'bold' }}>
-                                                <span style={{ color: '#f1c66f', letterSpacing: '8px' }}>军备</span>
+                                        <div style={{ display: 'flex', flexDirection: 'column', width: `${380 * scale}px` }}>
+                                            <div style={{ display: 'flex', justifyContent: 'center', borderBottom: `${2 * scale}px solid #b78031`, padding: `0 ${24 * scale}px ${16 * scale}px`, fontSize: `${32 * scale}px`, fontWeight: 'bold' }}>
+                                                <span style={{ color: '#f1c66f', letterSpacing: `${8 * scale}px` }}>军备</span>
                                             </div>
                                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1px 1fr' }}>
                                                 <button className="ancient-menu-button" style={{ borderBottom: '1px solid rgba(183, 128, 49, 0.3)' }} onClick={() => handleCommandClick('侦察')}>侦察</button>
@@ -713,11 +713,11 @@ export const GameScreen: React.FC = () => {
                                     )}
 
                                     {menuState === 'STATUS' && currentCity && (
-                                        <div style={{ display: 'flex', flexDirection: 'column', width: '380px', fontSize: '22px', padding: '0 24px' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'center', borderBottom: '2px solid #b78031', paddingBottom: '16px', marginBottom: '16px', fontSize: '32px', fontWeight: 'bold' }}>
-                                                <span style={{ color: '#f1c66f', letterSpacing: '4px' }}>{currentCity.name}</span>
+                                        <div style={{ display: 'flex', flexDirection: 'column', width: `${380 * scale}px`, fontSize: `${22 * scale}px`, padding: `0 ${24 * scale}px` }}>
+                                            <div style={{ display: 'flex', justifyContent: 'center', borderBottom: `${2 * scale}px solid #b78031`, paddingBottom: `${16 * scale}px`, marginBottom: `${16 * scale}px`, fontSize: `${32 * scale}px`, fontWeight: 'bold' }}>
+                                                <span style={{ color: '#f1c66f', letterSpacing: `${4 * scale}px` }}>{currentCity.name}</span>
                                             </div>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: `${12 * scale}px` }}>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>归属:</span> <span style={{ color: '#f1c66f' }}>{forces[currentCity.belong] ? persons[forces[currentCity.belong].kingId]?.name : '无'}</span></div>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>太守:</span> <span style={{ color: '#f1c66f' }}>
                                                     {currentCity.satrapId === 0 
@@ -837,19 +837,24 @@ export const GameScreen: React.FC = () => {
                                 </div>
 
                                 {/* 城市名称 */}
-                                <span style={{ 
-                                    marginTop: `${6 * scale}px`, 
-                                    backgroundColor: city.belong === playerForceId ? '#d6a85b' : '#2a1609', 
-                                    color: city.belong === playerForceId ? '#2a1609' : '#d6a85b',
-                                    padding: `${3 * scale}px ${6 * scale}px`, 
-                                    fontSize: `${18 * scale}px`, 
-                                    fontWeight: city.belong === playerForceId ? 'bold' : 'normal',
-                                    border: `${2 * scale}px solid #d6a85b`, 
-                                    whiteSpace: 'nowrap',
+                                <div style={{
+                                    marginTop: `${6 * scale}px`,
+                                    transform: `scale(${scale})`,
+                                    transformOrigin: 'top center',
                                     zIndex: 10
                                 }}>
-                                    {city.name}
-                                </span>
+                                    <span style={{ 
+                                        backgroundColor: city.belong === playerForceId ? '#d6a85b' : '#2a1609', 
+                                        color: city.belong === playerForceId ? '#2a1609' : '#d6a85b',
+                                        padding: '3px 6px', 
+                                        fontSize: '18px', 
+                                        fontWeight: city.belong === playerForceId ? 'bold' : 'normal',
+                                        border: '2px solid #d6a85b', 
+                                        whiteSpace: 'nowrap'
+                                    }}>
+                                        {city.name}
+                                    </span>
+                                </div>
                             </div>
                         );
                     })}
@@ -862,21 +867,21 @@ export const GameScreen: React.FC = () => {
                             onClose={() => setReportMsg(null)}
                             style={{ width: '600px', cursor: 'pointer' }}
                         >
-                            <div onClick={() => setReportMsg(null)} style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                            <div onClick={() => setReportMsg(null)} style={{ display: 'flex', alignItems: 'center', gap: `${20 * scale}px` }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                     <div style={{ 
-                                        width: '80px', height: '80px', border: '2px solid var(--theme-brown)', backgroundColor: '#000',
+                                        width: `${80 * scale}px`, height: `${80 * scale}px`, border: `${2 * scale}px solid var(--theme-brown)`, backgroundColor: '#000',
                                         backgroundImage: persons[reportMsg.avatarId]?.name ? `url(/assets/images/generals/${persons[reportMsg.avatarId]?.name}.png)` : 'none',
                                         backgroundSize: 'cover', backgroundPosition: 'center',
                                         display: 'flex', justifyContent: 'center', alignItems: 'center'
                                     }}>
                                         {!persons[reportMsg.avatarId]?.name && "头像"}
                                     </div>
-                                    <div style={{ marginTop: '5px', fontSize: '20px', color: 'var(--theme-dark)', fontWeight: 'bold' }}>
+                                    <div style={{ marginTop: `${5 * scale}px`, fontSize: `${20 * scale}px`, color: 'var(--theme-dark)', fontWeight: 'bold' }}>
                                         {persons[reportMsg.avatarId]?.name}
                                     </div>
                                 </div>
-                                <div style={{ flex: 1, fontSize: '24px', color: 'var(--theme-dark)', lineHeight: '1.5' }}>
+                                <div style={{ flex: 1, fontSize: `${24 * scale}px`, color: 'var(--theme-dark)', lineHeight: '1.5' }}>
                                     {reportMsg.text}
                                 </div>
                             </div>
@@ -888,29 +893,29 @@ export const GameScreen: React.FC = () => {
                             isOpen={true} 
                             onClose={handleNextReport}
                             title="回合汇报"
-                            style={{ width: '600px' }}
+                            style={{ width: `${600 * scale}px` }}
                         >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: `${20 * scale}px` }}>
                                 {playerReports[currentReportIndex].avatarId !== undefined && (
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                         <div style={{ 
-                                            width: '80px', height: '80px', border: '2px solid var(--theme-brown)', backgroundColor: '#000',
+                                            width: `${80 * scale}px`, height: `${80 * scale}px`, border: `${2 * scale}px solid var(--theme-brown)`, backgroundColor: '#000',
                                             backgroundImage: persons[playerReports[currentReportIndex].avatarId!]?.name ? `url(/assets/images/generals/${persons[playerReports[currentReportIndex].avatarId!]?.name}.png)` : 'none',
                                             backgroundSize: 'cover', backgroundPosition: 'center',
                                             display: 'flex', justifyContent: 'center', alignItems: 'center'
                                         }}>
                                             {!persons[playerReports[currentReportIndex].avatarId!]?.name && "头像"}
                                         </div>
-                                        <div style={{ marginTop: '5px', fontSize: '20px', color: 'var(--theme-dark)', fontWeight: 'bold' }}>
+                                        <div style={{ marginTop: `${5 * scale}px`, fontSize: `${20 * scale}px`, color: 'var(--theme-dark)', fontWeight: 'bold' }}>
                                             {persons[playerReports[currentReportIndex].avatarId!]?.name}
                                         </div>
                                     </div>
                                 )}
-                                <div style={{ flex: 1, fontSize: '22px', color: 'var(--theme-dark)', lineHeight: '1.6', minHeight: '80px', display: 'flex', alignItems: 'center', whiteSpace: 'pre-line' }}>
+                                <div style={{ flex: 1, fontSize: `${22 * scale}px`, color: 'var(--theme-dark)', lineHeight: '1.6', minHeight: `${80 * scale}px`, display: 'flex', alignItems: 'center', whiteSpace: 'pre-line' }}>
                                     {playerReports[currentReportIndex].msg}
                                 </div>
                             </div>
-                            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                            <div style={{ textAlign: 'center', marginTop: `${20 * scale}px` }}>
                                 <GameButton onClick={handleNextReport}>确认</GameButton>
                             </div>
                         </GameModal>
@@ -925,12 +930,12 @@ export const GameScreen: React.FC = () => {
                                 setAiBattleReports(nextReports);
                             }}
                             title="天下大势"
-                            style={{ width: '600px' }}
+                            style={{ width: `${600 * scale}px` }}
                         >
-                            <div style={{ fontSize: '22px', color: 'var(--theme-dark)', lineHeight: '1.6', minHeight: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', whiteSpace: 'pre-line' }}>
+                            <div style={{ fontSize: `${22 * scale}px`, color: 'var(--theme-dark)', lineHeight: '1.6', minHeight: `${80 * scale}px`, display: 'flex', alignItems: 'center', justifyContent: 'center', whiteSpace: 'pre-line' }}>
                                 {aiBattleReports[0]}
                             </div>
-                            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                            <div style={{ textAlign: 'center', marginTop: `${20 * scale}px` }}>
                                 <GameButton onClick={() => {
                                     const nextReports = [...aiBattleReports];
                                     nextReports.shift();

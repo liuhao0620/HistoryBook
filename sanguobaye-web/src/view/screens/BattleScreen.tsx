@@ -413,16 +413,21 @@ export const BattleScreen: React.FC = () => {
                                     <div style={{
                                         position: 'absolute',
                                         bottom: '0',
-                                        backgroundColor: 'rgba(45, 25, 10, 0.86)',
-                                        color: '#f1d184',
-                                        fontSize: `${12 * scale}px`,
-                                        fontWeight: 'bold',
-                                        padding: `${1 * scale}px ${6 * scale}px`,
-                                        border: '1px solid rgba(214, 156, 67, 0.72)',
-                                        borderRadius: `${2 * scale}px`,
+                                        transform: `scale(${scale})`,
+                                        transformOrigin: 'bottom center',
                                         zIndex: 3
                                     }}>
-                                        {unit.name}
+                                        <div style={{
+                                            backgroundColor: 'rgba(45, 25, 10, 0.86)',
+                                            color: '#f1d184',
+                                            fontSize: '12px',
+                                            fontWeight: 'bold',
+                                            padding: '1px 6px',
+                                            border: '1px solid rgba(214, 156, 67, 0.72)',
+                                            borderRadius: '2px'
+                                        }}>
+                                            {unit.name}
+                                        </div>
                                     </div>
                                 </div>
                             );
