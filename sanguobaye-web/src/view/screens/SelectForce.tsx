@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore } from '../../core/state/useGameStore';
+import { useScale } from '../../core/hooks/useScale';
 import { C_MAP, CITY_MAP_W, CITY_MAP_H } from '../../core/constants/cityMap';
 
 export const SelectForce: React.FC = () => {
     const { selectedScenario, loadScenarioAndStart, setScreen } = useGameStore();
+    const scale = useScale();
     const [hoveredForce, setHoveredForce] = useState<number | null>(null);
     const [cityLinks, setCityLinks] = useState<any[]>([]);
 
@@ -21,16 +23,16 @@ export const SelectForce: React.FC = () => {
     };
 
     return (
-        <div style={{ display: 'flex', height: '100vh', backgroundColor: '#2b1d14', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', height: '100vh', backgroundColor: '#20150d', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{
-                width: '1180px', height: '720px', 
+                width: '100%', height: '100%', 
                 backgroundColor: '#000', 
                 backgroundImage: 'url(/assets/images/bg_main_menu.jpg)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 boxShadow: '0 0 20px rgba(0,0,0,0.8)',
-                display: 'flex', color: '#cda654', fontFamily: '"STKaiti", "KaiTi", serif',
-                position: 'relative', padding: '40px', boxSizing: 'border-box', gap: '40px'
+                display: 'flex', color: '#d6a85b', fontFamily: '"STKaiti", "KaiTi", serif',
+                position: 'relative', padding: `${40 * scale}px`, boxSizing: 'border-box', gap: `${40 * scale}px`
             }}>
                 {/* 增加半透明遮罩层 */}
                 <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 0 }}></div>
@@ -38,9 +40,9 @@ export const SelectForce: React.FC = () => {
                 <button 
                     onClick={() => setScreen('SELECT_SCENARIO')}
                     style={{ 
-                        position: 'absolute', top: '20px', right: '20px',
-                        padding: '10px 20px', backgroundColor: 'rgba(26, 17, 12, 0.8)', color: '#cda654', 
-                        border: '2px solid #cda654', cursor: 'pointer', fontSize: '20px', fontFamily: '"STKaiti", "KaiTi", serif',
+                        position: 'absolute', top: `${40 * scale}px`, right: `${40 * scale}px`,
+                        padding: `${16 * scale}px ${32 * scale}px`, backgroundColor: 'rgba(26, 17, 12, 0.8)', color: '#d6a85b', 
+                        border: `${4 * scale}px solid #d6a85b`, cursor: 'pointer', fontSize: `${32 * scale}px`, fontFamily: '"STKaiti", "KaiTi", serif',
                         zIndex: 100
                     }}>
                     返回
@@ -48,8 +50,8 @@ export const SelectForce: React.FC = () => {
 
                 {/* 左侧：势力列表 */}
                 <div className="custom-scrollbar" style={{ 
-                    width: '200px', border: '4px solid #cda654', backgroundColor: 'rgba(26, 17, 12, 0.8)', 
-                    display: 'flex', flexDirection: 'column', overflowY: 'auto', padding: '10px 0', boxSizing: 'border-box', zIndex: 1
+                    width: `${350 * scale}px`, border: `${6 * scale}px solid #d6a85b`, backgroundColor: 'rgba(26, 17, 12, 0.8)', 
+                    display: 'flex', flexDirection: 'column', overflowY: 'auto', padding: `${20 * scale}px 0`, boxSizing: 'border-box', zIndex: 1
                 }}>
                     <div style={{ flex: '1 1 auto' }}>
                         {selectedScenario.forces.map((force: any) => {
@@ -62,10 +64,10 @@ export const SelectForce: React.FC = () => {
                                     onMouseLeave={() => setHoveredForce(null)}
                                     onClick={() => loadScenarioAndStart(force.id)}
                                     style={{
-                                        padding: '15px 10px', fontSize: '32px', textAlign: 'center',
-                                        cursor: 'pointer', letterSpacing: '5px', fontWeight: 'bold',
-                                        backgroundColor: isHovered ? '#cda654' : 'transparent',
-                                        color: isHovered ? '#1a110c' : '#cda654',
+                                        padding: `${24 * scale}px ${20 * scale}px`, fontSize: `${48 * scale}px`, textAlign: 'center',
+                                        cursor: 'pointer', letterSpacing: `${8 * scale}px`, fontWeight: 'bold',
+                                        backgroundColor: isHovered ? '#d6a85b' : 'transparent',
+                                        color: isHovered ? '#2a1609' : '#d6a85b',
                                         transition: 'all 0.2s'
                                     }}>
                                     {getKingName(force.kingId)}
@@ -76,14 +78,14 @@ export const SelectForce: React.FC = () => {
                 </div>
 
                 {/* 右侧：标题与地图区域 */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '20px', zIndex: 1 }}>
-                    <div style={{ fontSize: '48px', marginBottom: '30px', letterSpacing: '10px', fontWeight: 'bold' }}>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: `${40 * scale}px`, zIndex: 1 }}>
+                    <div style={{ fontSize: `${72 * scale}px`, marginBottom: `${40 * scale}px`, letterSpacing: `${16 * scale}px`, fontWeight: 'bold' }}>
                         势力形势图
                     </div>
 
                     {/* 右侧：地图渲染 */}
                     <div style={{ 
-                        width: '800px', height: '550px', border: '4px solid #cda654', 
+                        width: `${1200 * scale}px`, height: `${800 * scale}px`, border: `${6 * scale}px solid #d6a85b`, 
                         backgroundColor: '#000',
                         backgroundImage: 'url(/assets/images/bg_world_map.jpg)',
                         backgroundSize: 'cover',
@@ -106,27 +108,27 @@ export const SelectForce: React.FC = () => {
                             
                                 <div style={{ 
                                     position: 'relative', 
-                                    width: `${CITY_MAP_W * 50}px`, 
-                                    height: `${CITY_MAP_H * 50}px`,
-                                    transform: 'scale(1.2)', // 缩小一点以确保所有城池都显示出来
+                                    width: `${CITY_MAP_W * 75 * scale}px`, 
+                                    height: `${CITY_MAP_H * 75 * scale}px`,
+                                    transform: 'scale(1)', // 因为格子变大了，所以不需要缩小
                                     transformOrigin: 'center center',
-                                    marginTop: '50px' // 整体往下挪一格（50px）使之在形势图中居中
+                                    marginTop: `${50 * scale}px` // 整体往下挪一格使之在形势图中居中
                                 }}>
                             {/* SVG 层用于绘制连线 */}
                             <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 5 }}>
                                 {cityLinks.map((cityLink) => {
                                     const mapIndex = C_MAP.indexOf(cityLink.cityId + 1);
                                     if (mapIndex === -1) return null;
-                                    const startX = (mapIndex % CITY_MAP_W) * 50 + 25;
-                                    const startY = Math.floor(mapIndex / CITY_MAP_W) * 50 + 25;
+                                    const startX = ((mapIndex % CITY_MAP_W) * 75 + 37.5) * scale;
+                                    const startY = (Math.floor(mapIndex / CITY_MAP_W) * 75 + 37.5) * scale;
 
                                     return cityLink.links.map((link: any, idx: number) => {
                                         if (cityLink.cityId >= link.targetId) return null;
                                         
                                         const targetIndex = C_MAP.indexOf(link.targetId + 1);
                                         if (targetIndex === -1) return null;
-                                        const endX = (targetIndex % CITY_MAP_W) * 50 + 25;
-                                        const endY = Math.floor(targetIndex / CITY_MAP_W) * 50 + 25;
+                                        const endX = ((targetIndex % CITY_MAP_W) * 75 + 37.5) * scale;
+                                        const endY = (Math.floor(targetIndex / CITY_MAP_W) * 75 + 37.5) * scale;
 
                                         return (
                                             <line 
@@ -136,8 +138,8 @@ export const SelectForce: React.FC = () => {
                                                 x2={endX} 
                                                 y2={endY} 
                                                 stroke="#8d6e63" 
-                                                strokeWidth="2"
-                                                strokeDasharray="5,5"
+                                                strokeWidth={4 * scale}
+                                                strokeDasharray={`${8 * scale},${8 * scale}`}
                                             />
                                         );
                                     });
@@ -162,23 +164,37 @@ export const SelectForce: React.FC = () => {
                                          <div 
                                             style={{
                                                 position: 'absolute',
-                                                top: `${y * 50}px`, 
-                                                left: `${x * 50}px`,
-                                                width: '50px',
-                                                height: '50px',
+                                                top: `${y * 75 * scale}px`, 
+                                                left: `${x * 75 * scale}px`,
+                                                width: `${75 * scale}px`,
+                                                height: `${75 * scale}px`,
                                                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                                                 zIndex: isCurrentForceHovered ? 20 : 10
                                             }}>
                                             {/* 城池实心色块 */}
                                             <div style={{ 
-                                                width: '32px', height: '32px',
+                                                width: `${48 * scale}px`, height: `${48 * scale}px`,
                                                 backgroundImage: city.belong !== 0 ? 'url(/assets/images/city_friendly.png)' : 'url(/assets/images/city_neutral.png)',
                                                 backgroundSize: 'cover', backgroundPosition: 'center',
                                                 backgroundColor: 'transparent',
-                                                filter: isCurrentForceHovered ? 'drop-shadow(0 0 10px #FFF)' : (force && force.color ? `drop-shadow(0 0 5px ${force.color})` : 'none'),
+                                                filter: isCurrentForceHovered ? `drop-shadow(0 0 ${15 * scale}px #FFF)` : (force && force.color ? `drop-shadow(0 0 ${8 * scale}px ${force.color})` : 'none'),
                                                 transition: 'all 0.2s',
                                                 transform: isCurrentForceHovered ? 'scale(1.5)' : 'scale(1)'
                                             }}></div>
+                                            {/* 城市名称 */}
+                                            <span style={{ 
+                                                marginTop: `${4 * scale}px`, 
+                                                backgroundColor: city.belong !== 0 ? '#d6a85b' : '#2a1609', 
+                                                color: city.belong !== 0 ? '#2a1609' : '#d6a85b',
+                                                padding: `${2 * scale}px ${4 * scale}px`, 
+                                                fontSize: `${12 * scale}px`, 
+                                                fontWeight: city.belong !== 0 ? 'bold' : 'normal',
+                                                border: `${1 * scale}px solid #d6a85b`, 
+                                                whiteSpace: 'nowrap',
+                                                zIndex: 10
+                                            }}>
+                                                {city.name}
+                                            </span>
                                         </div>
                                      </React.Fragment>
                                  );
