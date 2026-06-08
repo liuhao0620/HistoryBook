@@ -4,7 +4,7 @@ import type { City } from '../models/City';
 import type { Person } from '../models/Person';
 import type { Force } from '../models/Force';
 
-export type ScreenType = 'MAIN_MENU' | 'SELECT_SCENARIO' | 'SELECT_FORCE' | 'GAME' | 'MAP_EDITOR' | 'BATTLE';
+export type ScreenType = 'MAIN_MENU' | 'SELECT_SCENARIO' | 'SELECT_FORCE' | 'GAME' | 'SETTINGS' | 'BATTLE';
 
 export interface Order {
     id: string;
@@ -58,6 +58,8 @@ export interface GameState {
     reportQueue: Report[];
     aiThinkingForceId: number | null;
 
+    resolution: { width: number, height: number };
+    setResolution: (res: { width: number, height: number }) => void;
     // Actions
     setScreen: (screen: ScreenType) => void;
     setAvailableScenarios: (scenarios: any[]) => void;
@@ -118,6 +120,9 @@ export const useGameStore = create<GameState>((set) => ({
     reportQueue: [],
     aiThinkingForceId: null,
 
+    resolution: { width: 1920, height: 1080 },
+    setResolution: (res) => set({ resolution: res }),
+    
     setScreen: (screen) => set({ currentScreen: screen }),
     
     setAvailableScenarios: (scenarios) => set({ availableScenarios: scenarios }),
