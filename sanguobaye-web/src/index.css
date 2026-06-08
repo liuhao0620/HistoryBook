@@ -64,14 +64,13 @@
 }
 
 #root {
-  width: 1920px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   box-sizing: border-box;
 }
 
@@ -79,6 +78,7 @@ body {
     margin: 0;
     padding: 0;
     overflow: hidden; /* 防止整个页面出现滚动条 */
+    background-color: #20150d;
 }
 
 /* 自定义滚动条样式，契合复古风格 */

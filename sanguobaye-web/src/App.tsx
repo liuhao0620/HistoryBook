@@ -40,7 +40,14 @@ function App() {
   };
 
   return (
-    <div style={{ position: 'relative', width: `${resolution.width}px`, height: `${resolution.height}px`, overflow: 'hidden' }}>
+    <div style={{
+      position: 'relative',
+      width: `${resolution.width}px`,
+      height: `${resolution.height}px`,
+      overflow: 'hidden',
+      flexShrink: 0,
+      boxShadow: '0 0 30px rgba(0,0,0,0.8)' // 增加阴影以突出显示游戏区域
+    }}>
       {renderScreen()}
     </div>
   );
