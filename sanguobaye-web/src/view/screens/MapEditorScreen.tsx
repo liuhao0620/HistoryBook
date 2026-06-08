@@ -62,7 +62,8 @@ export const MapEditorScreen: React.FC = () => {
     return (
         <div style={{
             display: 'flex',
-            height: '100vh',
+            height: '100%',
+            width: '100%',
             backgroundColor: '#2a1609',
             alignItems: 'center',
             justifyContent: 'center',

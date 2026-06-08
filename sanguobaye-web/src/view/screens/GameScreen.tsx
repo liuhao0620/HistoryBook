@@ -554,7 +554,7 @@ export const GameScreen: React.FC = () => {
                             width: '100%', 
                             height: '100%',
                             backgroundColor: '#b0c4de',
-                            backgroundImage: 'url(/assets/images/bg_world_map.jpg)',
+                            backgroundImage: 'url(/assets/images/bg_world_map_new.jpg)',
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
                             border: '4px solid #2a1609',

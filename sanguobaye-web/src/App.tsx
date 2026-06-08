@@ -40,7 +40,7 @@ function App() {
   };
 
   return (
-    <div style={{ width: `${resolution.width}px`, height: `${resolution.height}px`, overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: `${resolution.width}px`, height: `${resolution.height}px`, overflow: 'hidden' }}>
       {renderScreen()}
     </div>
   );
