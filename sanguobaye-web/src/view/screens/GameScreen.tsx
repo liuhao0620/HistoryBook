@@ -33,6 +33,8 @@ export const GameScreen: React.FC = () => {
     const { year, month, selectedCityId, cities, persons, forces, playerForceId, nextTurn, setScreen, selectCity, delayedTasks, processDelayedTasks, updateCity, updatePerson, addReport, aiThinkingForceId, reportQueue, clearReports } = useGameStore();
     const initBattle = useBattleStore(state => state.initBattle);
     const scale = useScale();
+    const resolution = useGameStore(state => state.resolution);
+    const scaleY = resolution.height / 1080;
     const [cityLinks, setCityLinks] = useState<any[]>([]);
 
     const [currentReportIndex, setCurrentReportIndex] = useState<number>(0);
@@ -743,9 +745,9 @@ export const GameScreen: React.FC = () => {
                                     <line 
                                         key={`${cityLink.cityId}-${link.targetId}-${idx}`}
                                         x1={startCoords.x * scale} 
-                                        y1={startCoords.y * scale} 
+                                        y1={startCoords.y * scaleY} 
                                         x2={endCoords.x * scale} 
-                                        y2={endCoords.y * scale} 
+                                        y2={endCoords.y * scaleY} 
                                         stroke="#8d6e63" 
                                         strokeWidth={2 * scale}
                                         strokeDasharray={`${5 * scale},${5 * scale}`}
@@ -792,7 +794,7 @@ export const GameScreen: React.FC = () => {
                                 }}
                                 style={{
                                     position: 'absolute',
-                                    top: `${cityCoords.y * scale - citySize / 2}px`,
+                                    top: `${cityCoords.y * scaleY - citySize / 2}px`,
                                     left: `${cityCoords.x * scale}px`,
                                     transform: 'translate(-50%, 0)',
                                     display: 'flex', flexDirection: 'column', alignItems: 'center',
