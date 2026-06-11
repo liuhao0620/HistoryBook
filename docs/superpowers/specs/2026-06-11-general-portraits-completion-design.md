@@ -1,109 +1,111 @@
-# General Portraits Completion Design
+# 将领头像补齐与复核设计
 
-## Context
+## 背景
 
-The game currently has portrait assets in `sanguobaye-web/public/assets/images/generals/`.
-The existing art guide is `doc/美术文档/美术资源生成指南.md`, which defines a dark gold and brown Three Kingdoms strategy portrait style and includes generated batches for core generals.
+游戏当前的将领头像资源位于 `sanguobaye-web/public/assets/images/generals/`。
+现有美术指南是 `doc/美术文档/美术资源生成指南.md`，其中已经定义了暗金、棕色调、三国策略游戏头像风格，并记录了核心武将和前两批补充头像的生成提示词。
 
-`sanguobaye-web/public/config/general_names.json` appears to contain garbled text, so the reliable source of Chinese general names for this task is the scenario `persons.json` files under `sanguobaye-web/public/config/scenarios/`.
-Across those scenario files there are 185 unique names. There are currently 66 existing portrait PNG files, leaving 119 missing portraits.
+`sanguobaye-web/public/config/general_names.json` 当前内容存在编码乱码，因此本次任务不直接以该文件中的乱码文本作为可读姓名来源。
+可读且可靠的将领中文名来源是 `sanguobaye-web/public/config/scenarios/` 下各剧本的 `persons.json` 文件。
+这些剧本人物表中共有 185 个唯一将领名；当前已有 66 个头像 PNG 文件，仍缺失 119 个头像。
 
-## Goal
+## 目标
 
-Complete the general portrait asset set for all 185 unique scenario generals.
+补齐并复核全部 185 个剧本将领的头像资源。
 
-This includes:
+本次范围包括：
 
-- Generate portraits for all 119 missing generals.
-- Review all 66 existing portraits for visual quality and excessive similarity.
-- Regenerate existing portraits when they are too homogeneous, visually weak, or insufficiently recognizable for the named historical/game character.
-- Save final portraits as `sanguobaye-web/public/assets/images/generals/{将领中文名}.png`.
-- Add the final prompt records to `doc/美术文档/美术资源生成指南.md` in the same style as the existing generated batches.
+- 为 119 个缺失将领生成头像。
+- 对 66 个已有头像做视觉质量与同质化复核。
+- 当已有头像出现明显同质化、质量不足、角色辨识度不够，或与历史/游戏设定不匹配时，重新生成该头像。
+- 最终头像统一保存为 `sanguobaye-web/public/assets/images/generals/{将领中文名}.png`。
+- 将新增或重生成头像的最终提示词追加记录到 `doc/美术文档/美术资源生成指南.md`，格式沿用现有批次。
 
-## Visual Direction
+## 视觉方向
 
-All portraits should preserve the established game style:
+所有头像应延续项目既有美术风格：
 
-- Three Kingdoms era historical portrait.
-- Bust portrait, head and shoulders, centered.
-- Dark gold and brown base palette.
-- Cinematic lighting.
-- Realistic painted strategy-game portrait.
-- Plain dark background.
-- No text, no logo, no watermark, no modern elements.
+- 三国时期历史人物头像。
+- 半身像，头肩构图，主体居中。
+- 暗金与棕色为基础色调。
+- 电影感光影。
+- 写实绘画风格，适合复古策略游戏 UI。
+- 深色纯色背景。
+- 不出现文字、标志、水印、现代元素。
 
-The style should be consistent enough to belong to one game, but not so uniform that portraits look like variants of the same person.
+整体风格需要统一到同一个游戏世界中，但不能统一到让不同武将像同一个人的换装版本。
 
-## De-Homogenization Rules
+## 去同质化规则
 
-Each portrait prompt should include distinguishing traits based on the character's historical role, faction, region, age, and personality.
-The prompt set should vary:
+每个头像提示词都应根据人物的历史身份、阵营、地域、年龄、性格和游戏设定加入可识别差异。
+提示词需要有意识地区分以下维度：
 
-- Face shape and age: youthful, elderly, rugged, gaunt, broad, refined, sickly, imposing.
-- Hair and facial hair: clean-shaven, thin mustache, short beard, long scholar beard, heavy warrior beard, grey beard.
-- Clothing and armor: court robes, scholar robes, Taoist robes, frontier armor, naval armor, heavy infantry armor, cavalry lamellar, southern commander armor, medical robes.
-- Regional motifs: Jiangdong naval details, Xiliang frontier fur and leather, Jingzhou scholar-official restraint, Yizhou mountain-road austerity, northern cavalry weathering.
-- Pose and expression: calm strategist, loyal veteran, arrogant noble, fierce champion, anxious minor lord, principled official, opportunistic adviser.
-- Accent colors: restrained faction or identity accents while keeping the overall dark gold and brown style.
+- 脸型与年龄感：年轻、年长、老成、粗犷、清瘦、宽脸、儒雅、病弱、威猛。
+- 发型与胡须：无须、短须、细髭、长须、浓须、灰白胡须、文士须。
+- 服饰与甲胄：朝服、文士袍、道士服、边地皮甲、江东水军甲、重步兵甲、骑兵札甲、南方将领服饰、医者服饰。
+- 地域元素：江东水军细节、西凉边塞皮毛与皮革、荆州士族克制感、益州山地与栈道气质、北方骑兵风霜感。
+- 姿态与表情：沉静谋士、忠诚老将、骄矜贵族、勇猛战将、焦虑小诸侯、刚正官员、投机说客。
+- 局部强调色：在暗金与棕色主风格下，允许使用克制的阵营或身份强调色。
 
-Any generated image that appears to reuse the same face, armor silhouette, beard, expression, or composition too closely with another portrait should be regenerated with a more specific prompt.
+如果生成图在脸型、甲胄轮廓、胡须、表情、姿态或构图上与其他头像过于相似，应视为失败，并用更具体的提示词重新生成。
 
-## Review Process
+## 复核流程
 
-The review should happen in batches.
+复核与生成按批次进行。
 
-1. Create or update prompt records for a batch of generals grouped by faction or role.
-2. Generate images into a temporary review location or the final generals directory.
-3. Build a contact-sheet style visual review of the batch together with nearby existing portraits.
-4. Check for:
-   - Duplicate-looking faces.
-   - Repeated armor and collar shapes.
-   - Repeated facial hair layouts.
-   - Similar expression and head angle across unrelated characters.
-   - Poor readability at game UI size.
-   - Mismatch between character identity and portrait.
-5. Regenerate failed portraits with targeted prompts.
-6. Move accepted portraits to `sanguobaye-web/public/assets/images/generals/`.
-7. Record final prompts in `doc/美术文档/美术资源生成指南.md`.
+1. 按阵营或人物类型整理一批将领，并为每个将领准备差异化提示词。
+2. 生成该批头像，先放入临时复核位置或最终头像目录。
+3. 制作接触表，将新生成头像与同批、同阵营、已有头像放在一起查看。
+4. 重点检查：
+   - 是否出现重复脸。
+   - 甲胄、衣领、肩甲轮廓是否过度重复。
+   - 胡须和发型是否过度重复。
+   - 无关人物是否使用了相似表情和头部角度。
+   - 缩小到游戏 UI 尺寸后是否仍然清晰。
+   - 头像是否符合对应人物身份和气质。
+5. 对不合格头像使用更有针对性的提示词重新生成。
+6. 通过复核的头像保存到 `sanguobaye-web/public/assets/images/generals/`。
+7. 将最终采用的提示词记录到 `doc/美术文档/美术资源生成指南.md`。
 
-Existing portraits are not automatically overwritten. They are reviewed first, then regenerated only when the visual review finds clear problems.
+已有头像不会无条件覆盖。
+先复核，再只对存在明确问题的头像重新生成。
 
-## Asset Batches
+## 资源批次
 
-The missing and review candidates should be organized into practical batches such as:
+缺失头像与需要复核的头像按实际工作拆成以下批次：
 
-- Cao Wei and Cao-affiliated officers.
-- Yuan Shao and northern officials.
-- Jiangdong/Wu commanders and advisers.
-- Liu Bei/Shu, Yizhou, and Hanzhong figures.
-- Jingzhou and southern regional figures.
-- Xiliang/frontier commanders.
-- Famous independents, scholars, physicians, diviners, and minor coalition figures.
+- 曹魏及曹操相关将领、谋士、宗族人物。
+- 袁绍阵营与北方士族、官员、将领。
+- 江东/孙吴将领与谋士。
+- 刘备阵营、蜀汉、益州、汉中相关人物。
+- 荆州与南方地方势力人物。
+- 西凉、边地、骑兵和割据势力人物。
+- 名士、医者、卜者、独立人物和讨董联盟小势力人物。
 
-Batching is only for control and review; the final deliverable is the full portrait set.
+批次只用于控制生成和复核节奏；最终交付目标仍是完整的 185 个将领头像资源。
 
-## Documentation
+## 文档记录
 
-`doc/美术文档/美术资源生成指南.md` should receive new generated sections after the existing batch 13 section.
-The format should match the existing entries:
+`doc/美术文档/美术资源生成指南.md` 应在现有第 13 批之后追加新的生成批次。
+新增记录格式沿用现有结构：
 
-- Batch heading with status.
-- Basis file or data source.
-- Purpose.
-- Size, format, and save-path rule.
-- Base style convention.
-- One numbered entry per general with save path and prompt.
+- 批次标题与生成状态。
+- 数据来源说明。
+- 用途说明。
+- 尺寸、格式、保存路径规则。
+- 基础画风约定。
+- 每个将领一条编号记录，包含保存路径和 AI 绘图提示词。
 
-Because the source `general_names.json` is garbled, the documentation should note that scenario `persons.json` files were used as the authoritative readable name source for this completion pass.
+由于 `general_names.json` 存在乱码，文档中需要说明：本次补齐以各剧本 `persons.json` 中的可读中文名作为权威姓名来源。
 
-## Verification
+## 验收标准
 
-Completion requires evidence for:
+完成时需要满足以下条件：
 
-- All unique scenario general names have matching PNG files.
-- No final portrait file is empty or unreadable.
-- The art guide contains prompt records for newly generated or regenerated portraits.
-- Contact-sheet visual review was performed for generated batches and existing reviewed portraits.
-- Any regenerated existing portrait has a clear reason recorded in the work summary.
+- 所有剧本中的唯一将领名都有对应 PNG 头像文件。
+- 最终头像文件均可读取，且不是空文件。
+- 美术指南中记录了新增或重生成头像的最终提示词。
+- 已对新生成批次和已有头像做接触表式视觉复核。
+- 如果重生成了已有头像，需要在工作总结中说明重生成原因。
 
-No production code changes are expected for this task.
+本任务预期不修改生产代码。
