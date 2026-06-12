@@ -341,6 +341,180 @@ De-homogenization rule: every portrait must vary face shape, age, clothing, head
 
 差异化规则：蜀汉与益州人物需要区分仁义旧部、益州地方官、山地守将、老将、谋士、商贾士族和忠烈武人；不要全部使用绿色长袍。
 
+### 法正 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/法正.png`
+- 最终提示词：
+  > 1:1 painted Three Kingdoms strategy game bust portrait of Fa Zheng, brilliant but vengeful Shu-Han strategist, sharp narrow face, calculating intense eyes, thin mustache and short beard, dark scholar robes with muted green-brown collar and hidden dagger-like clasp, compact adviser cap, sly tactical presence, painterly historical Chinese realism, low-saturation sepia and dark gold palette with restrained green accents matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable small thumbnail, no text, no watermark, no bright colors, avoid gentle benevolent adviser face, avoid warrior armor, avoid anime style.
+
+### 费祎 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/费祎.png`
+- 最终提示词：
+  > 1:1 painted historical strategy game bust portrait of Fei Yi, elegant Shu-Han statesman and diplomat, gentle refined face, calm intelligent eyes, neat thin mustache and short beard, soft dark court robes with muted green-grey and gold-brown trim, simple official cap, no armor, balanced and humane administrative presence, painterly Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable as small UI thumbnail, no text, no watermark, no bright colors, avoid sharp schemer look like Fa Zheng, avoid warrior armor, avoid anime style.
+
+### 关平 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/关平.png`
+- 最终提示词：
+  > Painted historical strategy game portrait, square 1:1 bust of Guan Ping, young Shu-Han warrior and son of Guan Yu. Ancient Chinese game illustration with visible brush texture, not photorealistic, not modern actor. Plain youthful but sturdy face, earnest loyal eyes, slightly rough skin, very faint mustache, modest dark green-brown lamellar armor, simple cloth-and-metal headband, restrained red cord, filial battlefield officer presence. Low-saturation sepia and dark gold palette with muted green accents matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable small thumbnail. No text, no watermark, no bright colors, no anime idol look, avoid long Guan Yu beard.
+
+### 黄权 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/黄权.png`
+- 最终提示词：
+  > 1:1 painted historical strategy game bust portrait of Huang Quan, cautious and rational Shu-Han strategist from Yizhou, later serving Wei, mature rectangular face, steady analytical eyes, neat mustache and medium beard, dark official robes over light hidden armor, muted earth-green collar and bronze clasp, modest square official cap, pragmatic border-administrator presence, painterly Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable small thumbnail, no text, no watermark, no bright colors, avoid sly Fa Zheng expression, avoid warrior armor, avoid anime style.
+
+### 黄忠 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/黄忠.png`
+- 最终提示词：
+  > 1:1 painted Three Kingdoms strategy game bust portrait of Huang Zhong, elderly veteran archer general of Shu-Han, weathered old face, piercing brave eyes, thick white eyebrows, full white beard but controlled, dark practical armor with muted green-brown archer cloak and subtle bow ornament, no bright fantasy gear, upright old warrior pride, painterly historical Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins for game portrait and small thumbnail, no text, no watermark, no bright colors, avoid Santa-like beard, avoid oversized ornate armor, avoid anime style.
+
+### 简雍 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/简雍.png`
+- 最终提示词：
+  > 1:1 painted historical strategy game bust portrait of Jian Yong, easygoing old companion and envoy of Liu Bei, relaxed slightly humorous face, clever lazy eyes, sparse mustache and casual short beard, loose dark traveler's scholar robe with muted brown-green scarf, simple soft cap tilted slightly, no armor, informal diplomatic presence, painterly Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable small thumbnail, no text, no watermark, no bright colors, avoid stern official look, avoid warrior armor, avoid anime style.
+
+### 蒋琬 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/蒋琬.png`
+- 最终提示词：
+  > 1:1 painted Three Kingdoms strategy game bust portrait of Jiang Wan, calm senior Shu-Han regent and administrator, mature broad forehead, steady gentle eyes, neat medium beard with a little grey, dignified dark court robes with muted green-grey edging and simple bronze clasp, tall but restrained official cap, no armor, patient governing presence, painterly historical Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins for portrait frame and small thumbnail, no text, no watermark, no bright colors, avoid youthful Fei Yi look, avoid sharp schemer face, avoid anime style.
+
+### 李严 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/李严.png`
+- 最终提示词：
+  > 1:1 painted historical strategy game bust portrait of Li Yan, proud capable Shu-Han administrator and military commander, stern square face, suspicious ambitious eyes, trimmed mustache and short beard, dark official-military robe over rigid armor plates, muted earth-green sash and bronze shoulder detail, upright but tense posture, painterly Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable small thumbnail, no text, no watermark, no bright colors, avoid gentle statesman look, avoid bulky brute armor, avoid anime style.
+
+### 廖化 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/廖化.png`
+- 最终提示词：
+  > 1:1 painted Three Kingdoms strategy game bust portrait of Liao Hua, long-serving Shu-Han veteran officer, weathered middle-aged to older face, loyal tired eyes, short grey-streaked beard, practical worn dark armor with muted green-brown cloth wrap, no ornate helmet, survivor of many campaigns presence, painterly historical Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable small thumbnail, no text, no watermark, no bright colors, avoid famous hero glamour, avoid young handsome face, avoid anime style.
+
+### 刘璋 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/刘璋.png`
+- 最终提示词：
+  > 1:1 painted historical strategy game bust portrait of Liu Zhang, weak provincial ruler of Yizhou in late Han, soft round face, anxious indecisive eyes, neat mustache and short beard, rich but subdued dark official robe with muted ochre-green trim, ornate yet slightly ill-fitting governor headpiece, no armor, sheltered and hesitant presence, painterly Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins for game portrait and small thumbnail, no text, no watermark, no bright colors, avoid heroic ruler look, avoid warrior armor, avoid anime style.
+
+### 马良 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/马良.png`
+- 最终提示词：
+  > 1:1 painted Three Kingdoms strategy game bust portrait of Ma Liang, refined Shu-Han scholar known for his white eyebrows, slender gentle face, calm wise eyes, distinctive pale white eyebrows while hair remains dark, neat thin mustache and short beard, elegant dark scholar robes with muted green-grey trim, modest official cap, no armor, luminous but restrained scholar presence, painterly Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable small thumbnail, no text, no watermark, no bright colors, avoid full white hair fantasy look, avoid anime style.
+
+### 马谡 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/马谡.png`
+- 最终提示词：
+  > 1:1 painted historical strategy game bust portrait of Ma Su, talented but overconfident Shu-Han strategist, younger narrow face, bright arrogant eyes, thin mustache, slightly raised chin, dark scholar-military robe with light hidden armor and muted green sash, compact adviser cap, clever but untested presence, painterly Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins for side-panel and small thumbnail, no text, no watermark, no bright colors, avoid gentle Ma Liang look, avoid old beard, avoid anime idol style.
+
+### 孟达 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/孟达.png`
+- 最终提示词：
+  > 1:1 painted Three Kingdoms strategy game bust portrait of Meng Da, ambitious and unreliable frontier commander between Shu and Wei, narrow guarded face, restless side-glancing eyes, trimmed mustache and short beard, dark mixed armor with travel-worn cloak and muted brown-green scarf, no faction-heavy emblem, posture slightly turned as if cautious, painterly historical Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable small thumbnail, no text, no watermark, no bright colors, avoid loyal heroic expression, avoid ornate noble armor, avoid anime style.
+
+### 糜芳 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/糜芳.png`
+- 最终提示词：
+  > 1:1 painted historical strategy game bust portrait of Mi Fang, wealthy clan military officer of Liu Bei who later surrendered, plump cautious face, uneasy eyes, short beard, dark armor partly covered by rich but subdued merchant-family robe, muted brown-red sash, slightly defensive posture, painterly Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins for game portrait and thumbnail, no text, no watermark, no bright colors, avoid heroic loyal warrior look, avoid scholar-only robe, avoid anime style.
+
+### 糜竺 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/糜竺.png`
+- 最终提示词：
+  > 1:1 painted Three Kingdoms strategy game bust portrait of Mi Zhu, wealthy merchant-gentry patron and loyal adviser of Liu Bei, mature kind face, calm generous eyes, neat long beard, refined dark silk robes with understated gold-brown merchant-family pattern, no armor, simple elegant official cap, dignified wealthy but not flashy presence, painterly historical Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable small thumbnail, no text, no watermark, no bright colors, avoid looking like Mi Fang, avoid military armor, avoid anime style.
+
+### 庞统 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/庞统.png`
+- 最终提示词：
+  > 1:1 painted historical strategy game bust portrait of Pang Tong, brilliant unconventional Shu-Han strategist known as the Fledgling Phoenix, unattractive but intelligent face, broad nose, heavy eyelids, penetrating hidden eyes, sparse mustache and uneven short beard, dark travel-worn scholar robes with muted green-brown scarf, simple low cap, no armor, eccentric deep strategist presence, painterly Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins for side-panel and small thumbnail, no text, no watermark, no bright colors, avoid handsome adviser look, avoid fantasy phoenix imagery, avoid anime style.
+
+### 孙乾 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/孙乾.png`
+- 最终提示词：
+  > 1:1 painted Three Kingdoms strategy game bust portrait of Sun Qian, early Liu Bei diplomat and adviser, middle-aged gentle face, composed trustworthy eyes, neat mustache and medium beard, plain dark traveler's official robe with muted green-brown edging, simple envoy cap, no armor, patient loyal envoy presence, painterly Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable small thumbnail, no text, no watermark, no bright colors, avoid warrior armor, avoid wealthy Mi Zhu look, avoid anime style.
+
+### 王平 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/王平.png`
+- 最终提示词：
+  > 1:1 painted historical strategy game bust portrait of Wang Ping, practical mountain-defense general of Shu-Han, dark weathered face, steady cautious eyes, short rough beard, sturdy but plain dark armor with mountain-campaign cloak and muted green-brown cloth wraps, no ornate helmet, humble self-taught commander presence from frontier ranks, painterly Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins for side-panel and small thumbnail, no text, no watermark, no bright colors, avoid noble scholar look, avoid bulky brute armor, avoid anime style.
+
+### 魏延 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/魏延.png`
+- 最终提示词：
+  > 1:1 painted Three Kingdoms strategy game bust portrait of Wei Yan, fierce and rebellious Shu-Han general, long angular face, intense suspicious eyes, thick eyebrows, wild medium beard, dark rugged armor with muted red-brown scarf and mountain-war leather straps, hair tied high but slightly unruly, dangerous independent warrior presence, painterly historical Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable small thumbnail, no text, no watermark, no bright colors, avoid loyal gentle expression, avoid northern brute bodyguard silhouette, avoid anime style.
+
+### 吴懿 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/吴懿.png`
+- 最终提示词：
+  > Painted Three Kingdoms strategy game portrait, square 1:1 bust of Wu Yi, Yizhou provincial military commander of Shu-Han. Historical Chinese game illustration, not photorealistic close-up. Medium crop with safe margins. Mature reserved face, practical eyes, neat short beard, simple dark official-military robe over restrained armor, muted ochre-green sash, low compact commander cap, provincial guard commander presence, not a king. Low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background. No text, no watermark, no bright colors, no anime, avoid ornate royal armor and tall jeweled crown.
+
+### 向朗 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/向朗.png`
+- 最终提示词：
+  > 1:1 painted historical strategy game bust portrait of Xiang Lang, elderly Shu-Han scholar-official, plain long face, quiet cautious eyes, thin grey mustache and short beard, modest dark robes with muted green-brown edging, simple low official cap, no armor, local learned elder presence, painterly Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins for side-panel and small thumbnail, no text, no watermark, no bright colors, avoid high-ranking grand minister luxury, avoid warrior armor, avoid anime style.
+
+### 徐庶 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/徐庶.png`
+- 最终提示词：
+  > 1:1 painted Three Kingdoms strategy game bust portrait of Xu Shu, wandering swordsman-scholar strategist of Liu Bei, lean melancholy face, sharp thoughtful eyes, short mustache and beard, dark traveler's scholar robe over light hidden armor, muted grey-green cloak, simple headwrap rather than tall official cap, restrained heroic but sorrowful presence, painterly historical Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable small thumbnail, no text, no watermark, no bright colors, avoid court official luxury, avoid rugged brute warrior, avoid anime style.
+
+### 严颜 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/严颜.png`
+- 最终提示词：
+  > 1:1 painted historical strategy game bust portrait of Yan Yan, stubborn elderly Yizhou veteran general, rugged old face, fierce unyielding eyes, thick grey eyebrows, short white beard, dark local armor with mountain fortress wear and muted ochre scarf, compact old helmet, proud defiant captured-general presence, painterly Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins for game portrait and small thumbnail, no text, no watermark, no bright colors, avoid looking like Huang Zhong archer, avoid ornate Shu court style, avoid anime.
+
+### 张任 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/张任.png`
+- 最终提示词：
+  > 1:1 painted Three Kingdoms strategy game bust portrait of Zhang Ren, loyal Yizhou general serving Liu Zhang, stern disciplined face, cold unwavering eyes, trimmed beard, dark practical armor with muted ochre-green scarf and fortress-guard shoulder plates, compact helmet, upright doomed-loyalty presence, painterly historical Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable small thumbnail, no text, no watermark, no bright colors, avoid Shu-Han green hero look, avoid rugged bandit style, avoid anime.
+
+### 张松 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/张松.png`
+- 最终提示词：
+  > Painted Three Kingdoms strategy game portrait, 1:1 bust of Zhang Song, clever unattractive Yizhou strategist. Short narrow face, sharp large eyes, crooked nose, thin mustache, slight hunched posture, plain dark scholar robe, small low cap, sly but human expression. Low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable small thumbnail. No text, no watermark, no bright colors, no anime, no caricature, not handsome.
+
+### 周仓 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/周仓.png`
+- 最终提示词：
+  > 1:1 painted historical strategy game bust portrait of Zhou Cang, rough loyal warrior follower of Guan Yu, dark rugged face, thick eyebrows, fierce devoted eyes, heavy short beard, simple dark armor with worn cloth headwrap and muted red-green scarf, strong shoulders but not monstrous, folk-hero battlefield presence, painterly Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins for game portrait and thumbnail, no text, no watermark, no bright colors, avoid looking like Zhou Tai, avoid ornate officer armor, avoid anime style.
+
+### 董允 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/董允.png`
+- 最终提示词：
+  > 1:1 painted Three Kingdoms strategy game bust portrait of Dong Yun, upright strict Shu-Han court official, young-to-mature refined face, serious principled eyes, neat thin mustache, immaculate dark official robe with muted green-grey trim, simple straight official cap, no armor, moral disciplinarian presence, painterly Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable small thumbnail, no text, no watermark, no bright colors, avoid gentle Fei Yi look, avoid old scholar beard, avoid anime style.
+
+### 伊籍 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/伊籍.png`
+- 最终提示词：
+  > Painted Three Kingdoms strategy game portrait, 1:1 bust of Yi Ji, older Liu Bei envoy and scholar-official. Gentle aged face, diplomatic calm eyes, thin grey mustache and short beard, plain dark travel official robe with muted green-brown trim, simple soft cap, no armor. Low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable small thumbnail. No text, no watermark, no bright colors, no anime, not a warrior.
+
+### 王累 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/王累.png`
+- 最终提示词：
+  > 1:1 painted historical strategy game bust portrait of Wang Lei, loyal Yizhou official known for desperate remonstrance, gaunt intense face, sorrowful determined eyes, thin mustache and short beard, plain dark official robes with muted ochre-green trim, simple low cap, no armor, tragic loyalist presence as if ready to die for counsel, painterly Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins for portrait frame and thumbnail, no text, no watermark, no bright colors, avoid calm bureaucrat look, avoid warrior armor, avoid anime style.
+
 ## 批次 E：荆州、南方与地方势力人物
 
 名单：蔡瑁、曹豹、陈登、陈宫、陈圭、黄祖、蒯良、蒯越、刘繇、王朗、王威、文聘、张允、王粲、王修、雷铜
