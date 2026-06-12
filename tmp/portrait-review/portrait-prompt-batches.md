@@ -119,6 +119,102 @@ De-homogenization rule: every portrait must vary face shape, age, clothing, head
 
 差异化规则：袁绍阵营要体现河北士族、贵族子弟、北方军将和谋士派系感；避免所有人物都成为同一种华丽金甲贵族。
 
+### 郭图 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/郭图.png`
+- 最终提示词：
+  > 1:1 realistic painted bust portrait of Guo Tu, a sharp but petty adviser of Yuan Shao in the Three Kingdoms era, thin foxlike face, narrow suspicious eyes, small pointed mustache and short beard, slightly smug expression, dark northern noble official robes with muted gold trim, tall angular scholar cap, no armor, low-saturation sepia and dark gold palette matching an ancient parchment strategy map UI, plain deep umber background, centered head and shoulders, safe margins for game portrait frame and small thumbnail, no text, no watermark, no bright colors, avoid heroic warrior look, avoid same face as Xun Yu.
+
+### 高干 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/高干.png`
+- 最终提示词：
+  > 1:1 realistic painted bust portrait of Gao Gan, a northern noble provincial governor and Yuan Shao kinsman, young mature aristocratic face, proud restrained gaze, clean neat mustache, elegant dark robe layered over polished but restrained armor, high noble headpiece with subtle Yuan clan ornament, refined Hebei elite presence, low-saturation sepia and dark gold palette matching an ancient parchment strategy map UI, plain deep umber background, centered head and shoulders, safe margins, readable as small UI portrait, no text, no watermark, no bright colors, avoid old strategist face, avoid rugged frontier look, avoid anime style.
+
+### 高览 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/高览.png`
+- 最终提示词：
+  > 1:1 realistic painted bust portrait of Gao Lan, a seasoned Hebei battlefield general under Yuan Shao, broad weathered face, steady battle-worn eyes, medium full beard, practical northern lamellar armor with muted iron and bronze, fur-lined shoulder edge, no ornate noble robe, veteran commander presence rather than brute bodyguard, low-saturation sepia and dark gold palette matching an ancient parchment strategy map UI, plain deep umber background, centered head and shoulders, safe margins for game portrait frame and small thumbnail, no text, no watermark, no bright colors, avoid oversized monster physique, avoid refined official look, avoid anime style.
+
+### 耿武 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/耿武.png`
+- 最终提示词：
+  > 1:1 realistic painted bust portrait of Geng Wu, a loyal regional minister in late Han Hebei, older upright face, tired but resolute eyes, thin grey mustache and short beard, plain dark official robe with simple woven collar, modest low scholar cap, no armor, austere loyalist presence, low-saturation sepia and dark gold palette matching an ancient parchment strategy map UI, plain deep umber background, centered head and shoulders, safe margins, readable as small UI portrait, no text, no watermark, no bright colors, avoid noble luxury, avoid warrior armor, avoid anime style.
+
+### 关纯 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/关纯.png`
+- 最终提示词：
+  > 1:1 realistic painted bust portrait of Guan Chun, a loyal upright official of late Han Hebei associated with Han Fu and Yuan Shao's era, angular lean face, intense principled eyes, short black beard, simple dark scholar-warrior robe over very light leather armor, modest black cloth cap, stern loyalist presence rather than famous battlefield general, low-saturation sepia and dark gold palette matching an ancient parchment strategy map UI, plain deep umber background, centered head and shoulders, safe margins for game portrait frame and small thumbnail, no text, no watermark, no bright colors, avoid ornate Yuan noble look, avoid bulky general armor, avoid anime style.
+
+### 田楷 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/田楷.png`
+- 最终提示词：
+  > 1:1 realistic painted bust portrait of Tian Kai, a northern frontier military governor connected to Gongsun Zan, lean sun-weathered face, alert cavalry officer eyes, trimmed mustache, practical leather-and-lamellar armor with pale fur collar and worn straps, compact military cap, austere Youzhou border presence, low-saturation sepia and dark gold palette matching an ancient parchment strategy map UI, plain deep umber background, centered head and shoulders, safe margins for side-panel and small modal portrait, no text, no watermark, no bright colors, avoid Yuan court luxury, avoid heavy brute armor, avoid anime style.
+
+### 辛毗 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/辛毗.png`
+- 最终提示词：
+  > 1:1 realistic painted bust portrait of Xin Pi, an articulate diplomat and adviser from a northern gentry family, clear intelligent eyes, slim lively face, neat thin mustache and short beard, composed persuasive expression, dark olive-brown scholar robes with restrained bronze clasp, modest official cap, no armor, low-saturation sepia and dark gold palette matching an ancient parchment strategy map UI, plain deep umber background, centered head and shoulders, safe margins, readable as small UI portrait, no text, no watermark, no bright colors, avoid harsh schemer face, avoid military armor, avoid anime style.
+
+### 辛评 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/辛评.png`
+- 最终提示词：
+  > 1:1 realistic painted bust portrait of Xin Ping, an older conservative adviser of Yuan Shao and elder northern gentry statesman, long oval face, measured cautious eyes, fuller neatly combed beard with early grey, formal dark court robes with muted gold edging, taller square scholar-official cap, dignified but worried expression, no armor, low-saturation sepia and dark gold palette matching an ancient parchment strategy map UI, plain deep umber background, centered head and shoulders, safe margins for game portrait and thumbnail, no text, no watermark, no bright colors, avoid same face as Xin Pi, avoid warrior armor, avoid anime style.
+
+### 荀谌 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/荀谌.png`
+- 最终提示词：
+  > 1:1 realistic painted bust portrait of Xun Chen, a refined Yingchuan strategist serving Yuan Shao, elegant narrow face, cool assessing eyes, thin mustache and short pointed beard, high dark scholar cap with restrained northern-gentry detail, layered black-brown robes with very subtle gold pattern, composed and distant expression, no armor, low-saturation sepia and dark gold palette matching an ancient parchment strategy map UI, plain deep umber background, centered head and shoulders, safe margins, readable as small UI portrait, no text, no watermark, no bright colors, avoid looking identical to Xun Yu, avoid youthful beauty, avoid anime style.
+
+### 袁尚 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/袁尚.png`
+- 最终提示词：
+  > Painted Three Kingdoms strategy game portrait, 1:1 bust of Yuan Shang, pampered young heir of Yuan Shao. Historical Chinese illustration realism with visible brushwork, not a photo. Softer rounded young noble face, less handsome, faint thin mustache, spoiled uncertain eyes, ornate but muted dark silk robe over light ceremonial armor, low wide noble crown, no tall official hat, no modern actor look. Dark sepia and muted gold palette matching an ancient parchment map UI, plain deep umber background, centered head and shoulders with safe margins, readable in small UI thumbnail. No text, no watermark, no bright colors, no anime, avoid looking like Gao Gan or Yuan Tan.
+
+### 袁谭 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/袁谭.png`
+- 最终提示词：
+  > 1:1 realistic painted bust portrait of Yuan Tan, the ambitious eldest son of Yuan Shao, mature noble warrior face, sharper cheekbones, hard resentful eyes, trimmed mustache and short beard, dark formal armor with squared shoulders and restrained Yuan clan gold trim, less elegant and more aggressive than Yuan Shang, high military-noble headpiece, low-saturation sepia and dark gold palette matching an ancient parchment strategy map UI, plain deep umber background, centered head and shoulders, safe margins, readable as small UI portrait, no text, no watermark, no bright colors, avoid youthful pampered face, avoid rugged bandit look, avoid anime style.
+
+### 袁熙 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/袁熙.png`
+- 最终提示词：
+  > 1:1 realistic painted bust portrait of Yuan Xi, a quieter northern lord and son of Yuan Shao associated with Youzhou, reserved aristocratic face, slightly long nose, distant cold eyes, neat mustache, dark blue-black noble robe under light cavalry armor, small fur-edged mantle hinting at northern frontier, restrained headpiece, subdued melancholy presence, low-saturation sepia and dark gold palette matching an ancient parchment strategy map UI, plain deep umber background, centered head and shoulders, safe margins for game portrait frame and small thumbnail, no text, no watermark, no bright colors, avoid same face as Yuan Shang or Yuan Tan, avoid brute warrior look, avoid anime style.
+
+### 袁遗 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/袁遗.png`
+- 最终提示词：
+  > 1:1 realistic painted bust portrait of Yuan Yi, an older Han dynasty aristocratic scholar-official from the Yuan clan, refined tired face, high forehead, long narrow grey beard, calm principled eyes, understated dark court robes with worn gold edging, tall traditional official cap, noble lineage but politically exhausted presence, no armor, low-saturation sepia and dark gold palette matching an ancient parchment strategy map UI, plain deep umber background, centered head and shoulders, safe margins, readable as small UI portrait, no text, no watermark, no bright colors, avoid young heir look, avoid military armor, avoid anime style.
+
+### 张郃 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/张郃.png`
+- 最终提示词：
+  > 1:1 realistic painted bust portrait of Zhang He, an agile and elegant battlefield general originally under Yuan Shao, later famous for tactical flexibility, lean handsome but mature warrior face, sharp bright eyes, trimmed mustache and pointed beard, sleek dark lamellar armor with narrow shoulder guards, subtle feather-like ridge on compact helmet, poised strategic warrior presence rather than brute strength, low-saturation sepia and dark gold palette matching an ancient parchment strategy map UI, plain deep umber background, centered head and shoulders, safe margins for game portrait frame and small thumbnail, no text, no watermark, no bright colors, avoid same silhouette as Gao Lan or Xu Huang, avoid anime style.
+
+### 张南 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/张南.png`
+- 最终提示词：
+  > 1:1 realistic painted bust portrait of Zhang Nan, a lesser Hebei military officer in Yuan Shao's forces, ordinary square face, practical watchful eyes, short mustache, slightly rough skin, simple dark iron lamellar armor with plain cloth scarf, no ornate helmet, modest field-command presence, low-saturation sepia and dark gold palette matching an ancient parchment strategy map UI, plain deep umber background, centered head and shoulders, safe margins for side-panel portrait and small modal thumbnail, no text, no watermark, no bright colors, avoid famous hero look, avoid noble court robe, avoid anime style.
+
+### 严纲 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/严纲.png`
+- 最终提示词：
+  > 1:1 realistic painted bust portrait of Yan Gang, a northern cavalry general associated with Gongsun Zan and the White Horse Volunteers, wind-burned face, stern forward eyes, short rugged beard, pale horsehair plume on compact helmet, light cavalry lamellar armor with off-white scarf and worn leather straps, frontier horseman discipline, low-saturation sepia and dark gold palette matching an ancient parchment strategy map UI, plain deep umber background, centered head and shoulders, safe margins for game portrait frame and small thumbnail, no text, no watermark, no bright colors, avoid Yuan noble robes, avoid bulky infantry armor, avoid anime style.
+
 ## 批次 C：江东与孙吴人物
 
 名单：陈武、丁奉、甘宁、蒋钦、凌操、凌统、鲁肃、陆逊、吕范、吕蒙、太史慈、虞翻、张纮、张昭、周泰、朱桓、诸葛谨、华歆、阚泽
