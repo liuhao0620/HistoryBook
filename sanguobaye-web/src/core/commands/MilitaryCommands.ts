@@ -6,11 +6,13 @@ import type { Order } from '../state/useGameStore';
 export class ConscriptionCommand extends BaseCommand {
     private cityId: number;
     private personId: number;
+    private arms: number;
 
-    constructor(cityId: number, personId: number) {
+    constructor(cityId: number, personId: number, arms: number) {
         super();
         this.cityId = cityId;
         this.personId = personId;
+        this.arms = arms;
     }
 
     execute(): CommandResult {
@@ -27,13 +29,18 @@ export class ConscriptionCommand extends BaseCommand {
             return { success: false, message: `府库空虚，没有金钱用于征兵。` };
         }
 
-        let arms = city.peopleDevotion * 10;
-        let maxAffordable = city.money * 2;
-        arms = Math.min(arms, maxAffordable);
+        const maxByDevotion = city.peopleDevotion * 10;
+        const maxAffordable = city.money * 2;
+        const maxAmount = Math.min(maxByDevotion, maxAffordable);
         
-        const costMoney = Math.floor(arms / 2);
+        let actualArms = Math.min(this.arms, maxAmount);
+        const costMoney = Math.floor(actualArms / 2);
 
-        store.updateCity(this.cityId, (c) => { c.money -= costMoney; });
+        // 立即生效
+        store.updateCity(this.cityId, (c) => { 
+            c.money -= costMoney;
+            c.mothballArms += actualArms;
+        });
         store.updatePerson(this.personId, (p) => { p.thew -= COST_THEW; });
 
         store.addOrder({
@@ -41,7 +48,7 @@ export class ConscriptionCommand extends BaseCommand {
             forceId: store.playerForceId,
             cityId: this.cityId,
             personId: this.personId,
-            data: { arms, costMoney }
+            data: { arms: actualArms, costMoney }
         });
 
         return { success: true, message: this.getAckMessage(this.personId) };
@@ -53,10 +60,7 @@ export class ConscriptionCommand extends BaseCommand {
         const person = store.persons[order.personId!];
         const { arms, costMoney } = order.data;
 
-        store.updateCity(order.cityId!, (c) => {
-            c.mothballArms += arms;
-        });
-
+        // 状态更新已在 execute 中立即生效
         const isKing = store.forces[order.forceId]?.kingId === person.id;
         const msgPrefix = isKing ? `孤在${city.name}征兵，` : `主公，臣在${city.name}征兵，`;
 
@@ -146,13 +150,9 @@ export class DistributeCommand extends BaseCommand {
             return { success: false, message: `${city.name} 后备兵力不足以分配给 ${person.name}。` };
         }
 
-        if (deltaArms > 0) {
-            store.updateCity(this.cityId, (c) => { c.mothballArms -= deltaArms; });
-        } else {
-            // 如果是减少兵力，先把兵力加回城池，等 resolve 结算时不需要再做处理，或者统一在 resolve 里做？
-            // 兵力分配比较特殊，不消耗体力且立即生效，但为了统一，我们放入队列
-            store.updateCity(this.cityId, (c) => { c.mothballArms -= deltaArms; });
-        }
+        // 兵力分配比较特殊，不消耗体力且立即生效
+        store.updateCity(this.cityId, (c) => { c.mothballArms -= deltaArms; });
+        store.updatePerson(this.personId, (p) => { p.arms = this.targetArms; });
 
         store.addOrder({
             type: 'DISTRIBUTE',
@@ -170,10 +170,7 @@ export class DistributeCommand extends BaseCommand {
         const person = store.persons[order.personId!];
         const { targetArms } = order.data;
 
-        store.updatePerson(order.personId!, (p) => {
-            p.arms = targetArms;
-        });
-
+        // 状态更新已在 execute 中立即生效
         const isKing = store.forces[order.forceId]?.kingId === person.id;
         const msgPrefix = isKing ? `孤的兵力已调整为` : `主公，臣的兵力已调整为`;
 
@@ -293,7 +290,11 @@ export class TransportationCommand extends BaseCommand {
             c.mothballArms -= this.arms;
         });
 
-        store.updatePerson(this.personId, (p) => { p.thew -= COST_THEW; });
+        // 运输者离开当前城市
+        store.updatePerson(this.personId, (p) => { 
+            p.thew -= COST_THEW; 
+            p.city = undefined;
+        });
 
         store.addOrder({
             type: 'TRANSPORTATION',
@@ -315,9 +316,9 @@ export class TransportationCommand extends BaseCommand {
 
         store.addDelayedTask({
             type: 'TRANSPORT',
-            monthsLeft: 2,
+            monthsLeft: 1,
             forceId: order.forceId,
-            data: { toCityId, money, food, arms, executorId: order.personId }
+            data: { toCityId, money, food, arms, executorId: order.personId, fromCityId: order.cityId }
         });
 
         const isKing = store.forces[order.forceId]?.kingId === person.id;
@@ -353,6 +354,13 @@ export class MoveCommand extends BaseCommand {
     execute(): CommandResult {
         const store = useGameStore.getState();
         
+        // 移动者立即离开当前城市
+        this.personIds.forEach(pid => {
+            store.updatePerson(pid, (p) => {
+                p.city = undefined;
+            });
+        });
+
         store.addOrder({
             type: 'MOVE',
             forceId: this.forceId,
@@ -372,7 +380,7 @@ export class MoveCommand extends BaseCommand {
 
         store.addDelayedTask({
             type: 'MOVE',
-            monthsLeft: 2,
+            monthsLeft: 1,
             forceId: order.forceId,
             data: { toCityId, personIds }
         });

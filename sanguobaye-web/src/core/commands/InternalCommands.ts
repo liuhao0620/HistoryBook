@@ -397,13 +397,20 @@ export class ExchangeCommand extends BaseCommand {
         if (this.type === 'buy') {
             const costMoney = Math.ceil(this.amount / 5);
             if (!this.checkMoney(this.cityId, costMoney)) return { success: false };
-            store.updateCity(this.cityId, (c) => { c.money -= costMoney; });
+            store.updateCity(this.cityId, (c) => { 
+                c.money -= costMoney;
+                c.food += this.amount; // 立即获得
+            });
         } else {
             if (city.food < this.amount) {
                 store.addLog(`【系统】${city.name} 粮草不足，需要 ${this.amount}。`);
                 return { success: false };
             }
-            store.updateCity(this.cityId, (c) => { c.food -= this.amount; });
+            const gainMoney = this.amount * 2;
+            store.updateCity(this.cityId, (c) => { 
+                c.food -= this.amount;
+                c.money += gainMoney; // 立即获得
+            });
         }
 
         store.addOrder({
@@ -423,8 +430,8 @@ export class ExchangeCommand extends BaseCommand {
         const person = store.persons[order.personId!];
         const { type, amount } = order.data;
 
+        // 状态更新已在 execute 中立即生效
         if (type === 'buy') {
-            store.updateCity(order.cityId!, (c) => { c.food += amount; });
             const costMoney = Math.ceil(amount / 5);
             store.addReport({
                 forceId: order.forceId,
@@ -432,7 +439,6 @@ export class ExchangeCommand extends BaseCommand {
             });
         } else {
             const gainMoney = amount * 2;
-            store.updateCity(order.cityId!, (c) => { c.money += gainMoney; });
             store.addReport({
                 forceId: order.forceId,
                 msg: `【内政】${person.name} 在 ${city.name} 卖出了 ${amount} 粮草，获得了 ${gainMoney} 金钱。`
@@ -513,26 +519,40 @@ export class SurrenderCommand extends BaseCommand {
 export class LargessCommand extends BaseCommand {
     private cityId: number;
     private targetId: number;
+    private targetItemId: number;
 
-    constructor(cityId: number, targetId: number) {
+    constructor(cityId: number, targetId: number, targetItemId: number) {
         super();
         this.cityId = cityId;
         this.targetId = targetId;
+        this.targetItemId = targetItemId;
     }
 
     execute(): CommandResult {
         const store = useGameStore.getState();
+        const target = store.persons[this.targetId];
+        const item = store.goods[this.targetItemId];
 
-        const COST_MONEY = 50;
-        if (!this.checkMoney(this.cityId, COST_MONEY)) return { success: false };
-
-        store.updateCity(this.cityId, (c) => { c.money -= COST_MONEY; });
+        // 立即生效（同原版游戏）
+        store.updateCity(this.cityId, (c) => {
+            if (c.toolQueue) {
+                const idx = c.toolQueue.indexOf(this.targetItemId);
+                if (idx > -1) c.toolQueue.splice(idx, 1);
+            }
+        });
+        
+        store.updatePerson(this.targetId, (p) => {
+            if (!p.equip) p.equip = [];
+            p.equip.push(this.targetItemId);
+            p.devotion = Math.min(100, p.devotion + (item ? Math.floor(item.money / 10) + 1 : 8));
+        });
 
         store.addOrder({
             type: 'LARGESS',
             forceId: store.playerForceId,
             cityId: this.cityId,
-            targetId: this.targetId
+            targetId: this.targetId,
+            data: { targetItemId: this.targetItemId }
         });
 
         return { success: true, message: "谢主公赏赐！" };
@@ -541,14 +561,13 @@ export class LargessCommand extends BaseCommand {
     static resolve(order: Order) {
         const store = useGameStore.getState();
         const target = store.persons[order.targetId!];
+        const targetItemId = order.data?.targetItemId;
+        const item = store.goods[targetItemId];
 
-        store.updatePerson(order.targetId!, (p) => {
-            p.devotion = Math.min(100, p.devotion + 8);
-        });
-
+        // 状态更新已在 execute 中立即生效，此处仅输出月末报告
         store.addReport({
             forceId: order.forceId,
-            msg: `谢主公赏赐！定当万死不辞！\n【内政】赏赐了 ${target.name}，其忠诚度上升了。`,
+            msg: `谢主公赏赐！定当万死不辞！\n【内政】赏赐了 ${target.name} 【${item?.name || '物品'}】，其忠诚度上升了。`,
             avatarId: target.id
         });
     }
@@ -557,21 +576,39 @@ export class LargessCommand extends BaseCommand {
 export class ConfiscateCommand extends BaseCommand {
     private cityId: number;
     private targetId: number;
+    private targetItemId: number;
 
-    constructor(cityId: number, targetId: number) {
+    constructor(cityId: number, targetId: number, targetItemId: number) {
         super();
         this.cityId = cityId;
         this.targetId = targetId;
+        this.targetItemId = targetItemId;
     }
 
     execute(): CommandResult {
         const store = useGameStore.getState();
+        const item = store.goods[this.targetItemId];
+
+        // 立即生效
+        store.updatePerson(this.targetId, (p) => {
+            if (p.equip) {
+                const idx = p.equip.indexOf(this.targetItemId);
+                if (idx > -1) p.equip.splice(idx, 1);
+            }
+            p.devotion = Math.max(0, p.devotion - 20);
+        });
+
+        store.updateCity(this.cityId, (c) => {
+            if (!c.toolQueue) c.toolQueue = [];
+            c.toolQueue.push(this.targetItemId);
+        });
 
         store.addOrder({
             type: 'CONFISCATE',
             forceId: store.playerForceId,
             cityId: this.cityId,
-            targetId: this.targetId
+            targetId: this.targetId,
+            data: { targetItemId: this.targetItemId }
         });
 
         return { success: true, message: "主公，您这是..." };
@@ -580,15 +617,13 @@ export class ConfiscateCommand extends BaseCommand {
     static resolve(order: Order) {
         const store = useGameStore.getState();
         const target = store.persons[order.targetId!];
+        const targetItemId = order.data?.targetItemId;
+        const item = store.goods[targetItemId];
 
-        store.updateCity(order.cityId!, (c) => { c.money += 50; });
-        store.updatePerson(order.targetId!, (p) => {
-            p.devotion = Math.max(0, p.devotion - 20);
-        });
-
+        // 状态更新已在 execute 中立即生效
         store.addReport({
             forceId: order.forceId,
-            msg: `主公，您这是...臣实在心寒！\n【内政】没收了 ${target.name} 的财产，其忠诚度大幅下降。`,
+            msg: `主公，您这是...臣实在心寒！\n【内政】没收了 ${target.name} 的【${item?.name || '物品'}】，其忠诚度大幅下降。`,
             avatarId: target.id
         });
     }
@@ -610,7 +645,12 @@ export class TreatCommand extends BaseCommand {
         const COST_MONEY = 50;
         if (!this.checkMoney(this.cityId, COST_MONEY)) return { success: false };
 
+        // 立即生效
         store.updateCity(this.cityId, (c) => { c.money -= COST_MONEY; });
+        store.updatePerson(this.targetId, (p) => {
+            p.thew = 100;
+            p.devotion = Math.min(100, p.devotion + 1);
+        });
 
         store.addOrder({
             type: 'TREAT',
@@ -626,11 +666,7 @@ export class TreatCommand extends BaseCommand {
         const store = useGameStore.getState();
         const target = store.persons[order.targetId!];
 
-        store.updatePerson(order.targetId!, (p) => {
-            p.thew = 100;
-            p.devotion = Math.min(100, p.devotion + 1);
-        });
-
+        // 状态更新已在 execute 中立即生效
         store.addReport({
             forceId: order.forceId,
             msg: `谢主公赐宴！臣感觉精神百倍！\n【内政】宴请了 ${target.name}，其体力已完全恢复。`,
@@ -649,6 +685,19 @@ export class KillCommand extends BaseCommand {
 
     execute(): CommandResult {
         const store = useGameStore.getState();
+        const target = store.persons[this.targetId];
+
+        // 立即生效
+        store.updatePerson(this.targetId, (p) => {
+            p.belong = 255; // 死亡
+        });
+
+        if (target.equip && target.equip.length > 0) {
+            store.updateCity(target.city!, (c) => {
+                if (!c.toolQueue) c.toolQueue = [];
+                c.toolQueue.push(...target.equip!);
+            });
+        }
 
         store.addOrder({
             type: 'KILL',
@@ -656,17 +705,14 @@ export class KillCommand extends BaseCommand {
             targetId: this.targetId
         });
 
-        return { success: true, message: "左右，将此人拉出去斩了！" };
+        return { success: true, message: `左右，将【${target.name}】拉出去斩了！` };
     }
 
     static resolve(order: Order) {
         const store = useGameStore.getState();
         const target = store.persons[order.targetId!];
 
-        store.updatePerson(order.targetId!, (p) => {
-            p.belong = 255;
-        });
-
+        // 状态更新已在 execute 中立即生效
         store.addReport({
             forceId: order.forceId,
             msg: `【内政】${target.name} 被处斩了。`
@@ -685,23 +731,29 @@ export class BanishCommand extends BaseCommand {
     execute(): CommandResult {
         const store = useGameStore.getState();
 
+        // 立即生效
+        const cityIds = Object.keys(store.cities).map(Number);
+        const randomCityId = cityIds[Math.floor(Math.random() * cityIds.length)];
+
+        store.updatePerson(this.targetId, (p) => {
+            p.belong = 0; // 在野
+            p.city = randomCityId; // 流放到随机城市
+        });
+
         store.addOrder({
             type: 'BANISH',
             forceId: store.playerForceId,
             targetId: this.targetId
         });
 
-        return { success: true, message: "将此人逐出城外！" };
+        return { success: true, message: `将【${store.persons[this.targetId].name}】逐出城外！` };
     }
 
     static resolve(order: Order) {
         const store = useGameStore.getState();
         const target = store.persons[order.targetId!];
 
-        store.updatePerson(order.targetId!, (p) => {
-            p.belong = 0;
-        });
-
+        // 状态更新已在 execute 中立即生效
         store.addReport({
             forceId: order.forceId,
             msg: `【内政】${target.name} 被流放了。`

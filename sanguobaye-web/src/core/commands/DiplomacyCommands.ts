@@ -49,7 +49,7 @@ export class AlienateCommand extends BaseCommand {
 
         store.addDelayedTask({
             type: 'DIPLOMACY',
-            monthsLeft: 10,
+            monthsLeft: 1,
             forceId: order.forceId,
             data: {
                 subtype: 'Alienate',
@@ -112,7 +112,7 @@ export class CanvassCommand extends BaseCommand {
 
         store.addDelayedTask({
             type: 'DIPLOMACY',
-            monthsLeft: 10,
+            monthsLeft: 1,
             forceId: order.forceId,
             data: {
                 subtype: 'Canvass',
@@ -175,7 +175,7 @@ export class CounterespionageCommand extends BaseCommand {
 
         store.addDelayedTask({
             type: 'DIPLOMACY',
-            monthsLeft: 10,
+            monthsLeft: 1,
             forceId: order.forceId,
             data: {
                 subtype: 'Counterespionage',
@@ -238,7 +238,7 @@ export class InduceCommand extends BaseCommand {
 
         store.addDelayedTask({
             type: 'DIPLOMACY',
-            monthsLeft: 10,
+            monthsLeft: 1,
             forceId: order.forceId,
             data: {
                 subtype: 'Induce',

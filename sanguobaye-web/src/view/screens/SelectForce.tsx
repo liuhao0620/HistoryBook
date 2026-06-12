@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore } from '../../core/state/useGameStore';
 import { useScale } from '../../core/hooks/useScale';
-import { C_MAP, CITY_MAP_W, CITY_MAP_H, getCityCenterCoords } from '../../core/constants/cityMap';
+import { C_MAP, getCityCenterCoords } from '../../core/constants/cityMap';
 
 export const SelectForce: React.FC = () => {
     const { selectedScenario, loadScenarioAndStart, setScreen } = useGameStore();
     const scale = useScale();
-    const resolution = useGameStore(state => state.resolution);
-    const scaleY = resolution.height / 1080;
     const [hoveredForce, setHoveredForce] = useState<number | null>(null);
     const [cityLinks, setCityLinks] = useState<any[]>([]);
 
@@ -94,7 +92,7 @@ export const SelectForce: React.FC = () => {
                         flex: 1,
                         border: `${6 * scale}px solid #d6a85b`, 
                         backgroundColor: '#000',
-                        backgroundImage: 'url(/assets/images/bg_world_map_new.png)',
+                        backgroundImage: 'url(/assets/images/bg_world_map.jpg)',
                         backgroundSize: '100% 100%',
                         backgroundPosition: 'center',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative',
@@ -146,7 +144,7 @@ export const SelectForce: React.FC = () => {
                                 })}
                             </svg>
 
-                            {C_MAP.map((cityIndex, index) => {
+                            {C_MAP.map((cityIndex) => {
                                 if (cityIndex === 0) return null;
                                 const city = selectedScenario.cities[cityIndex - 1];
                                 if (!city) return null;

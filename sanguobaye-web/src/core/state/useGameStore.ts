@@ -54,6 +54,7 @@ export interface GameState {
     selectedCityId: number | null;
     logs: string[]; // 游戏日志
     delayedTasks: DelayedTask[]; // 延迟任务队列
+    pendingPlayerBattles: any[]; // 等待玩家处理的战斗
     orderQueue: Order[];
     reportQueue: Report[];
     aiThinkingForceId: number | null;
@@ -116,6 +117,7 @@ export const useGameStore = create<GameState>((set) => ({
     selectedCityId: null,
     logs: [],
     delayedTasks: [],
+    pendingPlayerBattles: [],
     orderQueue: [],
     reportQueue: [],
     aiThinkingForceId: null,
@@ -412,7 +414,112 @@ export const useGameStore = create<GameState>((set) => ({
     })),
 
     processDelayedTasks: () => set(produce((state: GameState) => {
-        // 清理掉已经完成的任务 (monthsLeft <= 0 的认为在外部已被处理并应该被移除)
+        const completedTasks = state.delayedTasks.filter(t => t.monthsLeft <= 0);
+        if (completedTasks.length > 0) {
+            completedTasks.forEach(task => {
+                if (task.type === 'TRANSPORT') {
+                    const city = state.cities[task.data.toCityId];
+                    if (city) {
+                        city.money += task.data.money;
+                        city.food += task.data.food;
+                        city.mothballArms += task.data.arms;
+                    }
+                    const person = state.persons[task.data.executorId];
+                    if (person) {
+                        person.city = task.data.fromCityId;
+                    }
+                    const isKing = task.data.executorId === state.forces[task.forceId]?.kingId;
+                    const msgPrefix = isKing ? `孤已将物资押送到` : `主公，臣已将物资押送到`;
+                    state.reportQueue.push({
+                        id: Math.random().toString(36).substring(2, 9),
+                        forceId: task.forceId,
+                        msg: `${msgPrefix} ${city?.name || '目的地'}，送达金钱 ${task.data.money}，粮草 ${task.data.food}，兵力 ${task.data.arms}。`,
+                        avatarId: task.data.executorId
+                    });
+                } else if (task.type === 'MOVE') {
+                    task.data.personIds.forEach((pid: number) => {
+                        const p = state.persons[pid];
+                        if (p) p.city = task.data.toCityId;
+                    });
+                    const executorId = task.data.personIds[0];
+                    const isKing = executorId === state.forces[task.forceId]?.kingId;
+                    const msgPrefix = isKing ? `孤率军` : `主公，臣已率军`;
+                    const city = state.cities[task.data.toCityId];
+                    state.reportQueue.push({
+                        id: Math.random().toString(36).substring(2, 9),
+                        forceId: task.forceId,
+                        msg: `${msgPrefix}抵达 ${city?.name || '目的地'}。`,
+                        avatarId: executorId
+                    });
+                } else if (task.type === 'RECONNOITRE') {
+                    const isKing = task.data.executorId === state.forces[task.forceId]?.kingId;
+                    const msgPrefix = isKing ? `孤探明了` : `主公，臣探明了`;
+                    const city = state.cities[task.data.targetCityId];
+                    state.reportQueue.push({
+                        id: Math.random().toString(36).substring(2, 9),
+                        forceId: task.forceId,
+                        msg: `${msgPrefix} ${city?.name || '目的地'} 的兵力情况。`,
+                        avatarId: task.data.executorId
+                    });
+                } else if (task.type === 'ATTACK') {
+                    const targetCityId = task.data.targetCityId;
+                    const executors = task.data.executorIds;
+                    const defenderIds = Object.values(state.persons).filter(p => p.city === targetCityId).map(p => p.id);
+                    if (defenderIds.length === 0) {
+                        const targetCity = state.cities[targetCityId];
+                        if (targetCity) targetCity.belong = task.forceId;
+                        executors.forEach((pid: number) => {
+                            const p = state.persons[pid];
+                            if (p) p.city = targetCityId;
+                        });
+                        const executorId = executors[0];
+                        const isKing = executorId === state.forces[task.forceId]?.kingId;
+                        const msgPrefix = isKing ? `孤已兵不血刃占领了` : `主公，臣已兵不血刃占领了`;
+                        state.reportQueue.push({
+                            id: Math.random().toString(36).substring(2, 9),
+                            forceId: task.forceId,
+                            msg: `${msgPrefix} ${targetCity?.name || '目的地'}！`,
+                            avatarId: executorId
+                        });
+                    }
+                    // AI vs AI or Player battles will be handled externally due to async/component nature,
+                    // but state updates for empty cities can be done here.
+                } else if (task.type === 'DIPLOMACY') {
+                    const target = state.persons[task.data.targetId];
+                    const executor = state.persons[task.data.executorId];
+                    if (target && executor) {
+                        const isKing = executor.id === state.forces[task.forceId]?.kingId;
+                        const msgPrefix = isKing ? `孤` : `主公，臣`;
+                        const success = Math.random() * 100 < ((executor.iq || 50) - target.iq + 50);
+                        if (success) {
+                            if (task.data.subtype === 'Alienate') {
+                                target.devotion = Math.max(0, target.devotion - 10);
+                                state.reportQueue.push({ id: Math.random().toString(36).substring(2, 9), forceId: task.forceId, msg: `${msgPrefix}的离间之计成功了！\n【外交】${target.name} 忠诚度下降。`, avatarId: executor.id });
+                            } else if (task.data.subtype === 'Canvass') {
+                                target.belong = state.playerForceId;
+                                target.devotion = 60;
+                                state.reportQueue.push({ id: Math.random().toString(36).substring(2, 9), forceId: task.forceId, msg: `${msgPrefix}已成功招揽 ${target.name}！`, avatarId: executor.id });
+                                state.reportQueue.push({ id: Math.random().toString(36).substring(2, 9), forceId: task.forceId, msg: `良禽择木而栖，贤臣择主而事。在下愿随明公！\n【外交】招揽成功，${target.name} 加入我方！`, avatarId: target.id });
+                            } else if (task.data.subtype === 'Counterespionage') {
+                                target.belong = state.playerForceId;
+                                state.reportQueue.push({ id: Math.random().toString(36).substring(2, 9), forceId: task.forceId, msg: `${msgPrefix}的策反之计成功了，${target.name} 已经倒戈！`, avatarId: executor.id });
+                                state.reportQueue.push({ id: Math.random().toString(36).substring(2, 9), forceId: task.forceId, msg: `旧主无道，在下愿弃暗投明！\n【外交】策反成功，${target.name} 倒戈！`, avatarId: target.id });
+                            } else if (task.data.subtype === 'Induce') {
+                                target.belong = state.playerForceId;
+                                state.reportQueue.push({ id: Math.random().toString(36).substring(2, 9), forceId: task.forceId, msg: `${msgPrefix}已成功劝降 ${target.name}！`, avatarId: executor.id });
+                                state.reportQueue.push({ id: Math.random().toString(36).substring(2, 9), forceId: task.forceId, msg: `末将愿降，请受我一拜！\n【外交】劝降成功，${target.name} 投降！`, avatarId: target.id });
+                            }
+                        } else {
+                            state.reportQueue.push({ id: Math.random().toString(36).substring(2, 9), forceId: task.forceId, msg: `${msgPrefix}针对 ${target.name} 的计谋失败了。`, avatarId: executor.id });
+                            if (['Canvass', 'Induce'].includes(task.data.subtype)) {
+                                state.reportQueue.push({ id: Math.random().toString(36).substring(2, 9), forceId: task.forceId, msg: `忠臣不事二主，要杀便杀！`, avatarId: target.id });
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        // 清理掉已经完成的任务
         state.delayedTasks = state.delayedTasks.filter(t => t.monthsLeft > 0);
     })),
 

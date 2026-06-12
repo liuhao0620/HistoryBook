@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, Component, ReactNode } from 'react';
 import { useGameStore } from './core/state/useGameStore';
 import { MainMenu } from './view/screens/MainMenu';
 import { SelectScenario } from './view/screens/SelectScenario';
@@ -6,6 +6,29 @@ import { SelectForce } from './view/screens/SelectForce';
 import { GameScreen } from './view/screens/GameScreen';
 import { SettingsScreen } from './view/screens/SettingsScreen';
 import { BattleScreen } from './view/screens/BattleScreen';
+
+class ErrorBoundary extends Component<{children: ReactNode}, {hasError: boolean, error: any}> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error("ErrorBoundary caught an error", error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return <div style={{color: 'red', padding: '20px', background: 'white', zIndex: 9999, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'}}>
+        <h1>Something went wrong.</h1>
+        <pre>{this.state.error?.toString()}</pre>
+        <pre>{this.state.error?.stack}</pre>
+      </div>;
+    }
+    return this.props.children;
+  }
+}
 
 function App() {
   const { currentScreen, setAvailableScenarios, resolution } = useGameStore();
@@ -40,16 +63,18 @@ function App() {
   };
 
   return (
-    <div style={{
-      position: 'relative',
-      width: `${resolution.width}px`,
-      height: `${resolution.height}px`,
-      overflow: 'hidden',
-      flexShrink: 0,
-      boxShadow: '0 0 30px rgba(0,0,0,0.8)' // 增加阴影以突出显示游戏区域
-    }}>
-      {renderScreen()}
-    </div>
+    <ErrorBoundary>
+      <div style={{
+        position: 'relative',
+        width: `${resolution.width}px`,
+        height: `${resolution.height}px`,
+        overflow: 'hidden',
+        flexShrink: 0,
+        boxShadow: '0 0 30px rgba(0,0,0,0.8)' // 增加阴影以突出显示游戏区域
+      }}>
+        {renderScreen()}
+      </div>
+    </ErrorBoundary>
   );
 }
 
