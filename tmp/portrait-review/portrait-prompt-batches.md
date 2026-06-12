@@ -221,6 +221,120 @@ De-homogenization rule: every portrait must vary face shape, age, clothing, head
 
 差异化规则：江东人物要区分水军、游侠、老臣、青年统帅、儒雅谋士和刚烈护卫；允许克制的深红、青绿或水军皮革细节，但整体仍要低饱和。
 
+### 陈武 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/陈武.png`
+- 最终提示词：
+  > 1:1 realistic painted bust portrait of Chen Wu, a fierce Jiangdong infantry and river-war commander of Sun Quan, dark weathered face, intense loyal eyes, short rugged beard, sturdy build, dark leather-and-lamellar armor with muted red cloth knot and wet-river campaign wear, no ornate noble robe, low-saturation sepia, dark gold and restrained deep red palette matching an ancient parchment strategy map UI, plain deep umber background, centered head and shoulders, safe margins for game portrait frame and small modal thumbnail, no text, no watermark, no bright colors, avoid northern heavy cavalry look, avoid same face as Zhou Tai.
+
+### 丁奉 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/丁奉.png`
+- 最终提示词：
+  > 1:1 realistic painted bust portrait of Ding Feng, a veteran Eastern Wu general, older lean face, calm hardened eyes, grey-streaked short beard, practical dark river-navy armor with weathered leather straps and muted teal cloth edge, compact helmet without plume, disciplined late-career commander presence, low-saturation sepia, dark gold and restrained teal palette matching an ancient parchment strategy map UI, plain deep umber background, centered head and shoulders, safe margins for side-panel portrait and small thumbnail, no text, no watermark, no bright colors, avoid youthful hero face, avoid ornate court robes, avoid anime style.
+
+### 甘宁 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/甘宁.png`
+- 最终提示词：
+  > 1:1 realistic painted bust portrait of Gan Ning, bold river pirate turned Eastern Wu general, sharp rebellious face, confident wild eyes, short beard and mustache, dark leather river-raider armor with muted crimson scarf and small bell-like metal ornaments, open-collar swagger but historically grounded, no bright fantasy colors, low-saturation sepia, dark gold and restrained red palette matching an ancient parchment strategy map UI, plain deep umber background, centered head and shoulders, safe margins for game portrait frame and small modal thumbnail, no text, no watermark, avoid elegant court official look, avoid bulky northern armor, avoid anime style.
+
+### 蒋钦 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/蒋钦.png`
+- 最终提示词：
+  > Painted Three Kingdoms strategy game portrait, square 1:1 bust of Jiang Qin, practical Eastern Wu river-navy commander. Historical Chinese game illustration, visible brush texture, not photorealistic. Plain broad working face, honest alert eyes, short trimmed beard, no metal helmet, dark cloth headwrap tied low, simple water-worn leather-and-lamellar armor partly covered by muted teal river scarf, modest patrol commander presence, different from helmeted Ding Feng and Ling Cao. Low-saturation sepia, dark gold and subdued teal palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable small thumbnail. No text, no watermark, no bright colors, no anime.
+
+### 凌操 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/凌操.png`
+- 最终提示词：
+  > Painted Three Kingdoms strategy game portrait, 1:1 bust of Ling Cao, older Eastern Wu naval vanguard. Historical Chinese illustration realism with visible brushwork, not photorealistic. Weathered angular face, protective stern eyes, short grey-streaked beard, lighter river-war armor with leather plates, muted red-brown scarf, simple low helmet, Jiangdong boat-campaign feel. Low-saturation sepia, dark gold, restrained red-brown accents matching an ancient parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable in small thumbnail. No text, no watermark, no bright colors, avoid heavy northern cavalry armor, avoid modern photo look.
+
+### 凌统 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/凌统.png`
+- 最终提示词：
+  > 1:1 realistic painted bust portrait of Ling Tong, young fierce Eastern Wu general, son of Ling Cao, lean youthful face, intense restrained anger in the eyes, thin mustache beginning to grow, tied hair under compact military headpiece, sleek dark lamellar armor with muted red sash and river-war leather straps, proud disciplined posture, low-saturation sepia, dark gold and restrained red palette matching an ancient parchment strategy map UI, plain deep umber background, centered head and shoulders, safe margins for side-panel and small thumbnail, no text, no watermark, no bright colors, avoid looking like older Ling Cao, avoid pirate swagger like Gan Ning, avoid anime style.
+
+### 鲁肃 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/鲁肃.png`
+- 最终提示词：
+  > Painted Three Kingdoms strategy game portrait, 1:1 bust of Lu Su, generous broad-minded Eastern Wu statesman. Historical Chinese illustration realism with visible brush strokes and painterly texture, not photorealistic, not studio portrait. Warm mature rounded face, calm kind eyes, neat medium beard, soft dark scholar robes with restrained muted teal trim, simple official cap, no armor, diplomatic and humane presence. Dark sepia, muted gold and subdued teal palette matching an ancient parchment map UI, plain deep umber background, centered head and shoulders with safe margins, readable as small UI thumbnail. No text, no watermark, no bright colors, no anime.
+
+### 陆逊 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/陆逊.png`
+- 最终提示词：
+  > Painted historical game portrait, square 1:1 bust of Lu Xun, young Eastern Wu scholar-general. Painterly brush texture, ancient Chinese strategy game art, not photorealistic and not modern actor. Slim scholarly face, slightly narrow eyes, calm tactical gaze, sparse thin mustache, modest youthfulness, dark scholar robe over light hidden armor, muted teal sash and dark red-brown collar, small simple commander headpiece. Low-saturation sepia and dark gold colors matching parchment world-map UI, plain deep umber background, centered head and shoulders, safe margins, readable as small thumbnail. No text, no watermark, no bright colors, no anime.
+
+### 吕范 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/吕范.png`
+- 最终提示词：
+  > 1:1 painted historical strategy game bust portrait of Lü Fan, an Eastern Wu official known for ritual order and administration, mature slender face, meticulous eyes, neat thin mustache and short beard, precise composed expression, immaculate dark court robes with muted gold-brown trim and a narrow teal sash, tall but simple official cap, no armor, refined administrator presence, painterly Chinese illustration realism, low-saturation sepia and dark gold palette matching an ancient parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable as small UI portrait, no text, no watermark, no bright colors, avoid warm round Lu Su face, avoid warrior armor, avoid anime style.
+
+### 吕蒙 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/吕蒙.png`
+- 最终提示词：
+  > Painted historical strategy game portrait, 1:1 bust of Lü Meng, Eastern Wu commander who rose from rough soldier to learned general. Painterly brush texture, not photorealistic. Plain strong face, thoughtful disciplined eyes, short beard, modest dark lamellar armor partly covered by a simple scholar cloak, worn teal scarf, little ornament, compact cloth military cap, self-made practical commander, not a noble hero. Low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable in small thumbnail. No text, no watermark, no bright colors, no anime, avoid ornate armor.
+
+### 太史慈 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/太史慈.png`
+- 最终提示词：
+  > 1:1 painted Three Kingdoms strategy game bust portrait of Taishi Ci, heroic Eastern Han and Wu warrior known for bravery and archery, tall dignified face, bright resolute eyes, strong nose, neat mustache and short beard, dark agile armor with subtle bow-shaped ornament and muted red-brown scarf, upright loyal warrior presence, painterly historical Chinese realism with visible brush texture, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins for side-panel portrait and small thumbnail, no text, no watermark, no bright colors, avoid bulky brute look, avoid pirate style, avoid anime style.
+
+### 虞翻 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/虞翻.png`
+- 最终提示词：
+  > 1:1 painted historical strategy game bust portrait of Yu Fan, blunt outspoken Eastern Wu scholar and diviner, narrow severe face, sharp critical eyes, thin mustache and angular short beard, slightly tilted scholar cap, dark plain robes with subtle I Ching-like woven collar pattern, no armor, proud difficult intellectual presence, painterly Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins for side-panel and small thumbnail, no text, no watermark, no bright colors, avoid gentle Lu Su expression, avoid warrior armor, avoid anime style.
+
+### 张纮 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/张纮.png`
+- 最终提示词：
+  > 1:1 painted Three Kingdoms strategy game bust portrait of Zhang Hong, elegant senior Eastern Wu scholar and adviser, gentle long face, wise mild eyes, long neat grey beard, refined dark brown scholar robes with muted teal-green edging, simple tall official cap, no armor, calm literary statesman presence, painterly historical Chinese realism with soft brush texture, low-saturation sepia and dark gold palette matching ancient parchment map UI, plain deep umber background, centered head and shoulders, safe margins for game portrait and small thumbnail, no text, no watermark, no bright colors, avoid stern Zhang Zhao look, avoid warrior armor, avoid anime style.
+
+### 张昭 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/张昭.png`
+- 最终提示词：
+  > 1:1 painted historical strategy game bust portrait of Zhang Zhao, stern senior Eastern Wu minister, elderly rectangular face, deep frown lines, commanding critical eyes, long straight grey beard, austere dark court robes with restrained gold-brown trim, tall square official cap, no armor, uncompromising elder-statesman presence, painterly Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders with safe margins, readable in small thumbnail, no text, no watermark, no bright colors, avoid gentle Zhang Hong expression, avoid warrior armor, avoid anime style.
+
+### 周泰 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/周泰.png`
+- 最终提示词：
+  > 1:1 painted Three Kingdoms strategy game bust portrait of Zhou Tai, scarred loyal bodyguard general of Eastern Wu, rugged dark face with visible old scars across cheek and brow, grim protective eyes, short rough beard, dark river-war armor with worn leather straps and muted red cloth, strong shoulders but not monstrous, guarded silent presence, painterly historical Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins for game portrait and thumbnail, no text, no watermark, no bright colors, avoid northern brute armor, avoid pirate swagger, avoid anime style.
+
+### 朱桓 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/朱桓.png`
+- 最终提示词：
+  > Painted Three Kingdoms strategy game portrait, square 1:1 bust of Zhu Huan, proud Eastern Wu defensive general. Historical painterly realism, not photorealistic close-up. Medium crop with full headgear and shoulders visible, safe margins. Angular confident face, defiant eyes, short neat beard, practical dark armor with muted red-brown sash, compact low commander cap, fortress-commander presence. Low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background. No text, no watermark, no bright colors, no anime, avoid extreme close-up and avoid oversized tall official hat.
+
+### 诸葛谨 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/诸葛谨.png`
+- 最终提示词：
+  > 1:1 painted historical strategy game bust portrait of Zhuge Jin, gentle Eastern Wu statesman and elder brother of Zhuge Liang, long face with notably high broad forehead, kind restrained eyes, neat long beard, soft dark scholar robes with muted teal and gold-brown edging, simple official cap set back to reveal forehead, no armor, diplomatic trustworthy presence, painterly Chinese realism, low-saturation sepia and dark gold palette matching ancient parchment map UI, plain deep umber background, centered head and shoulders, safe margins for portrait frame and small thumbnail, no text, no watermark, no bright colors, avoid looking like Lu Su or Zhang Hong, avoid warrior armor, avoid anime style.
+
+### 华歆 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/华歆.png`
+- 最终提示词：
+  > 1:1 painted Three Kingdoms strategy game bust portrait of Hua Xin, refined late Han scholar-official later associated with Cao Wei, cool reserved face, high cheekbones, detached intelligent eyes, thin mustache and tidy short beard, austere dark court robes with very restrained gold trim, tall black official cap, no armor, old aristocratic scholar presence, painterly historical Chinese realism, low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins for side-panel portrait and small thumbnail, no text, no watermark, no bright colors, avoid warm Eastern Wu teal details, avoid warrior armor, avoid anime style.
+
+### 阚泽 (已生成)
+
+- 保存路径：`sanguobaye-web/public/assets/images/generals/阚泽.png`
+- 最终提示词：
+  > Painted Three Kingdoms strategy game portrait, square 1:1 bust of Kan Ze, clever Eastern Wu envoy and scholar. Ancient Chinese game illustration with visible brush texture, not photorealistic, not modern actor. Thin slightly plain face, quick observant eyes, sparse mustache, restrained wry expression, modest dark scholar robe with muted teal-brown edge, small simple cloth official cap, no luxurious embroidery, no armor. Low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable in small thumbnail. No text, no watermark, no bright colors, no anime, avoid handsome idol face.
+
 ## 批次 D：刘备、蜀汉、益州与汉中人物
 
 名单：法正、费祎、关平、黄权、黄忠、简雍、蒋琬、李严、廖化、刘璋、马良、马谡、孟达、糜芳、糜竺、庞统、孙乾、王平、魏延、吴懿、向朗、徐庶、严颜、张任、张松、周仓、董允、伊籍、王累
