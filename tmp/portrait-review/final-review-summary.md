@@ -4,6 +4,11 @@
 - 地图与运行时色调参考：`sanguobaye-web/public/assets/images/bg_world_map.jpg`
 - 唯一将领数：185
 - 最终头像数：185
+- 运行时头像规格：512x512 PNG
+- 运行时头像目录：`sanguobaye-web/public/assets/images/generals/`
+- 母版归档目录：`sanguobaye-web/assets-source/images/generals-master/`
+- 母版归档数量：185
+- 母版归档尺寸分布：122 张 1254x1254，63 张 512x512
 - 缺失文件：0
 - 坏 PNG 文件：0
 - 已复核已有头像：66
