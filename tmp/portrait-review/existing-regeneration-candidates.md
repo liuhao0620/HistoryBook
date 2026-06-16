@@ -8,6 +8,19 @@
 | 李堪 | 与李傕、李典、张杨等重甲武将的轮廓接近，小头像尺寸下缺少独立识别点。 | 做成西凉边地将领，削瘦脸、风沙痕迹、皮毛襟、短须，甲胄更粗粝而非中原制式。 |
 | 刘岱 | 与刘表、刘焉等宗亲州牧同属官服构图，当前辨识度偏弱，人物性格不够明确。 | 做成谨慎而虚弱的汉室宗亲州牧，较年轻、焦虑眼神，官服下露出轻甲，金饰克制。 |
 
+## 已重生成
+
+| 将领 | 保存路径 | 最终提示词 | 复核结论 |
+| --- | --- | --- | --- |
+| 侯成 | `sanguobaye-web/public/assets/images/generals/侯成.png` | Painted Three Kingdoms strategy game portrait, 1:1 bust of Hou Cheng, weary cautious cavalry officer formerly under Lu Bu. Tired narrow face, uneasy eyes, short beard, no full helmet, tied dark hair with simple cloth band, dark brown leather horseman armor with worn straps and muted red-brown scarf, low-status veteran cavalry presence. Low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable small thumbnail. No text, no watermark, no bright colors, no anime, avoid looking like Hou Xuan or a generic helmeted cavalryman. | 与侯选的金属盔、灰甲轮廓明显分开；运行小头像仍可读。 |
+| 李堪 | `sanguobaye-web/public/assets/images/generals/李堪.png` | Painted Three Kingdoms strategy game portrait, 1:1 bust of Li Kan, Xiliang frontier commander. Gaunt long face, wind-cracked skin, narrow hard eyes, very short beard, exposed forehead with tied-back hair, dusty pale fur collar, rough dark leather armor, ochre desert scarf, no cloth headwrap, no full metal helmet, no central-plains polished armor. Sepia and dark gold parchment-map palette, deep umber background, centered head and shoulders, safe margins. No text, no watermark, no bright colors, no anime, avoid looking like Hou Cheng. | 与李傕、李典、张杨的中原重甲轮廓拉开，也避免了与侯成的新图相似。 |
+| 刘岱 | `sanguobaye-web/public/assets/images/generals/刘岱.png` | Painted Three Kingdoms strategy game portrait, 1:1 bust of Liu Dai, cautious weak Han imperial clan provincial governor. Younger anxious face, tired worried eyes, neat thin mustache and short beard, dark formal governor robe over very light hidden armor, restrained gold-brown trim, modest official cap, not heroic. Low-saturation sepia and dark gold palette matching parchment map UI, plain deep umber background, centered head and shoulders, safe margins, readable thumbnail. No text, no watermark, no bright colors, no anime, avoid looking like Liu Biao or Liu Yan. | 与刘表、刘焉的稳重年长州牧气质分开，焦虑和轻甲特征更明确。 |
+
+审查图：
+
+- `tmp/portrait-review/contact-sheet-existing-regenerated.png`
+- `tmp/portrait-review/runtime-check-existing-regenerated.png`
+
 ## 保留
 
 | 将领 | 理由 |
