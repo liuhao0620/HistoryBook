@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore } from '../../core/state/useGameStore';
-import { useScale } from '../../core/hooks/useScale';
 import { C_MAP, getCityCenterCoords } from '../../core/constants/cityMap';
 
 export const SelectForce: React.FC = () => {
     const { selectedScenario, loadScenarioAndStart, setScreen } = useGameStore();
-    const scale = useScale();
+    const scale = 1; // Global scaling is handled in App.tsx
     const [hoveredForce, setHoveredForce] = useState<number | null>(null);
     const [cityLinks, setCityLinks] = useState<any[]>([]);
 
@@ -49,20 +48,25 @@ export const SelectForce: React.FC = () => {
                             const isHovered = hoveredForce === force.id;
 
                             return (
-                                <div 
+                                <button 
                                     key={force.id}
                                     onMouseEnter={() => setHoveredForce(force.id)}
                                     onMouseLeave={() => setHoveredForce(null)}
+                                    onFocus={() => setHoveredForce(force.id)}
+                                    onBlur={() => setHoveredForce(null)}
                                     onClick={() => loadScenarioAndStart(force.id)}
                                     style={{
                                         padding: `${24 * scale}px ${20 * scale}px`, fontSize: `${48 * scale}px`, textAlign: 'center',
                                         cursor: 'pointer', letterSpacing: `${8 * scale}px`, fontWeight: 'bold',
                                         backgroundColor: isHovered ? '#d6a85b' : 'transparent',
                                         color: isHovered ? '#2a1609' : '#d6a85b',
-                                        transition: 'all 0.2s'
+                                        transition: 'all 0.2s',
+                                        border: 'none',
+                                        width: '100%',
+                                        fontFamily: '"STKaiti", "KaiTi", serif'
                                     }}>
                                     {getKingName(force.kingId)}
-                                </div>
+                                </button>
                             );
                         })}
                     </div>

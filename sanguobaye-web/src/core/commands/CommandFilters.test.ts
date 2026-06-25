@@ -9,28 +9,70 @@ describe('CommandFilters', () => {
     const enemyForceId = 2;
     const currentCityId = 10;
 
+    const makePerson = (overrides: Partial<Person>): Person => ({
+        id: 0,
+        name: '武将',
+        belong: 0,
+        oldBelong: 0,
+        force: 50,
+        iq: 50,
+        thew: 100,
+        devotion: 80,
+        experience: 0,
+        level: 1,
+        age: 30,
+        armsType: 0,
+        arms: 0,
+        equip: [],
+        character: 0,
+        acted: false,
+        ...overrides,
+    });
+
+    const makeCity = (overrides: Partial<City>): City => ({
+        id: 0,
+        name: '城池',
+        belong: 0,
+        satrapId: 0,
+        state: 0,
+        farming: 0,
+        farmingLimit: 0,
+        commerce: 0,
+        commerceLimit: 0,
+        peopleDevotion: 0,
+        avoidCalamity: 0,
+        population: 0,
+        populationLimit: 0,
+        money: 0,
+        food: 0,
+        mothballArms: 0,
+        personQueue: [],
+        toolQueue: [],
+        ...overrides,
+    });
+
     const mockPersons: Person[] = [
-        { id: 1, name: '玩家君主', city: currentCityId, belong: playerForceId, acted: false, equip: [] } as Person,
-        { id: 2, name: '玩家武将A', city: currentCityId, belong: playerForceId, acted: false, equip: [1] } as Person,
-        { id: 3, name: '玩家武将B(满装备)', city: currentCityId, belong: playerForceId, acted: false, equip: [2, 3] } as Person,
-        { id: 4, name: '玩家武将C(已行动)', city: currentCityId, belong: playerForceId, acted: true, equip: [] } as Person,
-        { id: 5, name: '敌方君主', city: 11, belong: enemyForceId, acted: false, equip: [] } as Person,
-        { id: 6, name: '敌方太守', city: 11, belong: enemyForceId, acted: false, equip: [] } as Person,
-        { id: 7, name: '敌方武将', city: 11, belong: enemyForceId, acted: false, equip: [] } as Person,
-        { id: 8, name: '本城俘虏', city: currentCityId, belong: enemyForceId, acted: false, equip: [] } as Person,
-        { id: 9, name: '在野武将', city: currentCityId, belong: 0, acted: false, equip: [] } as Person,
-        { id: 10, name: '其他城己方武将', city: 12, belong: playerForceId, acted: false, equip: [] } as Person,
+        makePerson({ id: 1, name: '玩家君主', city: currentCityId, belong: playerForceId }),
+        makePerson({ id: 2, name: '玩家武将A', city: currentCityId, belong: playerForceId, equip: [1] }),
+        makePerson({ id: 3, name: '玩家武将B(满装备)', city: currentCityId, belong: playerForceId, equip: [2, 3] }),
+        makePerson({ id: 4, name: '玩家武将C(已行动)', city: currentCityId, belong: playerForceId, acted: true }),
+        makePerson({ id: 5, name: '敌方君主', city: 11, belong: enemyForceId }),
+        makePerson({ id: 6, name: '敌方太守', city: 11, belong: enemyForceId }),
+        makePerson({ id: 7, name: '敌方武将', city: 11, belong: enemyForceId }),
+        makePerson({ id: 8, name: '本城俘虏', city: currentCityId, belong: enemyForceId }),
+        makePerson({ id: 9, name: '在野武将', city: currentCityId, belong: 0 }),
+        makePerson({ id: 10, name: '其他城己方武将', city: 12, belong: playerForceId }),
     ];
 
     const mockForces: Record<number, Force> = {
-        [playerForceId]: { id: playerForceId, kingId: 1, name: '玩家势力', color: '#ff0000', money: 0 } as Force,
-        [enemyForceId]: { id: enemyForceId, kingId: 5, name: '敌方势力', color: '#0000ff', money: 0 } as Force,
+        [playerForceId]: { id: playerForceId, kingId: 1, character: 0, color: '#ff0000' },
+        [enemyForceId]: { id: enemyForceId, kingId: 5, character: 0, color: '#0000ff' },
     };
 
     const mockCities: Record<number, City> = {
-        [currentCityId]: { id: currentCityId, name: '主城', belong: playerForceId, satrapId: 2 } as City, // satrapId = personId + 1
-        11: { id: 11, name: '敌城', belong: enemyForceId, satrapId: 7 } as City, // satrapId = 7 (person 6)
-        12: { id: 12, name: '其他城', belong: playerForceId, satrapId: 0 } as City,
+        [currentCityId]: makeCity({ id: currentCityId, name: '主城', belong: playerForceId, satrapId: 2 }), // satrapId = personId + 1
+        11: makeCity({ id: 11, name: '敌城', belong: enemyForceId, satrapId: 7 }), // satrapId = 7 (person 6)
+        12: makeCity({ id: 12, name: '其他城', belong: playerForceId, satrapId: 0 }),
     };
 
     describe('getAvailableExecutors', () => {

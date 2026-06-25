@@ -1,10 +1,9 @@
 import React from 'react';
 import { useGameStore } from '../../core/state/useGameStore';
-import { useScale } from '../../core/hooks/useScale';
 
 export const SettingsScreen: React.FC = () => {
     const { setScreen, resolution, setResolution } = useGameStore();
-    const scale = useScale();
+    const scale = 1; // Global scaling is handled in App.tsx
 
     const handleSelect = (width: number, height: number) => {
         setResolution({ width, height });

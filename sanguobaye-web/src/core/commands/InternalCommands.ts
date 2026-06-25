@@ -530,7 +530,6 @@ export class LargessCommand extends BaseCommand {
 
     execute(): CommandResult {
         const store = useGameStore.getState();
-        const target = store.persons[this.targetId];
         const item = store.goods[this.targetItemId];
 
         // 立即生效（同原版游戏）
@@ -587,7 +586,6 @@ export class ConfiscateCommand extends BaseCommand {
 
     execute(): CommandResult {
         const store = useGameStore.getState();
-        const item = store.goods[this.targetItemId];
 
         // 立即生效
         store.updatePerson(this.targetId, (p) => {

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useGameStore, getSaveSlotsInfo } from '../../core/state/useGameStore';
-import { useScale } from '../../core/hooks/useScale';
 
 export const MainMenu: React.FC = () => {
     const { setScreen, loadGame } = useGameStore();
-    const scale = useScale();
+    const scale = 1; // Global scaling is handled in App.tsx
     const [slots, setSlots] = useState<any[]>([]);
     const [showLoadMenu, setShowLoadMenu] = useState(false);
     const [showCredits, setShowCredits] = useState(false); // 控制制作群组弹窗

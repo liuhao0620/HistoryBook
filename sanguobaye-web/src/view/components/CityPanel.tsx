@@ -24,7 +24,8 @@ export const CityPanel: React.FC = () => {
         if (cmdType === 'ASSART') {
             cmd = new AssartCommand(city.id, selectedPersonId);
         } else if (cmdType === 'CONSCRIPTION') {
-            cmd = new ConscriptionCommand(city.id, selectedPersonId);
+            const arms = Math.min(city.peopleDevotion * 10, city.money * 2);
+            cmd = new ConscriptionCommand(city.id, selectedPersonId, arms);
         }
 
         if (cmd) {

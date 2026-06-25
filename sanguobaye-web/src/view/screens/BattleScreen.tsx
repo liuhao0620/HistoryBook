@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { useBattleStore } from '../../core/battle/useBattleStore';
-import { useScale } from '../../core/hooks/useScale';
 import { TerrainType, ArmsType } from '../../core/battle/BattleTypes';
 import {
     PLAIN_MAP_BACKGROUND_IMAGE,
@@ -57,7 +56,7 @@ export const BattleScreen: React.FC = () => {
     const store = useBattleStore();
     const { map, units, day, activeUnitId, reachableTiles, attackableTiles, isAiThinking, isAttackerTurn } = store;
 
-    const scale = useScale();
+    const scale = 1; // Global scaling is handled in App.tsx
     const TILE_SIZE = 80 * scale;
     const SCENE_WIDTH = SCENE_WIDTH_BASE * scale;
     const SCENE_HEIGHT = SCENE_HEIGHT_BASE * scale;

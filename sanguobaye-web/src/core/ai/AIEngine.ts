@@ -297,7 +297,7 @@ export class AIEngine {
 
     // --- Helper Methods ---
 
-    private static getEnemyNeighbors(cityId: number, myForceId: number): City[] {
+    private static getEnemyNeighbors(_cityId: number, myForceId: number): City[] {
         const store = useGameStore.getState();
         // 这里需要有地图拓扑信息，暂时用简单的规则：相邻城市的ID差在一定范围内，或者直接返回所有非己方城池（作为大地图简化）
         // 如果游戏已经有 adjacency 列表，应该使用它。假设暂时返回所有敌人城池（简化版）
@@ -313,9 +313,9 @@ export class AIEngine {
         const store = useGameStore.getState();
         const satrapIds = Object.values(store.cities)
             .filter(c => c.belong !== myForceId && c.belong !== 0)
-            .map(c => c.satrap)
-            .filter((id): id is number => id !== undefined);
-        return satrapIds.map(id => store.persons[id]).filter(Boolean);
+            .map(c => c.satrapId)
+            .filter(id => id > 0);
+        return satrapIds.map(id => store.persons[id - 1]).filter(Boolean);
     }
 
     private static getEnemyKings(myForceId: number): Person[] {

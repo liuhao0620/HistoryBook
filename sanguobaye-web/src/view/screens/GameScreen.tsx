@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore, getSaveSlotsInfo } from '../../core/state/useGameStore';
-import { useScale } from '../../core/hooks/useScale';
 
 const bounceKeyframes = `
 @keyframes bounce {
@@ -28,15 +27,15 @@ import { GameButton } from '../components/ui/GameButton';
 import { GameModal } from '../components/ui/GameModal';
 
 type CommandStep = 'NONE' | 'SELECT_EXECUTORS' | 'SELECT_TARGET_CITY' | 'SELECT_TARGET_PERSON' | 'INPUT_AMOUNTS' | 'SELECT_ITEM';
+type CommandAmounts = Record<number | string, number | string>;
 
 import { getAvailableExecutors, getAvailableTargets } from '../../core/commands/CommandFilters';
 
 export const GameScreen: React.FC = () => {
-    const { year, month, selectedCityId, cities, persons, forces, playerForceId, nextTurn, setScreen, selectCity, delayedTasks, processDelayedTasks, updateCity, updatePerson, addReport, aiThinkingForceId, reportQueue, clearReports } = useGameStore();
+    const { year, month, selectedCityId, cities, persons, forces, playerForceId, nextTurn, setScreen, selectCity, delayedTasks, processDelayedTasks, addReport, aiThinkingForceId, reportQueue, clearReports } = useGameStore();
     const initBattle = useBattleStore(state => state.initBattle);
-    const scale = useScale();
-    const resolution = useGameStore(state => state.resolution);
-    const scaleY = resolution.height / 1080;
+    const scale = 1; // Since App.tsx handles global scaling, local scale is set to 1 to avoid double scaling
+    const scaleY = 1; // Similarly, scaleY is set to 1
     const [cityLinks, setCityLinks] = useState<any[]>([]);
 
     const [currentReportIndex, setCurrentReportIndex] = useState<number>(0);
@@ -107,7 +106,7 @@ export const GameScreen: React.FC = () => {
         targetCityId?: number;
         targetPersonId?: number;
         targetItemId?: number;
-        amounts?: Record<number | string, number>;
+        amounts?: CommandAmounts;
     }>({ cmd: null, step: 'NONE', executors: [], amounts: {} });
 
     const [reportMsg, setReportMsg] = useState<{avatarId: number, text: string} | null>(null);
@@ -229,12 +228,12 @@ export const GameScreen: React.FC = () => {
         }
 
         if (cmd === '征兵' && !extraArgs?.amounts) {
-            setCommandCtx(prev => ({ ...prev, step: 'INPUT_AMOUNTS' }));
+            setCommandCtx(prev => ({ ...prev, step: 'INPUT_AMOUNTS', executors }));
             return;
         }
 
         if (cmd === '交易' && !extraArgs?.amounts) {
-            setCommandCtx(prev => ({ ...prev, step: 'INPUT_AMOUNTS' }));
+            setCommandCtx(prev => ({ ...prev, step: 'INPUT_AMOUNTS', executors }));
             return;
         }
 
@@ -300,12 +299,12 @@ export const GameScreen: React.FC = () => {
             if (cmd === '移动') break; 
         }
     
-        const continuousCommands = ['开垦', '招商', '搜寻', '治理', '出巡', '征兵', '赏赐', '没收', '宴请'];
+        const continuousCommands = ['开垦', '招商', '搜寻', '治理', '出巡', '赏赐', '没收', '宴请'];
         if (!continuousCommands.includes(cmd)) {
             setCommandCtx({ cmd: null, step: 'NONE', executors: [], amounts: {} });
         } else {
-            // Keep the modal open, but clear the selection
-            setCommandCtx(prev => ({ ...prev, executors: [] }));
+            // Return to SELECT_EXECUTORS step, clear the selection and amounts
+            setCommandCtx(prev => ({ ...prev, step: 'SELECT_EXECUTORS', executors: [], amounts: {} }));
         }
     };
 
@@ -354,6 +353,9 @@ export const GameScreen: React.FC = () => {
                                 return (
                                     <div 
                                         key={p.id} 
+                                        role="button"
+                                        tabIndex={0}
+                                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleGeneralClick(p.id); }}
                                         onClick={() => handleGeneralClick(p.id)} 
                                         style={{ 
                                             display: 'flex', padding: '12px 10px', fontSize: '22px', 
@@ -437,7 +439,7 @@ export const GameScreen: React.FC = () => {
                         {availablePersons.length === 0 ? (
                             <div style={{ padding: '20px', textAlign: 'center', fontSize: '20px' }}>无符合条件的武将。</div>
                         ) : availablePersons.map(p => (
-                            <div key={p.id} onClick={() => handleTargetPersonSelected(p.id)} style={{ display: 'flex', padding: '10px', fontSize: '20px', cursor: 'pointer', borderBottom: '1px solid var(--theme-border)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.1)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                            <div key={p.id} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleTargetPersonSelected(p.id); }} onClick={() => handleTargetPersonSelected(p.id)} style={{ display: 'flex', padding: '10px', fontSize: '20px', cursor: 'pointer', borderBottom: '1px solid var(--theme-border)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.1)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                                 <div style={{ flex: 1.2 }}>{p.name}</div>
                                 <div style={{ flex: 1 }}>{p.belong ? persons[forces[p.belong]?.kingId]?.name || '君主' : '在野'}</div>
                                 <div style={{ flex: 1 }}>{p.city !== undefined ? cities[p.city]?.name : '未知'}</div>
@@ -537,7 +539,8 @@ export const GameScreen: React.FC = () => {
             }
 
             if (commandCtx.cmd === '征兵') {
-                const executor = persons[commandCtx.executors[0]];
+                const executorId = commandCtx.executors[0];
+                if (executorId === undefined) return null;
                 const maxByDevotion = (currentCity?.peopleDevotion || 0) * 10;
                 const maxByMoney = (currentCity?.money || 0) * 2;
                 const maxAmount = Math.min(maxByDevotion, maxByMoney);
@@ -601,7 +604,7 @@ export const GameScreen: React.FC = () => {
                         {availableItems.length === 0 ? (
                             <div style={{ padding: '20px', textAlign: 'center', fontSize: '20px' }}>无符合条件的物品。</div>
                         ) : availableItems.map((item, idx) => (
-                            <div key={`${item.id}-${idx}`} onClick={() => executeCommands(commandCtx.cmd!, commandCtx.executors, { targetItemId: item.id })} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', fontSize: '20px', cursor: 'pointer', borderBottom: '1px solid var(--theme-border)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.1)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                            <div key={`${item.id}-${idx}`} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') executeCommands(commandCtx.cmd!, commandCtx.executors, { targetItemId: item.id }); }} onClick={() => executeCommands(commandCtx.cmd!, commandCtx.executors, { targetItemId: item.id })} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', fontSize: '20px', cursor: 'pointer', borderBottom: '1px solid var(--theme-border)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.1)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                                 <div>{item.name}</div>
                                 <div style={{ color: 'var(--theme-brown)' }}>{item.desc}</div>
                             </div>
@@ -877,6 +880,26 @@ export const GameScreen: React.FC = () => {
                         return (
                             <div 
                                 key={city.id}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        if (aiThinkingForceId !== null) return;
+                                        if (reportMsg) setReportMsg(null);
+                                        if (commandCtx.step === 'SELECT_TARGET_CITY') {
+                                            handleTargetCitySelected(city.id);
+                                            return;
+                                        }
+                                        selectCity(city.id);
+                                        if (city.belong === playerForceId) {
+                                            setMenuState('CITY');
+                                        } else {
+                                            setMenuState('NONE');
+                                        }
+                                    }
+                                }}
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     if (aiThinkingForceId !== null) return; // 回合结算阶段禁止呼出城池菜单

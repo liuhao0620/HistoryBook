@@ -1,10 +1,9 @@
 import React from 'react';
 import { useGameStore } from '../../core/state/useGameStore';
-import { useScale } from '../../core/hooks/useScale';
 
 export const SelectScenario: React.FC = () => {
     const { availableScenarios, selectScenario, setScreen } = useGameStore();
-    const scale = useScale();
+    const scale = 1; // Global scaling is handled in App.tsx
 
     return (
         <div style={{ display: 'flex', height: '100%', width: '100%', backgroundColor: '#20150d', alignItems: 'center', justifyContent: 'center' }}>
@@ -61,6 +60,9 @@ export const SelectScenario: React.FC = () => {
                         return (
                             <div 
                                 key={scenario.id}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') selectScenario(scenario); }}
                                 onClick={() => selectScenario(scenario)}
                                 style={getScenarioCardStyle(scale)}>
                                 {/* 左侧剧本插图 */}
